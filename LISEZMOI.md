@@ -8,7 +8,7 @@ Site vitrine statique (HTML, CSS, JavaScript sans étape de build), prêt pour N
 |---|---|
 | `index.html` | Portail d'entrée : cuisine Armony en 3D qui change de « portrait », choix Particuliers / Professionnels |
 | `particuliers.html` | Collezione Anniversario 50, les 12 collections Armony, les portraits avec leurs finitions, aperçu 3D, étapes du projet, formulaire « Être rappelé » |
-| `configurateur.html` | Configurateur 3D : modèle, implantation, longueur, façades, plan, profilés, colonnes, hauts, îlot, hotte. Envoi pour chiffrage |
+| `configurateur.html` | Configurateur 3D : le visiteur choisit la taille de sa pièce et un modèle Armony, pose et fait glisser ses meubles (bas, colonnes, hauts, îlots, aimantés aux murs), puis choisit façades, accent, plan de travail et poignées parmi les 154 finitions du catalogue Armony 2026 (`assets/js/finitions.js`, vignettes dans `assets/img/finitions/`). Envoi pour chiffrage |
 | `professionnels.html` | Arguments Armony, catalogues à télécharger, showroom Tours Nord, secteur, prise de rendez-vous en 3 étapes (appel, puis magasin ou showroom) |
 | `merci.html`, `mentions-legales.html`, `404.html` | Pages simples |
 
