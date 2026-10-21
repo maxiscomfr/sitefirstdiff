@@ -20,7 +20,7 @@ export const CONTACT = {
 // Les photos viennent du site armonycucine.it. Si elles ont été copiées sur le site
 // (outils/telecharger-photos-armony.sh), PHOTOS_LOCALES passe à true et elles sont
 // servies depuis assets/img/armony/.
-export const PHOTOS_LOCALES = false;
+export const PHOTOS_LOCALES = true;
 const DISTANT = 'https://www.armonycucine.it/wp-content/uploads/';
 
 export function photoDistante(chemin) { return DISTANT + chemin; }
