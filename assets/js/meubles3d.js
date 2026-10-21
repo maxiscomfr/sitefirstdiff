@@ -2,7 +2,7 @@
 // Chaque meuble a son origine au sol, au milieu de son dos : il se plaque contre un mur
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
-import { FINITIONS } from './finitions.js';
+import { FINITIONS } from './finitions.js?v=20261021b';
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
 

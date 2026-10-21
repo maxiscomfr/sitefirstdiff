@@ -3,10 +3,10 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/RoomEnvironment.js';
 import { OrbitControls } from 'three/addons/OrbitControls.js';
-import { $, $$, brancherFormulaire } from './site.js';
-import { FINITIONS } from './finitions.js';
+import { $, $$, brancherFormulaire } from './site.js?v=20261021b';
+import { FINITIONS } from './finitions.js?v=20261021b';
 import { FIN, MODELES, POIGNEES, TEINTES_POIGNEE, FAMILLES_PLAN, MEUBLES, PROFONDEUR, Materiaux,
-  construireMeuble, emprise, depart, accentParDefaut } from './meubles3d.js';
+  construireMeuble, emprise, depart, accentParDefaut } from './meubles3d.js?v=20261021b';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'gres--pietra-grey',
