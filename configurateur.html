@@ -3,12 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Configurateur de cuisine Armony — FirstDiff</title>
+  <title>FirstDiff</title>
   <meta name="description" content="Posez vos meubles Armony dans votre pièce, en 3D, avec les vraies finitions du catalogue 2026. FirstDiff vous envoie le chiffrage.">
   <meta name="theme-color" content="#0c0b0a">
-  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/site.css?v=20261021c">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261021d">
   <link rel="modulepreload" href="assets/vendor/three/three.module.min.js">
   <script type="importmap">{ "imports": { "three": "./assets/vendor/three/three.module.min.js", "three/addons/": "./assets/vendor/three/addons/" } }</script>
 </head>
@@ -35,6 +37,7 @@
         <button data-vue="dessus">Vue de dessus</button>
         <button data-vue="face">Face</button>
       </div>
+      <p class="alerte-conflits" id="alerte-conflits" hidden></p>
       <p class="aide-scene" id="aide-scene">Faites glisser un meuble pour le déplacer : il s'aimante aux murs et à ses voisins.</p>
       <img class="armony-filigrane" src="assets/img/logos/armony-sombre.png" alt="" width="150" height="35">
     </section>
@@ -50,13 +53,31 @@
 
       <div class="panneaux">
         <div class="panneau actif" role="tabpanel" data-panneau="0">
-          <h3>Votre pièce</h3>
-          <label class="legende-champ" for="largeur">Largeur du mur du fond</label>
-          <input class="curseur" type="range" id="largeur" min="2.4" max="8" step="0.1" value="5">
-          <div class="valeur-curseur"><span>2,40 m</span><b id="val-largeur"></b><span>8 m</span></div>
-          <label class="legende-champ" for="profondeur">Profondeur de la pièce</label>
-          <input class="curseur" type="range" id="profondeur" min="2.4" max="7" step="0.1" value="4.2">
-          <div class="valeur-curseur"><span>2,40 m</span><b id="val-profondeur"></b><span>7 m</span></div>
+          <h3>Forme de la pièce</h3>
+          <div class="opt-grille trois" id="opt-forme">
+            <button class="opt" data-forme="rect"><b>Rectangle</b><small>Quatre murs droits</small></button>
+            <button class="opt" data-forme="L"><b>En L</b><small>Un angle rentrant</small></button>
+            <button class="opt" data-forme="biais"><b>En biais</b><small>Angles hors 90°</small></button>
+          </div>
+          <h3>Cotes exactes</h3>
+          <div class="cotes">
+            <label class="cote"><span>Mur du fond</span><input id="cote-W" inputmode="numeric"><i>cm</i></label>
+            <label class="cote"><span>Profondeur</span><input id="cote-D" inputmode="numeric"><i>cm</i></label>
+            <label class="cote" data-pour-forme="L"><span>Largeur de la découpe</span><input id="cote-Lx" inputmode="numeric"><i>cm</i></label>
+            <label class="cote" data-pour-forme="L"><span>Profondeur de la découpe</span><input id="cote-Lz" inputmode="numeric"><i>cm</i></label>
+            <label class="cote" data-pour-forme="biais"><span>Angle du mur de gauche</span><input id="cote-aG" inputmode="numeric"><i>°</i></label>
+            <label class="cote" data-pour-forme="biais"><span>Angle du mur de droite</span><input id="cote-aD" inputmode="numeric"><i>°</i></label>
+            <label class="cote"><span>Hauteur sous plafond</span><input id="cote-H" inputmode="numeric"><i>cm</i></label>
+            <label class="cote"><span>Hauteur des colonnes</span><select id="cote-hc"></select></label>
+          </div>
+          <ul class="longueurs-murs" id="longueurs-murs"></ul>
+          <h3>Portes et fenêtres</h3>
+          <div class="ajout-ouverture" id="ajout-ouverture">
+            <button type="button" data-ouverture="fenetre">+ Fenêtre</button>
+            <button type="button" data-ouverture="porte">+ Porte</button>
+            <button type="button" data-ouverture="baie">+ Porte-fenêtre</button>
+          </div>
+          <ul class="liste-ouvertures" id="liste-ouvertures"></ul>
           <h3>Point de départ</h3>
           <div class="opt-grille" id="opt-depart">
             <button class="opt" data-depart="lineaire"><b>Linéaire</b><small>Tout sur le mur du fond</small></button>
@@ -127,7 +148,7 @@
     </section>
   </main>
 
-  <script type="module" src="assets/js/site.js?v=20261021c"></script>
-  <script type="module" src="assets/js/configurateur.js?v=20261021c"></script>
+  <script type="module" src="assets/js/site.js?v=20261021d"></script>
+  <script type="module" src="assets/js/configurateur.js?v=20261021d"></script>
 </body>
 </html>
