@@ -139,6 +139,16 @@ export function ouvrirVisionneuse({ surtitre, titre, sousTitre, lignes = [], ima
       <aside></aside>`;
     document.body.appendChild(vis);
     $('.fermer', vis).onclick = fermer;
+    // balayage au doigt pour passer d'une photo à l'autre
+    let x0 = null;
+    const scene = $('.scene', vis);
+    scene.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') x0 = e.clientX; });
+    scene.addEventListener('pointerup', (e) => {
+      if (x0 == null) return;
+      const d = e.clientX - x0; x0 = null;
+      if (Math.abs(d) > 40) vis._aller(d < 0 ? 1 : -1);
+    });
+    scene.style.touchAction = 'pan-y';
     vis.addEventListener('click', (e) => { if (e.target === vis || e.target.classList.contains('scene')) fermer(); });
     addEventListener('keydown', (e) => {
       if (!vis.classList.contains('ouverte')) return;
