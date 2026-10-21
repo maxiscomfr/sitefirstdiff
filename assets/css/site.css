@@ -505,3 +505,54 @@ section { position: relative; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   .revele { opacity: 1; transform: none; }
 }
+
+/* ---------- configurateur : meubles posés par le visiteur ---------- */
+.config-scene .selection { position: absolute; right: 24px; top: 22px; z-index: 3; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; max-width: calc(100% - 48px); padding: 8px 8px 8px 16px; background: rgba(12,11,10,.86); backdrop-filter: blur(10px); color: var(--ivoire); }
+.config-scene .selection[hidden] { display: none; }
+.config-scene .selection .sel-nom { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; margin-right: 8px; color: var(--or-clair); }
+.config-scene .selection button { background: none; border: 1px solid var(--ligne); color: var(--ivoire); padding: 8px 12px; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; cursor: pointer; transition: background .3s, color .3s; }
+.config-scene .selection button:hover { background: var(--ivoire); color: var(--noir); }
+.config-scene .selection button[data-action="supprimer"]:hover { background: #c0603a; border-color: #c0603a; color: var(--ivoire); }
+.config-scene .outils button[aria-pressed="true"] { background: var(--noir); color: var(--ivoire); }
+.config-scene .aide-scene { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); margin: 0; padding: 8px 16px; background: rgba(239,234,224,.86); color: var(--noir); font-size: 13px; white-space: nowrap; pointer-events: none; }
+.panneau > h3:not(:first-child) { margin-top: 6px; }
+#palette h3 { margin: 0 0 12px; }
+.palette { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 24px; }
+.ajout { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; text-align: left; background: none; border: 1px solid var(--ligne); color: var(--ivoire); padding: 10px 12px; cursor: pointer; transition: border-color .3s, background .3s; }
+.ajout .plus { grid-row: span 2; width: 26px; height: 26px; border: 1px solid var(--or-clair); border-radius: 50%; display: grid; place-items: center; color: var(--or-clair); font-size: 16px; line-height: 1; transition: background .3s, color .3s; }
+.ajout b { font-weight: 400; font-size: 14px; line-height: 1.25; }
+.ajout small { color: var(--gris); font-size: 12px; }
+.ajout:hover { border-color: rgba(239,234,224,.4); }
+.ajout:hover .plus, .ajout.ajoute .plus { background: var(--or-clair); color: var(--noir); }
+.ajout.ajoute { border-color: var(--or-clair); background: rgba(168,147,90,.12); }
+.liste-meubles { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ligne); }
+.liste-meubles li { display: flex; align-items: center; border-bottom: 1px solid var(--ligne); }
+.liste-meubles li.vide { padding: 14px 0; color: var(--gris); font-size: 14px; }
+.liste-meubles .choisir { flex: 1; text-align: left; background: none; border: 0; color: var(--ivoire); padding: 11px 0; font-size: 14px; cursor: pointer; }
+.liste-meubles .choisir small { color: var(--gris); margin-left: 6px; }
+.liste-meubles li.choisi .choisir { color: var(--or-clair); }
+.liste-meubles .retirer { background: none; border: 0; color: var(--gris); font-size: 20px; width: 36px; height: 36px; cursor: pointer; }
+.liste-meubles .retirer:hover { color: #e07b55; }
+.bascule-cible { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.bascule-cible button { text-align: left; background: none; border: 1px solid var(--ligne); color: var(--ivoire); padding: 12px 14px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
+.bascule-cible button small { display: block; margin-top: 4px; font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--gris); }
+.bascule-cible button[aria-pressed="true"] { border-color: var(--or-clair); background: rgba(168,147,90,.1); }
+.famille { margin-bottom: 22px; }
+.famille h4 { margin: 0 0 10px; font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 19px; color: var(--or-clair); }
+.echantillons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.echantillon { position: relative; aspect-ratio: 2.2; padding: 0; border: 1px solid rgba(255,255,255,.1); background-size: cover; background-position: center; cursor: pointer; overflow: hidden; }
+.echantillon span { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 6px 4px; font-size: 10.5px; line-height: 1.2; text-align: left; color: var(--ivoire); background: linear-gradient(transparent, rgba(12,11,10,.78)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.echantillon:hover { border-color: rgba(239,234,224,.5); }
+.echantillon[aria-pressed="true"] { outline: 1px solid var(--or-clair); outline-offset: 3px; border-color: var(--or-clair); }
+.opt:disabled { opacity: .4; cursor: not-allowed; }
+@media (hover: none), (max-width: 760px) { .config-scene .aide-scene { display: none; } }
+@media (max-width: 760px) {
+  .config { grid-template-rows: auto auto; }
+  .config-scene { position: sticky; top: 70px; z-index: 4; height: 44svh; }
+  .config-scene .etiquette { left: 12px; top: 10px; }
+  .config-scene .etiquette .modele { font-size: 24px; }
+  .config-scene .etiquette .sous { display: none; }
+  .config-scene .selection { left: auto; right: 8px; top: 8px; max-width: calc(100% - 110px); padding: 4px; gap: 4px; flex-wrap: nowrap; }
+  .config-scene .selection .sel-nom { display: none; }
+  .config-scene .selection button { padding: 8px 7px; font-size: 9px; letter-spacing: .06em; white-space: nowrap; }
+}
