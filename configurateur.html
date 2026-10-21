@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Configurateur de cuisine Armony — FirstDiff</title>
+  <meta name="description" content="Composez votre cuisine Armony en 3D : modèle, implantation, façades, plan de travail, profilés. FirstDiff vous envoie son chiffrage.">
+  <meta name="theme-color" content="#0c0b0a">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="modulepreload" href="assets/vendor/three/three.module.min.js">
+  <script type="importmap">{ "imports": { "three": "./assets/vendor/three/three.module.min.js", "three/addons/": "./assets/vendor/three/addons/" } }</script>
+</head>
+<body data-univers="particuliers" class="page-config">
+  <header class="entete defile"></header>
+
+  <main class="config">
+    <section class="config-scene" aria-label="Votre cuisine en 3D">
+      <canvas id="config3d"></canvas>
+      <div class="etiquette">
+        <div class="modele" id="nom-modele">Yota</div>
+        <div class="sous" id="sous-modele">Linéaire + îlot</div>
+      </div>
+      <div class="outils" role="group" aria-label="Points de vue">
+        <button data-vue="ensemble">Ensemble</button>
+        <button data-vue="face">Face</button>
+        <button data-vue="ilot">Îlot</button>
+        <button data-vue="haut">Plongée</button>
+      </div>
+      <img class="armony-filigrane" src="assets/img/logos/armony-sombre.png" alt="" width="150" height="35">
+    </section>
+
+    <section class="config-panneau" aria-label="Options de votre cuisine">
+      <div class="onglets" role="tablist">
+        <button role="tab" aria-selected="true" data-onglet="0"><span>i.</span>Modèle</button>
+        <button role="tab" aria-selected="false" data-onglet="1"><span>ii.</span>Façades</button>
+        <button role="tab" aria-selected="false" data-onglet="2"><span>iii.</span>Plan</button>
+        <button role="tab" aria-selected="false" data-onglet="3"><span>iv.</span>Meubles</button>
+        <button role="tab" aria-selected="false" data-onglet="4"><span>v.</span>Envoyer</button>
+      </div>
+
+      <div class="panneaux">
+        <div class="panneau actif" role="tabpanel" data-panneau="0">
+          <h3>Modèle Armony</h3>
+          <div class="opt-grille" id="opt-modele"></div>
+          <h3>Implantation</h3>
+          <div class="opt-grille" id="opt-implantation"></div>
+          <h3>Longueur du mur principal</h3>
+          <input class="curseur" type="range" id="longueur" min="2.4" max="6.6" step="0.6" value="4.2" aria-describedby="val-longueur">
+          <div class="valeur-curseur"><span>2,40 m</span><b id="val-longueur">4,20 m</b><span>6,60 m</span></div>
+        </div>
+
+        <div class="panneau" role="tabpanel" data-panneau="1">
+          <h3>Façades principales <small style="text-transform:none;letter-spacing:0;color:var(--gris)">— meubles bas</small></h3>
+          <div class="nuancier" id="nu-facade"></div>
+          <p class="nom-teinte" id="nom-facade"></p>
+          <h3>Façades d'accent <small style="text-transform:none;letter-spacing:0;color:var(--gris)">— colonnes et îlot</small></h3>
+          <div class="nuancier" id="nu-accent"></div>
+          <p class="nom-teinte" id="nom-accent"></p>
+        </div>
+
+        <div class="panneau" role="tabpanel" data-panneau="2">
+          <h3>Plan de travail</h3>
+          <div class="nuancier" id="nu-plan"></div>
+          <p class="nom-teinte" id="nom-plan"></p>
+          <h3>Profilés, gorges et poignées</h3>
+          <div class="nuancier" id="nu-profil"></div>
+          <p class="nom-teinte" id="nom-profil"></p>
+        </div>
+
+        <div class="panneau" role="tabpanel" data-panneau="3">
+          <h3>Colonnes</h3>
+          <input class="curseur" type="range" id="colonnes" min="0" max="4" step="1" value="3">
+          <div class="valeur-curseur"><span>Aucune</span><b id="val-colonnes">3 colonnes</b><span>4</span></div>
+          <h3>Équipements</h3>
+          <div class="bascules">
+            <label class="bascule-opt">Meubles hauts <input type="checkbox" id="hauts"></label>
+            <label class="bascule-opt">Îlot avec coin repas <input type="checkbox" id="bar" checked></label>
+            <label class="bascule-opt">Plan en cascade sur l'îlot <input type="checkbox" id="cascade" checked></label>
+            <label class="bascule-opt">Suspensions au-dessus de l'îlot <input type="checkbox" id="suspensions" checked></label>
+          </div>
+          <h3>Hotte</h3>
+          <div class="opt-grille" id="opt-hotte"></div>
+        </div>
+
+        <div class="panneau" role="tabpanel" data-panneau="4">
+          <h3>Votre composition</h3>
+          <ul class="recap" id="recap"></ul>
+          <form class="form" name="configuration-cuisine" method="POST" action="merci.html?demande=chiffrage" data-netlify="true" netlify-honeypot="adresse-web" enctype="multipart/form-data">
+            <input type="hidden" name="form-name" value="configuration-cuisine">
+            <p class="honey"><label>Ne pas remplir <input name="adresse-web"></label></p>
+            <input type="hidden" name="configuration">
+            <input type="hidden" name="lien_3d">
+            <input type="file" name="apercu" hidden>
+            <div class="champ"><label for="c-nom">Nom et prénom</label><input id="c-nom" name="nom" autocomplete="name" required></div>
+            <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="telephone" type="tel" autocomplete="tel" required></div>
+            <div class="champ"><label for="c-mail">E-mail</label><input id="c-mail" name="email" type="email" autocomplete="email" required></div>
+            <div class="champ"><label for="c-cp">Code postal du projet</label><input id="c-cp" name="code_postal" inputmode="numeric" pattern="[0-9]{5}" autocomplete="postal-code" required></div>
+            <div class="champ"><label for="c-budget">Budget envisagé</label>
+              <select id="c-budget" name="budget"><option value="">Je ne sais pas encore</option><option>Moins de 15 000 €</option><option>15 000 à 25 000 €</option><option>25 000 à 40 000 €</option><option>40 000 à 60 000 €</option><option>Plus de 60 000 €</option></select></div>
+            <div class="champ"><label for="c-delai">Échéance</label>
+              <select id="c-delai" name="delai"><option value="">Pas d'échéance précise</option><option>Moins de 3 mois</option><option>3 à 6 mois</option><option>6 à 12 mois</option><option>Plus d'un an</option></select></div>
+            <div class="champ"><label for="c-msg">Mesures de la pièce, précisions</label><textarea id="c-msg" name="message" placeholder="Ex. : pièce de 4,5 × 3,8 m, fenêtre à gauche, four vapeur souhaité…"></textarea></div>
+            <label class="consent"><input type="checkbox" name="accord" value="oui" required> J'accepte que FirstDiff utilise ces informations pour établir mon chiffrage et me recontacter.</label>
+            <button class="btn plein" type="submit">Recevoir mon chiffrage <span class="fleche"></span></button>
+            <p class="etat-envoi" role="status"></p>
+          </form>
+        </div>
+      </div>
+
+      <div class="config-pied">
+        <button class="lien" id="prec" type="button" style="background:none;border-left:0;border-right:0;border-top:0;cursor:pointer">Précédent</button>
+        <span class="etape-txt" id="etape-txt">Étape 1 / 5</span>
+        <button class="btn or" id="suiv" type="button">Suivant <span class="fleche"></span></button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="assets/js/site.js"></script>
+  <script type="module" src="assets/js/configurateur.js"></script>
+</body>
+</html>

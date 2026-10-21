@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cuisines Armony pour les particuliers — FirstDiff</title>
+  <meta name="description" content="Découvrez les collections et les portraits Armony Cucine, composez votre cuisine en 3D et recevez son chiffrage par FirstDiff.">
+  <meta name="theme-color" content="#0c0b0a">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script type="importmap">{ "imports": { "three": "./assets/vendor/three/three.module.min.js", "three/addons/": "./assets/vendor/three/addons/" } }</script>
+</head>
+<body data-univers="particuliers">
+  <header class="entete"></header>
+
+  <main>
+    <section class="heros">
+      <div class="heros-fond"><div class="photo" data-photo="2017/05/Portrait27-SKYLINE-YOTA-RIGA-1-WEB.webp" data-eager="1" data-libelle=" "></div></div>
+      <div class="conteneur heros-grille">
+        <div>
+          <span class="surtitre revele">Espace particuliers</span>
+          <h1 class="display revele revele-d1">La cuisine<br>italienne <span class="italique">à votre mesure</span></h1>
+          <p class="chapo revele revele-d2" style="margin-top:26px">Douze collections Armony, des centaines de finitions, et une équipe FirstDiff pour faire de votre projet une pièce unique.</p>
+          <div class="actions revele revele-d3">
+            <a class="btn plein" href="configurateur.html">Composer ma cuisine <span class="fleche"></span></a>
+            <a class="btn" href="#collections">Les collections</a>
+          </div>
+        </div>
+        <div class="heros-signature revele revele-d2">
+          <img src="assets/img/logos/armony-clair.png" alt="Armony Cucine" width="300" height="70">
+          <p>Made in Italy</p>
+        </div>
+      </div>
+      <span class="defiler" aria-hidden="true"></span>
+    </section>
+
+    <div class="bandeau" aria-hidden="true">
+      <div class="bandeau-piste">
+        <span>Armony <em>cucine</em></span><span>Collezione Anniversario 50</span><span>Made in Italy</span><span>Portraits <em>Armony</em></span><span>Showroom Tours Nord</span>
+        <span>Armony <em>cucine</em></span><span>Collezione Anniversario 50</span><span>Made in Italy</span><span>Portraits <em>Armony</em></span><span>Showroom Tours Nord</span>
+      </div>
+    </div>
+
+    <section class="bloc section-claire">
+      <div class="conteneur anniv">
+        <div>
+          <div class="anniv-logo revele"><img src="assets/img/logos/armony-50-sombre.png" alt="Armony Collezione Anniversario 50" width="440" height="252" loading="lazy"></div>
+          <h2 class="titre-m revele revele-d1" style="margin-top:46px">Cinquante ans de <span class="italique">cuisine italienne</span></h2>
+          <p class="chapo revele revele-d2" style="margin-top:22px">Pour ses 50 ans, Armony signe la Collezione Anniversario : des profilés en or antique, des laques profondes, des grès veinés. Un demi-siècle de savoir-faire, à découvrir avec FirstDiff.</p>
+          <div class="chiffres revele revele-d3">
+            <div><strong>50</strong><span>ans d'Armony</span></div>
+            <div><strong>12</strong><span>collections</span></div>
+            <div><strong>100%</strong><span>conçu en Italie</span></div>
+          </div>
+        </div>
+        <div class="photo anniv-visuel revele revele-d1" data-photo="2017/05/Portrait01-SystemYota-1-WEB.webp" data-alt="Cuisine Armony System et Yota, Portrait 01" data-libelle="Portrait 01"></div>
+      </div>
+    </section>
+
+    <section class="bloc" id="collections">
+      <div class="conteneur">
+        <div class="entete-section">
+          <div>
+            <span class="surtitre revele">Collection cuisines Armony</span>
+            <h2 class="titre revele revele-d1">Douze façons<br>de <span class="italique">vivre la cuisine</span></h2>
+          </div>
+          <p class="chapo revele revele-d2">Chaque collection a son caractère : profilés architecturaux, façades rainurées, laques métal ou bois massifs. Ouvrez une collection pour voir ses portraits.</p>
+        </div>
+        <div class="collections" id="grille-collections"></div>
+      </div>
+    </section>
+
+    <section class="bloc section-sombre portraits" id="portraits">
+      <div class="conteneur">
+        <div class="entete-section">
+          <div>
+            <span class="surtitre revele">Les portraits Armony</span>
+            <h2 class="titre revele revele-d1">Des projets,<br><span class="italique">finition par finition</span></h2>
+          </div>
+          <div class="revele revele-d2" style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap">
+            <p class="chapo" style="margin:0">Un portrait, c'est une cuisine réelle photographiée avec ses matières. Inspirez-vous-en, puis composez la vôtre.</p>
+            <div class="portraits-nav">
+              <button class="rond" data-dir="-1" aria-label="Portraits précédents"><svg width="18" height="12" viewBox="0 0 18 12"><path d="M17 6H1M6 1L1 6l5 5" stroke="currentColor" fill="none"/></svg></button>
+              <button class="rond" data-dir="1" aria-label="Portraits suivants"><svg width="18" height="12" viewBox="0 0 18 12"><path d="M1 6h16M12 1l5 5-5 5" stroke="currentColor" fill="none"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="portraits-piste" id="piste-portraits"></div>
+    </section>
+
+    <section class="appel-config">
+      <div class="visuel"><canvas id="mini3d" aria-label="Aperçu 3D d'une cuisine Armony"></canvas></div>
+      <div class="texte">
+        <span class="surtitre revele">Configurateur 3D</span>
+        <h2 class="titre revele revele-d1">Composez,<br><span class="italique">nous chiffrons</span></h2>
+        <p class="chapo revele revele-d2">Choisissez le modèle, l'implantation, les façades, le plan de travail et les profilés. Votre composition nous parvient directement et nous revenons vers vous avec un chiffrage.</p>
+        <div class="pastilles revele revele-d2" aria-hidden="true">
+          <i style="background:#1C2230"></i><i style="background:#1F3E47"></i><i style="background:#E2DDD3"></i><i style="background:#8F9A84"></i><i style="background:#6A4A36"></i><i style="background:#A88C57"></i><i style="background:#1D1D1E"></i>
+        </div>
+        <div class="revele revele-d3"><a class="btn plein" href="configurateur.html">Ouvrir le configurateur <span class="fleche"></span></a></div>
+      </div>
+    </section>
+
+    <section class="bloc section-claire">
+      <div class="conteneur">
+        <div class="entete-section">
+          <div>
+            <span class="surtitre revele">Votre projet avec FirstDiff</span>
+            <h2 class="titre revele revele-d1">De l'idée <span class="italique">à la pose</span></h2>
+          </div>
+          <p class="chapo revele revele-d2">Un interlocuteur unique, du premier croquis jusqu'à la livraison de votre cuisine Armony.</p>
+        </div>
+        <div class="etapes">
+          <div class="etape revele"><div class="n">01</div><h3>Composer</h3><p>Vous imaginez votre cuisine dans le configurateur, ou vous nous parlez de vos envies.</p></div>
+          <div class="etape revele revele-d1"><div class="n">02</div><h3>Échanger</h3><p>Nous vous appelons pour préciser les mesures, l'usage et le budget.</p></div>
+          <div class="etape revele revele-d2"><div class="n">03</div><h3>Chiffrer</h3><p>Vous recevez une proposition détaillée, finitions et électroménager compris.</p></div>
+          <div class="etape revele revele-d3"><div class="n">04</div><h3>Réaliser</h3><p>Fabrication en Italie, livraison et pose par un cuisiniste partenaire près de chez vous.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bloc" id="contact">
+      <div class="conteneur rdv">
+        <div>
+          <span class="surtitre revele">Être rappelé</span>
+          <h2 class="titre revele revele-d1">Parlons de<br><span class="italique">votre cuisine</span></h2>
+          <p class="chapo revele revele-d2" style="margin-top:22px">Laissez-nous vos coordonnées : nous vous rappelons pour faire le point sur votre projet.</p>
+          <p class="revele revele-d3" style="margin-top:30px"><a class="lien" data-tel href="#"></a></p>
+          <p class="revele revele-d3"><a class="lien" data-mail href="#"></a></p>
+        </div>
+        <form class="form revele" name="rappel-particulier" method="POST" action="merci.html" data-netlify="true" netlify-honeypot="adresse-web">
+          <input type="hidden" name="form-name" value="rappel-particulier">
+          <p class="honey"><label>Ne pas remplir <input name="adresse-web"></label></p>
+          <div class="champ"><label for="rp-nom">Nom et prénom</label><input id="rp-nom" name="nom" autocomplete="name" required></div>
+          <div class="champ"><label for="rp-tel">Téléphone</label><input id="rp-tel" name="telephone" type="tel" autocomplete="tel" required></div>
+          <div class="champ"><label for="rp-mail">E-mail</label><input id="rp-mail" name="email" type="email" autocomplete="email" required></div>
+          <div class="champ"><label for="rp-cp">Code postal du projet</label><input id="rp-cp" name="code_postal" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" required></div>
+          <div class="champ plein"><span class="legende-champ">Votre projet</span>
+            <div class="choix">
+              <label><input type="radio" name="projet" value="Construction neuve" required><span>Construction neuve</span></label>
+              <label><input type="radio" name="projet" value="Rénovation"><span>Rénovation</span></label>
+              <label><input type="radio" name="projet" value="Je m'informe"><span>Je m'informe</span></label>
+            </div>
+          </div>
+          <div class="champ plein"><label for="rp-msg">Votre message</label><textarea id="rp-msg" name="message" placeholder="Pièce, dimensions, envies, délais…"></textarea></div>
+          <label class="consent plein"><input type="checkbox" name="accord" value="oui" required> J'accepte que FirstDiff utilise ces informations pour me recontacter au sujet de mon projet.</label>
+          <div class="plein" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+            <button class="btn plein" type="submit">Être rappelé <span class="fleche"></span></button>
+            <p class="etat-envoi" role="status"></p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pied"></footer>
+  <script type="module" src="assets/js/site.js"></script>
+  <script type="module" src="assets/js/particuliers.js"></script>
+</body>
+</html>

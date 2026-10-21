@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FirstDiff × Armony Cucine — Cuisines italiennes d'exception</title>
+  <meta name="description" content="FirstDiff présente Armony Cucine : cuisines italiennes haut de gamme. Particuliers, composez votre cuisine. Professionnels, découvrez nos catalogues et notre showroom de Tours Nord.">
+  <meta name="theme-color" content="#070706">
+  <meta property="og:title" content="FirstDiff × Armony Cucine">
+  <meta property="og:description" content="Cuisines italiennes Armony : collections, configurateur et showroom à Tours Nord.">
+  <meta property="og:image" content="/assets/img/og.jpg">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/cormorant-garamond-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="modulepreload" href="assets/vendor/three/three.module.min.js">
+  <script type="importmap">{ "imports": { "three": "./assets/vendor/three/three.module.min.js", "three/addons/": "./assets/vendor/three/addons/" } }</script>
+</head>
+<body class="portail">
+  <canvas id="scene3d" aria-hidden="true"></canvas>
+  <div class="voile"></div>
+  <div class="charge3d">Armony Cucine</div>
+
+  <div class="portail-haut">
+    <img src="assets/img/logos/firstdiff-ligne-clair.png" alt="FirstDiff — un intérieur d'exception" width="128" height="30">
+    <a class="contact" data-tel href="#">Nous appeler</a>
+  </div>
+
+  <main>
+    <div class="portail-centre">
+      <p class="presente">FirstDiff présente</p>
+      <h1 class="sr">Armony Cucine, cuisines italiennes, présentées par FirstDiff</h1>
+      <img class="armony" src="assets/img/logos/armony-clair.png" alt="Armony Cucine" width="520" height="121">
+      <p>La cuisine italienne d'exception, de l'idée au chantier.</p>
+    </div>
+
+    <div class="finition-courante" aria-live="polite"></div>
+
+    <nav class="portes" aria-label="Choisir votre espace">
+      <a class="porte" href="particuliers.html" data-porte="part">
+        <span class="pour">Vous êtes un particulier</span>
+        <h2>Particuliers</h2>
+        <p>Les collections et portraits Armony, et un configurateur pour composer votre cuisine et recevoir son chiffrage.</p>
+        <span class="btn">Entrer <span class="fleche"></span></span>
+      </a>
+      <a class="porte" href="professionnels.html" data-porte="pro">
+        <span class="pour">Vous êtes un professionnel</span>
+        <h2>Professionnels</h2>
+        <p>Catalogues à télécharger, showroom de Tours Nord et rendez-vous avec votre agent Armony.</p>
+        <span class="btn or">Entrer <span class="fleche"></span></span>
+      </a>
+    </nav>
+  </main>
+
+  <script type="module" src="assets/js/site.js"></script>
+  <script type="module" src="assets/js/portail.js"></script>
+</body>
+</html>
