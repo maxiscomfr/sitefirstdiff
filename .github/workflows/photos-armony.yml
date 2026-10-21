@@ -1,0 +1,21 @@
+# Copie les photos Armony sur le site (assets/img/armony/) et bascule le site sur ces copies.
+# À lancer à la main depuis l'onglet Actions de GitHub, par exemple quand une collection change.
+name: Photos Armony
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  photos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: bash outils/telecharger-photos-armony.sh
+      - name: Enregistrer les photos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/img/armony assets/js/donnees.js
+          git diff --cached --quiet || (git commit -m "Photos Armony hébergées sur le site" && git push)
