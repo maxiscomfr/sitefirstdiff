@@ -1,7 +1,7 @@
 // Portail d'entrée : une cuisine Armony en 3D qui change de « portrait » en continu.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/RoomEnvironment.js';
-import { construireCuisine, installerStudio, Materiaux, FACADES, PLANS } from './cuisine3d.js?v=20261021b';
+import { construireCuisine, installerStudio, Materiaux, FACADES, PLANS } from './cuisine3d.js?v=20261021c';
 
 const PORTRAITS = [
   { nom: 'Portrait 01 · System + Yota', cfg: { modele: 'system', facade: 'polaris-midnight', accent: 'noce-elegante', plan: 'onyx-white', profil: 'noir' } },
@@ -15,16 +15,18 @@ const BASE = { implantation: 'ilot', longueur: 5.4, colonnes: 3, hauts: false, c
 
 const canvas = document.getElementById('scene3d');
 const etiquette = document.querySelector('.finition-courante');
-const calme = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// ?capture=N : fige le portrait N (sert à fabriquer les images fixes des téléphones, outils/images-accueil.mjs)
+const capture = new URLSearchParams(location.search).get('capture');
+const calme = capture != null || matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let renderer;
 try {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: capture != null });
 } catch (e) {
   document.body.classList.add('scene-prete', 'sans-3d');
   throw e;
 }
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+renderer.setPixelRatio(capture != null ? devicePixelRatio : Math.min(devicePixelRatio, 1.75));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
 renderer.shadowMap.enabled = true;
@@ -48,7 +50,7 @@ const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 60);
 const cible = new THREE.Vector3(0, 1.3, 1.1);
 const mats = new Materiaux();
 let cuisine = null;
-let index = 0;
+let index = capture != null ? +capture % PORTRAITS.length : 0;
 
 function poser(i) {
   if (cuisine) scene.remove(cuisine);
@@ -57,7 +59,7 @@ function poser(i) {
   const c = PORTRAITS[i].cfg;
   if (etiquette) etiquette.innerHTML = `${PORTRAITS[i].nom}<b>${FACADES[c.facade].nom} · ${FACADES[c.accent].nom} · ${PLANS[c.plan].nom}</b>`;
 }
-poser(0);
+poser(index);
 
 function taille() {
   const w = canvas.clientWidth, h = canvas.clientHeight;

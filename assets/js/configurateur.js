@@ -3,10 +3,14 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/RoomEnvironment.js';
 import { OrbitControls } from 'three/addons/OrbitControls.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261021b';
-import { FINITIONS } from './finitions.js?v=20261021b';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { $, $$, brancherFormulaire } from './site.js?v=20261021c';
+import { FINITIONS } from './finitions.js?v=20261021c';
 import { FIN, MODELES, POIGNEES, TEINTES_POIGNEE, FAMILLES_PLAN, MEUBLES, PROFONDEUR, Materiaux,
-  construireMeuble, emprise, depart, accentParDefaut } from './meubles3d.js?v=20261021b';
+  construireMeuble, emprise, depart, accentParDefaut } from './meubles3d.js?v=20261021c';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'gres--pietra-grey',
@@ -55,15 +59,18 @@ const canvas = $('#config3d');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#d9d4cb');
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
-scene.environmentIntensity = 0.55;
-scene.add(new THREE.HemisphereLight('#fffaf2', '#8f8a82', 0.9));
-const soleil = new THREE.DirectionalLight('#fff3e2', 2.0);
-soleil.position.set(-3, 7, 7); soleil.castShadow = true;
+scene.environmentIntensity = 0.8;
+scene.add(new THREE.HemisphereLight('#fffaf2', '#8f8a82', 0.55));
+// lumière du jour venant d'une fenêtre à gauche, plus douce en face
+const soleil = new THREE.DirectionalLight('#fff1dc', 2.2);
+soleil.position.set(-4, 6, 6); soleil.castShadow = true;
+const appoint = new THREE.DirectionalLight('#e8eef5', 0.45); appoint.position.set(5, 4, 8); scene.add(appoint);
 soleil.shadow.mapSize.set(2048, 2048);
 Object.assign(soleil.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6 });
 soleil.shadow.bias = -0.0004; soleil.shadow.normalBias = 0.02;
@@ -74,37 +81,89 @@ const controles = new OrbitControls(camera, canvas);
 controles.enableDamping = true; controles.dampingFactor = 0.08;
 controles.minDistance = 2; controles.maxDistance = 18; controles.maxPolarAngle = Math.PI * 0.495;
 
+// occlusion ambiante (ombres de contact entre meubles, murs et sol) sur ordinateur et tablette
+const composer = matchMedia('(max-width: 760px)').matches ? null : new EffectComposer(renderer);
+let ao = null;
+if (composer) {
+  composer.addPass(new RenderPass(scene, camera));
+  ao = new GTAOPass(scene, camera, 1, 1);
+  ao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.4, thickness: 1.2, scale: 1.1 });
+  ao.blendIntensity = 0.85;
+  composer.addPass(ao);
+  composer.addPass(new OutputPass());
+}
+const dessiner = () => (composer ? composer.render() : renderer.render(scene, camera));
+
 let besoinRendu = true;
 const rendre = () => { besoinRendu = true; };
 const mats = new Materiaux(rendre);
 
 // la pièce : sol et trois murs, visibles seulement de l'intérieur
 const piece = new THREE.Group(); scene.add(piece);
+// la grille n'apparaît qu'en vue de dessus et pendant qu'on déplace un meuble
+let vueCourante = 'perspective';
+const grilleVisible = () => vueCourante === 'dessus' || !!glisse?.bouge;
+const majGrille = () => { if (piece.userData.grille) piece.userData.grille.visible = grilleVisible(); rendre(); };
 function construirePiece() {
   piece.clear();
   const { W, D } = cfg; const H = 2.7;
-  const sol = new THREE.Mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshStandardMaterial({ color: '#cfc8bc', roughness: 0.85 }));
+  const sol = new THREE.Mesh(new THREE.PlaneGeometry(W, D), matSol(W, D));
   sol.rotation.x = -QUART; sol.position.set(0, 0, D / 2); sol.receiveShadow = true;
   const dehors = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color: '#d9d4cb', roughness: 1 }));
   dehors.rotation.x = -QUART; dehors.position.y = -0.002;
   const n = Math.round(Math.max(W, D) / 0.5) * 2;
   const grille = new THREE.GridHelper(n * 0.5, n, '#b4ac9e', '#bfb8ab');
-  grille.material.transparent = true; grille.material.opacity = 0.4;
+  grille.material.transparent = true; grille.material.opacity = 0.35;
+  grille.visible = grilleVisible(); piece.userData.grille = grille;
   grille.position.set(0, 0.001, D / 2);
   grille.material.clippingPlanes = [
     new THREE.Plane(new THREE.Vector3(1, 0, 0), W / 2), new THREE.Plane(new THREE.Vector3(-1, 0, 0), W / 2),
     new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), new THREE.Plane(new THREE.Vector3(0, 0, -1), D),
   ];
-  const murMat = new THREE.MeshStandardMaterial({ color: '#ece8e1', roughness: 0.95 });
+  const murMat = new THREE.MeshStandardMaterial({ color: '#ebe6dd', roughness: 0.95 });
   const fond = new THREE.Mesh(new THREE.PlaneGeometry(W, H), murMat); fond.position.set(0, H / 2, 0);
   const gauche = new THREE.Mesh(new THREE.PlaneGeometry(D, H), murMat); gauche.rotation.y = QUART; gauche.position.set(-W / 2, H / 2, D / 2);
   const droite = new THREE.Mesh(new THREE.PlaneGeometry(D, H), murMat); droite.rotation.y = -QUART; droite.position.set(W / 2, H / 2, D / 2);
   for (const m of [fond, gauche, droite]) m.receiveShadow = true;
-  piece.add(dehors, sol, grille, fond, gauche, droite);
+  // plinthes
+  const pl = new THREE.MeshStandardMaterial({ color: '#f2efe9', roughness: 0.6 });
+  const plinthes = [[W, 0, 0.006, 0], [D, -W / 2 + 0.006, D / 2, QUART], [D, W / 2 - 0.006, D / 2, -QUART]].map(([l, x, z, r]) => {
+    const p = new THREE.Mesh(new THREE.BoxGeometry(l, 0.08, 0.012), pl); p.position.set(x, 0.04, z); p.rotation.y = r; p.receiveShadow = true; return p;
+  });
+  piece.add(dehors, sol, grille, fond, gauche, droite, ...plinthes);
   soleil.target.position.set(0, 0, D / 2);
   rendre();
 }
 renderer.localClippingEnabled = true;
+
+// parquet chêne clair dessiné à la volée : lames de 18 cm, nuances et fil du bois
+let texParquet = null;
+function matSol(W, D) {
+  if (!texParquet) {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 1024;
+    const g = c.getContext('2d'); const lames = 8, lg = 1024 / lames;
+    let graine = 7; const alea = () => ((graine = (graine * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < lames; i++) {
+      let y = -alea() * 1024;
+      while (y < 1024) {
+        const h = 380 + alea() * 420, t = 0.9 + alea() * 0.16;
+        g.fillStyle = `rgb(${Math.round(196 * t)},${Math.round(170 * t)},${Math.round(134 * t)})`;
+        g.fillRect(i * lg, y, lg, h);
+        for (let k = 0; k < 26; k++) {
+          g.strokeStyle = `rgba(110,80,50,${0.04 + alea() * 0.07})`; g.lineWidth = 0.6 + alea() * 1.4;
+          const x = i * lg + alea() * lg; g.beginPath(); g.moveTo(x, y); g.bezierCurveTo(x + 6 * (alea() - 0.5), y + h / 3, x + 6 * (alea() - 0.5), y + h * 2 / 3, x, y + h); g.stroke();
+        }
+        g.fillStyle = 'rgba(60,40,25,.35)'; g.fillRect(i * lg, y, lg, 2); g.fillRect(i * lg, y, 1.5, h);
+        y += h;
+      }
+    }
+    texParquet = new THREE.CanvasTexture(c);
+    texParquet.colorSpace = THREE.SRGBColorSpace; texParquet.wrapS = texParquet.wrapT = THREE.RepeatWrapping;
+    texParquet.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  }
+  const t = texParquet.clone(); t.needsUpdate = true; t.repeat.set(W / 1.44, D / 1.44);
+  return new THREE.MeshStandardMaterial({ map: t, roughness: 0.55, bumpMap: t, bumpScale: 0.3 });
+}
 
 // ---------- meubles dans la scène ----------
 const groupes = new Map();
@@ -244,6 +303,7 @@ function vue(nom, instant = false) {
     dessus: { pos: [0, Math.max(W, D) * 1.3 * k + 1.5, D / 2 + 0.01], cible: [0, 0, D / 2] },
   };
   const v = vues[nom] || vues.perspective;
+  vueCourante = vues[nom] ? nom : 'perspective'; majGrille();
   const fin = { pos: new THREE.Vector3(...v.pos), cible: new THREE.Vector3(...v.cible) };
   $$('[data-vue]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.vue === nom));
   if (instant) { camera.position.copy(fin.pos); controles.target.copy(fin.cible); controles.update(); rendre(); return; }
@@ -257,6 +317,7 @@ function taille() {
   const w = canvas.clientWidth, h = canvas.clientHeight;
   if (!w || !h) return;
   renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
   if (premierCadrage) { premierCadrage = false; vue('perspective', true); }
   rendre();
 }
@@ -271,7 +332,7 @@ function boucle(t) {
     rendre();
   }
   if (controles.update()) rendre();
-  if (besoinRendu) { renderer.render(scene, camera); besoinRendu = false; }
+  if (besoinRendu) { dessiner(); besoinRendu = false; }
 }
 
 // ---------- glisser-déposer ----------
@@ -307,7 +368,7 @@ canvas.addEventListener('pointermove', (e) => {
     if (e.pointerType === 'mouse' && !glisse) canvas.style.cursor = meubleSous(e) ? 'grab' : '';
     return;
   }
-  if (Math.hypot(e.clientX - glisse.x0, e.clientY - glisse.y0) > 3) glisse.bouge = true;
+  if (!glisse.bouge && Math.hypot(e.clientX - glisse.x0, e.clientY - glisse.y0) > 3) { glisse.bouge = true; majGrille(); }
   if (!glisse.bouge) return;
   versPointeur(e);
   const p = new THREE.Vector3(); if (!rayon.ray.intersectPlane(solPlan, p)) return;
@@ -319,7 +380,7 @@ const finGlisse = (e) => {
   if (!glisse) return;
   if (!glisse.m && Math.hypot(e.clientX - glisse.x0, e.clientY - glisse.y0) < 4) { selection = null; majSelection(); }
   if (glisse.m && glisse.bouge) { memoriser(); majListe(); }
-  glisse = null; controles.enabled = true; canvas.style.cursor = '';
+  glisse = null; controles.enabled = true; canvas.style.cursor = ''; majGrille();
 };
 canvas.addEventListener('pointerup', finGlisse);
 canvas.addEventListener('pointercancel', finGlisse);
@@ -497,7 +558,7 @@ $('#suiv').addEventListener('click', () => aller(etape + 1));
 // ---------- envoi ----------
 function capture() {
   const sel = surligne.visible; surligne.visible = false; conflits.visible = false;
-  renderer.render(scene, camera);
+  dessiner();
   surligne.visible = sel; conflits.visible = true;
   return new Promise((ok) => canvas.toBlob((b) => ok(b), 'image/jpeg', 0.86));
 }

@@ -2,7 +2,8 @@
 // Chaque meuble a son origine au sol, au milieu de son dos : il se plaque contre un mur
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
-import { FINITIONS } from './finitions.js?v=20261021b';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { FINITIONS } from './finitions.js?v=20261021c';
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
 
@@ -92,12 +93,15 @@ export class Materiaux {
     const f = FIN[id] || FINITIONS[0];
     const kx = Math.round(largeur * 20) / 20, ky = Math.round(hauteur * 10) / 10;
     return this.get(`f:${f.id}:${kx}:${ky}:${rainure}`, () => {
-      const mat = new THREE.MeshStandardMaterial({ color: f.tex ? '#ffffff' : f.couleur, roughness: f.r, metalness: f.m });
+      // laques brillantes et verres : vernis transparent ; bois et matières : relief tiré de l'échantillon
+      const brillant = f.r <= 0.25;
+      const mat = new THREE.MeshPhysicalMaterial({ color: f.tex ? '#ffffff' : f.couleur, roughness: f.r, metalness: f.m,
+        clearcoat: brillant ? 1 : f.r <= 0.45 ? 0.25 : 0, clearcoatRoughness: brillant ? 0.04 : 0.3 });
       if (f.tex) {
         const t = texture(f.id, this.surCharge).clone();
         // l'échantillon fait environ 3 × 1 : on le répète pour garder un grain réaliste
         t.repeat.set(Math.max(0.35, kx / 0.6), Math.max(0.35, ky / 0.7)); t.needsUpdate = true;
-        mat.map = t;
+        mat.map = t; mat.bumpMap = t; mat.bumpScale = 0.8;
       }
       if (rainure) {
         const b = texRainures().clone(); b.needsUpdate = true; b.repeat.set(Math.max(1, Math.round(kx / 0.025)), 1);
@@ -113,7 +117,7 @@ export class Materiaux {
     return this.get(`p:${f.id}:${k}`, () => {
       const mat = new THREE.MeshPhysicalMaterial({ color: f.tex ? '#ffffff' : f.couleur, roughness: Math.min(f.r, 0.5), metalness: 0,
         clearcoat: f.fid === 'gres' ? 0.4 : 0, clearcoatRoughness: 0.3 });
-      if (f.tex) { const t = texture(f.id, this.surCharge).clone(); t.repeat.set(Math.max(0.5, k / 1.2), 1); t.needsUpdate = true; mat.map = t; }
+      if (f.tex) { const t = texture(f.id, this.surCharge).clone(); t.repeat.set(Math.max(0.5, k / 1.2), 1); t.needsUpdate = true; mat.map = t; mat.bumpMap = t; mat.bumpScale = 0.4; }
       return mat;
     });
   }
@@ -146,6 +150,15 @@ function boite(parent, mat, w, h, d, x, y, z, ombre = true) {
   m.castShadow = ombre; m.receiveShadow = true;
   parent.add(m); return m;
 }
+// façades et plans aux arêtes légèrement adoucies : elles accrochent la lumière comme les vraies
+const GEO_ARRONDIES = new Map();
+function boiteArrondie(parent, mat, w, h, d, x, y, z, r = 0.0025) {
+  const cle = [w, h, d].map((v) => Math.round(v * 1000)).join(':');
+  if (!GEO_ARRONDIES.has(cle)) GEO_ARRONDIES.set(cle, new RoundedBoxGeometry(w, h, d, 2, Math.min(r, d / 2 - 0.0005, h / 2 - 0.0005)));
+  const m = new THREE.Mesh(GEO_ARRONDIES.get(cle), mat);
+  m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+  parent.add(m); return m;
+}
 const PLINTHE = 0.1, CAISSON = 0.76, JEU = 0.003, EP = 0.022;
 
 // Une façade (porte ou tiroir) centrée en (x, y), posée sur le plan z, tournée vers +z.
@@ -161,7 +174,7 @@ function facade(g, c, w, h, x, y, z, { horizontale = false } = {}) {
     boite(g, mb, b, h - 2 * b, EP, x + w / 2 - b / 2, y, z + EP / 2);
     boite(g, mat, w - 2 * b, h - 2 * b, EP * 0.6, x, y, z + EP * 0.3);
   } else {
-    boite(g, mat, w - JEU, h - JEU, EP, x, y, z + EP / 2);
+    boiteArrondie(g, mat, w - JEU, h - JEU, EP, x, y, z + EP / 2);
   }
   if (porte === 'chant') boite(g, mats.fixe('ombre'), w - JEU, 0.012, 0.004, x, y + h / 2 - 0.008, z + EP, false);
   if (porte === 'profil') {
@@ -193,7 +206,7 @@ function caissonBas(g, c, l, P) {
 
 function planDeTravail(g, c, l, P, x = 0, z = 0) {
   const ep = EP_PLAN[FIN[c.plan]?.fid] || 0.03;
-  boite(g, c.mats.plan(c.plan, l), l, ep, P + 0.02, x, PLINTHE + CAISSON + ep / 2, z + (P + 0.02) / 2);
+  boiteArrondie(g, c.mats.plan(c.plan, l), l, ep, P + 0.02, x, PLINTHE + CAISSON + ep / 2, z + (P + 0.02) / 2, 0.004);
   return PLINTHE + CAISSON + ep;
 }
 
@@ -285,7 +298,7 @@ export function construireMeuble(m, cfg, mats) {
     const prof = def.bar ? 1.0 : 0.66;
     boite(g, mats.finition(c.fin, { largeur: l, hauteur: hBase }), l, hBase - PLINTHE, 0.02, 0, PLINTHE + (hBase - PLINTHE) / 2, Pw / 2 + 0.01);
     const zc = -Pw / 2 - 0.03 + prof / 2;
-    boite(g, mats.plan(c.plan, l), l + 0.04, ep, prof, 0, hBase + ep / 2, zc);
+    boiteArrondie(g, mats.plan(c.plan, l), l + 0.04, ep, prof, 0, hBase + ep / 2, zc, 0.004);
     for (const s of [-1, 1]) boite(g, mats.plan(c.plan, 1), ep, hBase + ep, prof, s * (l / 2 + 0.02 + ep / 2), (hBase + ep) / 2, zc);
     boite(g, mats.fixe('verre'), 0.8, 0.006, 0.5, 0, hBase + ep + 0.003, -0.02);
     if (def.bar) {

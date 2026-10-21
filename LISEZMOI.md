@@ -43,3 +43,11 @@ Le script copie les images dans `assets/img/armony/` et bascule le site dessus. 
 - Polices Jost et Cormorant Garamond hébergées localement.
 - Pas de cookie, pas de traceur. Le configurateur garde la dernière composition dans le navigateur du visiteur.
 - Tester en local : `python3 -m http.server` à la racine puis ouvrir http://localhost:8000 (les formulaires ne fonctionnent qu'une fois sur Netlify).
+
+## Mises à jour du 21 octobre
+
+- Photos Armony hébergées sur le site (`assets/img/armony/`). Pour les recopier après un changement chez Armony : onglet Actions du dépôt GitHub, « Photos Armony », « Run workflow ».
+- Catalogue 2026 compressé (52 Mo → 16 Mo), texte et mise en page conservés.
+- Accueil sur téléphone : images fixes de la scène 3D (`assets/img/accueil/`, refaites avec `outils/images-accueil.mjs`), la 3D reste sur ordinateur et tablette.
+- Configurateur : ombres de contact, arêtes adoucies, laques vernies, parquet ; mention « esquisse indicative ».
+- Après toute modification d'un script ou du CSS, changer le suffixe `?v=` dans les pages et les imports, pour que les visiteurs reçoivent la nouvelle version.
