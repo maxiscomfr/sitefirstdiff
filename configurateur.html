@@ -10,12 +10,30 @@
   <link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/site.css?v=20261022a">
-  <link rel="modulepreload" href="assets/vendor/three/three.module.min.js">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261022b">
+  <script>
+    // Le configurateur 3D se manipule à la souris, sur grand écran : sur téléphone, on invite à revenir sur ordinateur.
+    if (matchMedia('(max-width: 760px)').matches) document.documentElement.classList.add('telephone');
+    else document.head.insertAdjacentHTML('beforeend', '<link rel="modulepreload" href="assets/vendor/three/three.module.min.js">');
+  </script>
   <script type="importmap">{ "imports": { "three": "./assets/vendor/three/three.module.min.js", "three/addons/": "./assets/vendor/three/addons/" } }</script>
 </head>
 <body data-univers="particuliers" class="page-config">
   <header class="entete defile"></header>
+
+  <main class="config-ordi">
+    <img src="assets/img/accueil/portrait-0.jpg" alt="" fetchpriority="high">
+    <div class="config-ordi-texte">
+      <p class="surtitre">Configurateur 3D</p>
+      <h1 class="titre">À utiliser <em>sur ordinateur</em></h1>
+      <p class="chapo">Le configurateur Armony se manipule à la souris, sur un grand écran. Ouvrez cette page depuis votre ordinateur pour composer votre cuisine en 3D.</p>
+      <div class="actions">
+        <button class="btn plein" type="button" id="partager-lien">M'envoyer le lien <span class="fleche"></span></button>
+        <a class="btn" href="particuliers.html#contact">Être rappelé</a>
+        <a class="lien" href="particuliers.html#collections">Voir les collections</a>
+      </div>
+    </div>
+  </main>
 
   <main class="config">
     <section class="config-scene" aria-label="Votre cuisine en 3D">
@@ -151,7 +169,14 @@
     </section>
   </main>
 
-  <script type="module" src="assets/js/site.js?v=20261022a"></script>
-  <script type="module" src="assets/js/configurateur.js?v=20261022a"></script>
+  <script type="module" src="assets/js/site.js?v=20261022b"></script>
+  <script type="module">
+    if (!document.documentElement.classList.contains('telephone')) import('./assets/js/configurateur.js?v=20261022b');
+    else document.getElementById('partager-lien').addEventListener('click', async (e) => {
+      const url = location.href.split('#')[0];
+      if (navigator.share) { try { await navigator.share({ title: 'Configurateur FirstDiff', url }); } catch {} return; }
+      try { await navigator.clipboard.writeText(url); e.currentTarget.firstChild.textContent = 'Lien copié '; } catch { location.href = 'mailto:?subject=Configurateur%20FirstDiff&body=' + encodeURIComponent(url); }
+    });
+  </script>
 </body>
 </html>

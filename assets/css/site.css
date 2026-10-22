@@ -698,3 +698,15 @@ section { position: relative; }
 .avance { margin-top: 8px; }
 .avance[open] { padding-bottom: 10px; }
 .avance > summary + h3 { margin-top: 22px; }
+
+/* ---------- configurateur : sur téléphone, invitation à passer sur ordinateur ---------- */
+.config-ordi { display: none; }
+.telephone .config { display: none; }
+.telephone .config-ordi { position: relative; display: flex; align-items: flex-end; min-height: 100svh; padding: 110px var(--marge) 48px; overflow: hidden; }
+.config-ordi > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
+.config-ordi::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,11,10,.05) 0%, rgba(12,11,10,.55) 50%, rgba(12,11,10,.95) 100%); }
+.config-ordi-texte { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 16px; }
+.config-ordi .titre em { font-family: var(--serif, serif); text-transform: none; color: var(--or-clair); }
+.config-ordi .actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; margin-top: 10px; }
+.config-ordi .actions .btn { justify-content: center; }
+.config-ordi .actions .lien { align-self: center; margin-top: 6px; }
