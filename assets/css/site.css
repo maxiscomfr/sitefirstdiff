@@ -730,3 +730,44 @@ details.famille summary { display: flex; align-items: baseline; justify-content:
 details.famille summary::-webkit-details-marker { display: none; }
 details.famille summary h4 { margin: 0; }
 details.famille summary small { opacity: .6; }
+
+/* ---------- pédagogie et argumentaire ---------- */
+.guide { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--ligne-sombre); border: 1px solid var(--ligne-sombre); }
+.carte-guide { background: var(--ivoire); padding: 40px 38px 36px; display: flex; flex-direction: column; gap: 14px; }
+.carte-guide .n { font-family: var(--serif); font-style: italic; font-size: 48px; line-height: 1; color: var(--or-sombre); }
+.carte-guide h3 { font-size: 18px; letter-spacing: .16em; text-transform: uppercase; font-weight: 400; margin: 0; }
+.carte-guide p { font-size: 16px; color: #55524c; margin: 0; }
+.carte-guide .lien { margin-top: auto; color: var(--or-sombre); }
+.matieres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px 28px; }
+.matiere i { display: block; aspect-ratio: 3 / 1; background-size: cover; background-position: center; margin-bottom: 20px; border: 1px solid var(--ligne); }
+.matiere h3 { font-size: 18px; letter-spacing: .16em; text-transform: uppercase; font-weight: 400; margin: 0 0 4px; }
+.matiere span { display: block; font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--or-clair); margin-bottom: 12px; }
+.matiere p { font-size: 15.5px; color: var(--gris-clair); margin: 0; }
+.note-matieres { margin: 48px 0 0; padding-top: 24px; border-top: 1px solid var(--ligne); font-size: 15px; color: var(--gris-clair); }
+.faq details { border-bottom: 1px solid var(--ligne); }
+.faq details:first-child { border-top: 1px solid var(--ligne); }
+.faq summary { cursor: pointer; list-style: none; padding: 20px 40px 20px 0; position: relative; font-size: 17px; letter-spacing: .02em; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 24px; color: var(--or-clair); transition: transform .3s; }
+.faq details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.faq details p { margin: 0 0 22px; color: var(--gris-clair); font-size: 15.5px; max-width: 60ch; }
+.gamme { border-top: 1px solid var(--ligne-sombre); }
+.gamme-ligne { display: grid; grid-template-columns: 220px 1fr; gap: 40px; padding: 28px 0; border-bottom: 1px solid var(--ligne-sombre); align-items: baseline; }
+.gamme-ligne h3 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 32px; color: var(--or-sombre); margin: 0; }
+.gamme-ligne p { margin: 0; color: #55524c; font-size: 16px; max-width: 70ch; }
+.gamme-ligne b { display: block; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; font-size: 13px; color: var(--noir); margin-bottom: 6px; }
+.arguments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--ligne); border: 1px solid var(--ligne); }
+.argument { background: var(--noir-2); padding: 36px 30px 32px; }
+.argument h3 { font-size: 17px; letter-spacing: .14em; text-transform: uppercase; font-weight: 400; margin: 0 0 14px; color: var(--or-clair); }
+.argument p { margin: 0; font-size: 15.5px; color: var(--gris-clair); }
+.faq { align-self: start; }
+@media (max-width: 960px) {
+  .guide { grid-template-columns: 1fr; }
+  .matieres { grid-template-columns: repeat(2, 1fr); }
+  .arguments { grid-template-columns: 1fr; }
+  .gamme-ligne { grid-template-columns: 1fr; gap: 10px; }
+}
+@media (max-width: 600px) {
+  .matieres { grid-template-columns: 1fr; }
+  .carte-guide { padding: 30px 22px; }
+}
