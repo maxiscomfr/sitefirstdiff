@@ -1,6 +1,6 @@
 // Espace professionnels : catalogues, showroom, parcours de prise de rendez-vous.
-import { $, $$, brancherFormulaire, observer } from './site.js?v=20261022s';
-import { CATALOGUES, CONTACT } from './donnees.js?v=20261022s';
+import { $, $$, brancherFormulaire, observer } from './site.js?v=20261022t';
+import { CATALOGUES, CONTACT } from './donnees.js?v=20261022t';
 
 // ---------- catalogues ----------
 const liste = $('#liste-catalogues');

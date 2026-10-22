@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022s';
-import { FINITIONS } from './finitions.js?v=20261022s';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022t';
+import { FINITIONS } from './finitions.js?v=20261022t';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022s';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022t';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022s';
+  empriseOuverture } from './piece.js?v=20261022t';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -336,7 +336,7 @@ function majConflits() {
 // Aimantation libre : un meuble d'angle se colle en retour à 90° contre un voisin (et inversement).
 function collerAuVoisin(m, x, z) {
   const d = def(m), l = d.l;
-  let mieux = null, dmin = 0.45;
+  let mieux = null, dmin = 0.9;
   for (const o of meubles) {
     if (o === m || libre(o) || !chevauchentEnHauteur(plage(o), plage(m))) continue;
     const od = def(o), ol = od.l, ex = [Math.cos(o.r), -Math.sin(o.r)], ez = [Math.sin(o.r), Math.cos(o.r)];
@@ -355,6 +355,9 @@ function collerAuVoisin(m, x, z) {
 function placer(m, x, z) {
   const d = def(m); const l = d.l;
   if (!libre(m)) {
+    // un meuble d'angle s'accroche d'abord à un voisin proche, comme posé sur une grille
+    const k0 = collerAuVoisin(m, x, z);
+    if (k0) { m.r = k0.r; m.x = Math.round(k0.x * 100) / 100; m.z = Math.round(k0.z * 100) / 100; return; }
     let mieux = null;
     for (const mur of MURS) {
       const p = projeter(mur, x, z);
@@ -390,8 +393,8 @@ function placer(m, x, z) {
       if (cible != null && cible >= l / 2 - 0.001 && cible <= mur.len - l / 2 + 0.001) t = cible;
       ({ x, z } = surMur(mur, t));
     } else {
-      const k = collerAuVoisin(m, x, z);
-      if (k) { m.r = k.r; x = k.x; z = k.z; }
+      // loin de tout : pas de 5 cm, pour que les meubles posés à la main restent alignés
+      x = Math.round(x * 20) / 20; z = Math.round(z * 20) / 20;
       [x, z] = garderDedans(m, x, z);
     }
   } else {
