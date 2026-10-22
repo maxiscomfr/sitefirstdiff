@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261023a';
-import { FINITIONS } from './finitions.js?v=20261023a';
+import { $, $$, brancherFormulaire } from './site.js?v=20261023b';
+import { FINITIONS } from './finitions.js?v=20261023b';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023a';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023b';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261023a';
+  empriseOuverture } from './piece.js?v=20261023b';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -357,6 +357,7 @@ function collerAuVoisin(m, x, z) {
         const wc = [o.x + cx * eo[0] + cz * zo[0], o.z + cx * eo[1] + cz * zo[1]];
         const dist = Math.hypot(wc[0] - cour[0], wc[1] - cour[1]);
         if (dist >= dmin) continue;
+        if (m.fixeR && (Math.abs(Math.sin(k.r - m.r)) > 0.01 || Math.cos(k.r - m.r) < 0)) continue;
         const R = coins(emprise(m.type), k.x, k.z, k.r);
         if (!R.every(([px, pz]) => dedans(CONTOUR, px, pz))) continue;
         if (meubles.some((u) => u !== m && chevauchentEnHauteur(plage(u), plage(m)) && recouvrement(R, rect(u)) > 0.02)) continue;
@@ -373,6 +374,8 @@ function placer(m, x, z) {
   if (!libre(m)) {
     let mieux = null;
     for (const mur of MURS) {
+      // orientation choisie par le client (bouton Pivoter) : seuls comptent les murs dans ce sens
+      if (m.fixeR && (Math.abs(Math.sin(mur.r - m.r)) > 0.01 || Math.cos(mur.r - m.r) < 0)) continue;
       const p = projeter(mur, x, z);
       if (p.cote > -0.3 && (!mieux || p.dist < mieux.p.dist)) mieux = { mur, p };
     }
@@ -697,10 +700,15 @@ canvas.addEventListener('pointercancel', finGlisse);
 function action(nom) {
   const m = meubles.find((x) => x.id === selection); if (!m) return;
   if (nom === 'pivoter') {
-    // un meuble contre un mur s'en décolle pour tourner ; un îlot tourne d'un quart de tour sur place
-    if (!libre(m)) { m.x += Math.sin(m.r) * 0.9; m.z += Math.cos(m.r) * 0.9; }
-    m.r -= QUART; if (m.r < -Math.PI) m.r += 2 * Math.PI;
-    [m.x, m.z] = garderDedans(m, m.x, m.z);
+    if (libre(m)) { m.r -= QUART; if (m.r < -Math.PI) m.r += 2 * Math.PI; [m.x, m.z] = garderDedans(m, m.x, m.z); }
+    else {
+      // quart de tour autour du centre du meuble, puis aimantation dans la nouvelle orientation choisie par le client
+      const P = PROFONDEUR[def(m).type];
+      const cx = m.x + Math.sin(m.r) * P / 2, cz = m.z + Math.cos(m.r) * P / 2;
+      m.r -= QUART; if (m.r < -Math.PI) m.r += 2 * Math.PI;
+      m.fixeR = true;
+      placer(m, cx - Math.sin(m.r) * P / 2, cz - Math.cos(m.r) * P / 2);
+    }
   }
   if (nom === 'dupliquer') {
     const c = { ...m, id: nouvelId() };
