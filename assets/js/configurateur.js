@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022v';
-import { FINITIONS } from './finitions.js?v=20261022v';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022x';
+import { FINITIONS } from './finitions.js?v=20261022x';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022v';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022x';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022v';
+  empriseOuverture } from './piece.js?v=20261022x';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -355,9 +355,6 @@ function collerAuVoisin(m, x, z) {
 function placer(m, x, z) {
   const d = def(m); const l = d.l;
   if (!libre(m)) {
-    // un meuble d'angle s'accroche en retour à 90° s'il est tout près d'un voisin ; sinon l'aimantation habituelle (murs et côte à côte à 180°)
-    const k0 = collerAuVoisin(m, x, z);
-    if (k0) { m.r = k0.r; m.x = Math.round(k0.x * 100) / 100; m.z = Math.round(k0.z * 100) / 100; return; }
     let mieux = null;
     for (const mur of MURS) {
       const p = projeter(mur, x, z);
@@ -391,6 +388,9 @@ function placer(m, x, z) {
       if (cible != null && cible >= l / 2 - 0.001 && cible <= mur.len - l / 2 + 0.001) t = cible;
       ({ x, z } = surMur(mur, t));
     } else {
+      // loin des murs : un meuble d'angle se cale en retour à 90° contre un voisin proche
+      const k = collerAuVoisin(m, x, z);
+      if (k) { m.r = k.r; x = k.x; z = k.z; }
       [x, z] = garderDedans(m, x, z);
     }
   } else {
@@ -994,3 +994,6 @@ meubles.forEach((m) => placer(m, m.x, m.z));
 majPiece(); construirePiece(); majFinitions(); reconstruire(); majListe();
 aller(0);
 requestAnimationFrame(boucle);
+
+// accès pour les tests automatiques
+window.__fd = { placer, meubles: () => meubles, poser, majConflits };
