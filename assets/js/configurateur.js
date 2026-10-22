@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261023b';
-import { FINITIONS } from './finitions.js?v=20261023b';
+import { $, $$, brancherFormulaire } from './site.js?v=20261023c';
+import { FINITIONS } from './finitions.js?v=20261023c';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023b';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023c';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261023b';
+  empriseOuverture } from './piece.js?v=20261023c';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -29,15 +29,15 @@ let compteur = 0;
 const nouvelId = () => 'm' + (++compteur);
 
 function encoderMeubles() {
-  return meubles.map((m) => [m.type, m.x.toFixed(2), m.z.toFixed(2), deg(m.r), m.accent ? 1 : 0].join('~')).join('_');
+  return meubles.map((m) => [m.type, m.x.toFixed(2), m.z.toFixed(2), deg(m.r), m.accent ? 1 : 0, ...(m.miroir ? [1] : [])].join('~')).join('_');
 }
 function decoderMeubles(s, enDegres) {
   return s.split('_').filter(Boolean).map((t) => {
-    let [type, x, z, r, a] = t.split('~');
+    let [type, x, z, r, a, mi] = t.split('~');
     type = ALIAS[type] || type;
     // les anciens liens notaient la rotation en quarts de tour
     const angle = enDegres ? (+r * Math.PI) / 180 : +r * QUART;
-    return MEUBLES[type] ? { id: nouvelId(), type, x: +x, z: +z, r: angle, accent: a === '1' } : null;
+    return MEUBLES[type] ? { id: nouvelId(), type, x: +x, z: +z, r: angle, accent: a === '1', miroir: mi === '1' } : null;
   }).filter(Boolean);
 }
 const encoderOuvertures = () => ouvertures.map((o) => [o.type, o.mur, o.t.toFixed(2), o.l.toFixed(2), o.h.toFixed(2), o.y.toFixed(2)].join('~')).join('_');
@@ -401,9 +401,24 @@ function placer(m, x, z) {
         for (const c of [po.t + ol / 2 + l / 2, po.t - ol / 2 - l / 2]) if (Math.abs(c - t) < meilleur) { meilleur = Math.abs(c - t); cible = c; }
       }
       // dans un angle : se caler juste après la profondeur des meubles du mur voisin
-      if (cible == null && Math.abs(t - l / 2 - 0.6) < 0.1) cible = 0.6 + l / 2;
-      if (cible == null && Math.abs(mur.len - t - l / 2 - 0.6) < 0.1) cible = mur.len - 0.6 - l / 2;
+      const pr = PROFONDEUR[def(m).type] || 0.6;
+      if (cible == null && Math.abs(t - l / 2 - pr) < 0.1) cible = pr + l / 2;
+      if (cible == null && Math.abs(mur.len - t - l / 2 - pr) < 0.1) cible = mur.len - pr - l / 2;
       if (cible != null && cible >= l / 2 - 0.001 && cible <= mur.len - l / 2 + 0.001) t = cible;
+      // meuble d'angle : sa partie aveugle se range du côté du coin (bout de mur ou meuble à 90°)
+      if (d.faces === 'angle') {
+        let gG = t - l / 2, gD = mur.len - t - l / 2;
+        for (const o of meubles) {
+          if (o === m || libre(o) || Math.abs(Math.cos(o.r - m.r)) >= 0.01 || !chevauchentEnHauteur(plage(o), plage(m))) continue;
+          const pts = rect(o).map(([px, pz]) => projeter(mur, px, pz));
+          if (Math.min(...pts.map((q) => q.cote)) > 0.05) continue;
+          const t0 = Math.min(...pts.map((q) => q.t)), t1 = Math.max(...pts.map((q) => q.t));
+          if (Math.abs(t - l / 2 - t1) < 0.05) gG = 0;
+          if (Math.abs(t + l / 2 - t0) < 0.05) gD = 0;
+        }
+        const miroir = gG < gD;
+        if (!!m.miroir !== miroir) { m.miroir = miroir; const g = groupes.get(m.id); if (g) g.scale.x = miroir ? -1 : 1; }
+      }
       ({ x, z } = surMur(mur, t));
     } else {
       // loin des murs : se cale côte à côte ou en retour contre un voisin proche

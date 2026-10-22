@@ -1,5 +1,5 @@
 // Comportements communs : en-tête, pied de page, apparitions, photos, visionneuse, formulaires.
-import { CONTACT, photo, photoDistante, PHOTOS_LOCALES } from './donnees.js?v=20261023b';
+import { CONTACT, photo, photoDistante, PHOTOS_LOCALES } from './donnees.js?v=20261023c';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
