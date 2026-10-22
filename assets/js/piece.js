@@ -11,7 +11,7 @@ export const OUVERTURES = {
   porte: { nom: 'Porte', l: 0.9, h: 2.1, y: 0 },
   baie: { nom: 'Porte-fenêtre', l: 1.6, h: 2.2, y: 0 },
 };
-export const PIECE_DEFAUT = { forme: 'rect', W: 5, D: 4.2, H: 2.6, hc: 2.25, aG: 90, aD: 90, Lx: 1.6, Lz: 1.4 };
+export const PIECE_DEFAUT = { forme: 'rect', W: 5, D: 4.2, H: 2.6, hc: 2.16, aG: 90, aD: 90, Lx: 1.6, Lz: 1.4 };
 
 const rad = (d) => (d * Math.PI) / 180;
 

@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261023c';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261023d';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -103,16 +103,18 @@ const TYPES = [
   { id: 'crgt2', nom: 'Colonne garde-manger 2 portes', type: 'colonne', equip: 'deux', largeurs: [80, 90, 100, 120], groupe: 'Colonnes' },
   { id: 'couv', nom: 'Colonne ouverte à étagères', type: 'colonne', equip: 'ouvert', largeurs: [45, 60], groupe: 'Colonnes' },
   // Meubles hauts
-  { id: 'h1p', nom: 'Haut 1 porte', type: 'haut', faces: 'porte', largeurs: [15, 20, 30, 40, 45, 50, 60], groupe: 'Meubles hauts' },
-  { id: 'h2p', nom: 'Haut 2 portes', type: 'haut', faces: 'portes', largeurs: [80, 90, 100, 120], groupe: 'Meubles hauts' },
-  { id: 'h39', nom: 'Haut bas, H.39', type: 'haut', faces: 'portes', h: 0.39, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Meuble haut peu haut, par exemple au-dessus d’une hotte ou d’une fenêtre.' },
-  { id: 'h52', nom: 'Haut intermédiaire, H.52', type: 'haut', faces: 'portes', h: 0.52, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Un peu plus haut qu’un meuble de 39 cm.' },
-  { id: 'h65', nom: 'Haut, H.65', type: 'haut', faces: 'portes', h: 0.65, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Hauteur courante, pour les cuisines sous plafond bas.' },
-  { id: 'h91', nom: 'Haut grande hauteur, H.91', type: 'haut', faces: 'portes', h: 0.91, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Monte plus haut pour gagner du rangement jusqu’au plafond.' },
+  { id: 'h1p', nom: 'Haut 1 porte', type: 'haut', faces: 'porte', largeurs: [15, 30, 40, 45, 50, 60], groupe: 'Meubles hauts' },
+  { id: 'h2p', nom: 'Haut 2 portes', type: 'haut', faces: 'portes', largeurs: [75, 80, 90, 100, 120], groupe: 'Meubles hauts' },
+  { id: 'h26', nom: 'Haut très bas, H.26', type: 'haut', faces: 'portes', h: 0.26, largeurs: [45, 50, 60, 75, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Le plus bas des meubles hauts, par exemple au-dessus d’une porte ou d’une fenêtre.' },
+  { id: 'h117', nom: 'Haut jusqu’au plafond, H.117', type: 'haut', faces: 'portes', h: 1.17, largeurs: [30, 45, 60, 90, 120], groupe: 'Meubles hauts', aide: 'La plus grande hauteur de meuble haut, pour monter jusqu’au plafond.' },
+  { id: 'h39', nom: 'Haut bas, H.39', type: 'haut', faces: 'portes', h: 0.39, largeurs: [30, 45, 50, 60, 75, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Meuble haut peu haut, par exemple au-dessus d’une hotte ou d’une fenêtre.' },
+  { id: 'h52', nom: 'Haut intermédiaire, H.52', type: 'haut', faces: 'portes', h: 0.52, largeurs: [30, 45, 50, 60, 75, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Un peu plus haut qu’un meuble de 39 cm.' },
+  { id: 'h65', nom: 'Haut, H.65', type: 'haut', faces: 'portes', h: 0.65, largeurs: [30, 45, 50, 60, 75, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Hauteur courante, pour les cuisines sous plafond bas.' },
+  { id: 'h91', nom: 'Haut grande hauteur, H.91', type: 'haut', faces: 'portes', h: 0.91, largeurs: [15, 30, 40, 45, 50, 60, 75, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Monte plus haut pour gagner du rangement jusqu’au plafond.' },
   { id: 'hegout', nom: 'Haut égouttoir', type: 'haut', faces: 'ouvert', largeurs: [60, 80, 90], groupe: 'Meubles hauts', aide: 'Meuble haut ouvert au-dessus de l’évier, pour faire sécher la vaisselle.' },
-  { id: 'hang', nom: 'Haut d’angle', type: 'haut', faces: 'angle', largeurs: [60, 65, 70], groupe: 'Meubles hauts', aide: 'Meuble haut d’angle : il ferme le coin quand deux rangées de meubles hauts se rejoignent à 90°.' },
-  { id: 'hang2', nom: 'Haut d’angle H.91', type: 'haut', faces: 'angle', h: 0.91, largeurs: [60, 65, 70], groupe: 'Meubles hauts', aide: 'Haut d’angle grande hauteur, pour monter jusqu’au plafond.' },
-  { id: 'habat', nom: 'Haut abattant', type: 'haut', faces: 'abattant', h: 0.36, largeurs: [60, 80, 90, 120], groupe: 'Meubles hauts' },
+  { id: 'hang', nom: 'Haut d’angle', type: 'haut', faces: 'angle', largeurs: [65, 70], groupe: 'Meubles hauts', aide: 'Meuble haut d’angle en L de 65 × 65 cm (ou 70 × 70) : il ferme le coin quand deux rangées de meubles hauts se rejoignent à 90°.' },
+  { id: 'hang2', nom: 'Haut d’angle H.91', type: 'haut', faces: 'angle', h: 0.91, largeurs: [65, 70], groupe: 'Meubles hauts', aide: 'Haut d’angle grande hauteur, pour monter jusqu’au plafond.' },
+  { id: 'habat', nom: 'Haut abattant', type: 'haut', faces: 'abattant', h: 0.39, largeurs: [60, 80, 90, 120], groupe: 'Meubles hauts' },
   { id: 'habat2', nom: 'Haut double abattant', type: 'haut', faces: 'abattant2', largeurs: [60, 90, 120], groupe: 'Meubles hauts' },
   { id: 'hvit', nom: 'Haut vitrine', type: 'haut', faces: 'vitrine', largeurs: [40, 60, 90], groupe: 'Meubles hauts' },
   { id: 'houv', nom: 'Haut ouvert', type: 'haut', faces: 'ouvert', largeurs: [30, 60, 90], groupe: 'Meubles hauts' },
@@ -160,17 +162,17 @@ export const ALIAS = { 'tiroirs-60': 'b3t-60', 'tiroirs-90': 'b3t-90', 'porte-45
   'col-four-60': 'cfour-60', 'col-frigo-60': 'cfrigo-60', 'col-rgt-45': 'crgt-45', 'col-rgt-60': 'crgt-60',
   'haut-60': 'h1p-60', 'haut-90': 'h2p-90', 'ilot-300': 'ilotbar-300' };
 
-export const PROFONDEUR = { bas: 0.6, colonne: 0.6, haut: 0.36, ilot: 1.0, table: 0.9 };
+export const PROFONDEUR = { bas: 0.6, colonne: 0.6, haut: 0.33, ilot: 1.0, table: 0.9 };
 export const accentParDefaut = (type) => type === 'colonne' || type === 'ilot';
-export const HAUTEURS_COLONNE = [2.05, 2.25, 2.45];
+export const HAUTEURS_COLONNE = [2.03, 2.16, 2.29];
 
 // Hauteur occupée par un meuble (bas et haut), selon la hauteur des colonnes choisie
-export function vertical(def, hc = 2.25) {
+export function vertical(def, hc = 2.16) {
   if (def.type === 'colonne') return [0, hc];
   if (def.type === 'haut') {
-    if (def.faces === 'etagere') return [1.5, 1.55];
+  if (def.faces === 'etagere') return [1.5, 1.55];
     if (def.equip === 'hotte') return [1.58, hc];
-    return [hc - (def.h || 0.72), hc];
+    return [hc - (def.h || 0.78), hc];
   }
   if (def.type === 'ilot') return [0, 0.96];
   if (def.type === 'table') return [0, 0.78];
@@ -457,7 +459,7 @@ function meubleHaut(g, c, def, l, P, hc) {
     boiteArrondie(g, mats.finition(c.accentFin, { largeur: l, hauteur: 0.1 }), l, 0.04, 0.25, 0, 1.52, 0.125, 0.003);
     return;
   }
-  const H = def.h || 0.72, y0 = hc - H;
+  const H = def.h || 0.78, y0 = hc - H;
   if (def.faces === 'joue' || def.faces === 'fileur') { boite(g, mats.finition(c.fin, { largeur: P, hauteur: H }), l, H, def.faces === 'joue' ? P : P - EP, 0, y0 + H / 2, (def.faces === 'joue' ? P : P - EP) / 2); return; }
   if (def.equip === 'hotte-integree') {
     boite(g, mats.fixe('inox'), l - 0.04, 0.05, 0.3, 0, y0 - 0.025, 0.17);
@@ -468,10 +470,14 @@ function meubleHaut(g, c, def, l, P, hc) {
   const zF = P - EP;
   if (def.faces === 'vitrine') vitrine(g, c, l, H, 0, y0 + H / 2, zF);
   else if (def.faces === 'angle') {
-    // partie aveugle (cachée par le meuble voisin) à droite, porte à gauche
+    // équerre : un bras le long du mur du fond (porte à gauche), un bras en retour du côté du coin (porte sur sa face intérieure)
     const lp = l - P;
     facade(g, c, lp, H, -l / 2 + lp / 2, y0 + H / 2, zF);
-    boite(g, mats.finition(c.fin, { largeur: P, hauteur: H }), P - JEU, H - JEU, EP, l / 2 - P / 2, y0 + H / 2, zF - 0.01);
+    const retour = new THREE.Group(); retour.position.set(l / 2 - P, 0, 0);
+    boite(retour, mats.finition(c.fin, { largeur: P, hauteur: H }), P - EP, H, l - P, (P + EP) / 2, y0 + H / 2, P + (l - P) / 2);
+    const fr = new THREE.Group(); fr.rotation.y = -Math.PI / 2; fr.position.set(EP, 0, P + (l - P) / 2);
+    facade(fr, c, l - P, H, 0, y0 + H / 2, 0);
+    retour.add(fr); g.add(retour);
   }
   else if (def.faces === 'abattant') facade(g, c, l, H, 0, y0 + H / 2, zF, { horizontale: true });
   else if (def.faces === 'abattant2') { facade(g, c, l, H / 2, 0, y0 + H / 4, zF, { horizontale: true }); facade(g, c, l, H / 2, 0, y0 + H * 3 / 4, zF, { horizontale: true }); }
@@ -501,7 +507,7 @@ export function construireMeuble(m, cfg, mats) {
   const g = new THREE.Group();
   const c = { mats, porte: MODELES[cfg.modele]?.porte || 'lisse', cadre: MODELES[cfg.modele]?.cadre, fin: m.accent ? cfg.accent : cfg.facade, accentFin: cfg.accent,
     plan: cfg.plan, poignee: cfg.poignee, teinte: cfg.teinte, sansPlan: true };
-  const l = def.l, P = PROFONDEUR[def.type], hc = cfg.hc || 2.25;
+  const l = def.l, P = PROFONDEUR[def.type], hc = cfg.hc || 2.16;
 
   if (def.type === 'bas') {
     if (def.faces === 'joue') {
@@ -563,6 +569,7 @@ export function emprise(type) {
   const def = MEUBLES[type]; const P = PROFONDEUR[def.type];
   if (def.type === 'ilot') return { x0: -def.l / 2 - 0.05, x1: def.l / 2 + 0.05, z0: -0.33, z1: def.bar ? 0.72 : 0.36 };
   if (def.type === 'table') return { x0: -def.l / 2, x1: def.l / 2, z0: -0.86, z1: 0.86 };
+  if (def.faces === 'angle' && def.type === 'haut') return { x0: -def.l / 2, x1: def.l / 2, z0: 0, z1: def.l };
   if (def.faces === 'etagere') return { x0: -def.l / 2, x1: def.l / 2, z0: 0, z1: 0.25 };
   if (def.faces === 'joue' || def.equip === 'joue') return { x0: -def.l / 2, x1: def.l / 2, z0: 0, z1: P + 0.02 };
   return { x0: -def.l / 2, x1: def.l / 2, z0: 0, z1: P };
