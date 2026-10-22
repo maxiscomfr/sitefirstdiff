@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022u';
-import { FINITIONS } from './finitions.js?v=20261022u';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022v';
+import { FINITIONS } from './finitions.js?v=20261022v';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022u';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022v';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022u';
+  empriseOuverture } from './piece.js?v=20261022v';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -336,7 +336,7 @@ function majConflits() {
 // Aimantation libre : un meuble d'angle se colle en retour à 90° contre un voisin (et inversement).
 function collerAuVoisin(m, x, z) {
   const d = def(m), l = d.l;
-  let mieux = null, dmin = 0.9;
+  let mieux = null, dmin = 0.45;
   for (const o of meubles) {
     if (o === m || libre(o) || !chevauchentEnHauteur(plage(o), plage(m))) continue;
     const od = def(o), ol = od.l, ex = [Math.cos(o.r), -Math.sin(o.r)], ez = [Math.sin(o.r), Math.cos(o.r)];
@@ -355,7 +355,7 @@ function collerAuVoisin(m, x, z) {
 function placer(m, x, z) {
   const d = def(m); const l = d.l;
   if (!libre(m)) {
-    // un meuble d'angle s'accroche d'abord à un voisin proche, comme posé sur une grille
+    // un meuble d'angle s'accroche en retour à 90° s'il est tout près d'un voisin ; sinon l'aimantation habituelle (murs et côte à côte à 180°)
     const k0 = collerAuVoisin(m, x, z);
     if (k0) { m.r = k0.r; m.x = Math.round(k0.x * 100) / 100; m.z = Math.round(k0.z * 100) / 100; return; }
     let mieux = null;
@@ -380,8 +380,6 @@ function placer(m, x, z) {
           for (const c of [t1 + l / 2, t0 - l / 2]) if (Math.abs(c - t) < meilleur) { meilleur = Math.abs(c - t); cible = c; }
           continue;
         }
-        // un meuble d'angle ne se colle pas bord à bord (180°) à un autre meuble : son flanc reste libre
-        if (def(o).faces === 'angle' || d.faces === 'angle') continue;
         const po = projeter(mur, o.x, o.z);
         if (po.dist > 0.01 || Math.abs(Math.sin(o.r - m.r)) > 0.01 || Math.cos(o.r - m.r) < 0) continue;
         const ol = def(o).l;
