@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022c';
-import { FINITIONS } from './finitions.js?v=20261022c';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022d';
+import { FINITIONS } from './finitions.js?v=20261022d';
 import { FIN, MODELES, POIGNEES, TEINTES_POIGNEE, FAMILLES_PLAN, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022c';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022d';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022c';
+  empriseOuverture } from './piece.js?v=20261022d';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'gres--pietra-grey',
@@ -81,20 +81,20 @@ const canvas = $('#config3d');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
+renderer.toneMappingExposure = 1.05;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.localClippingEnabled = true;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#d9d4cb');
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
-scene.environmentIntensity = 0.8;
+scene.environmentIntensity = 1;
 scene.add(new THREE.HemisphereLight('#fffaf2', '#8f8a82', 0.55));
 // lumière du jour venant d'une fenêtre à gauche, plus douce en face
 const soleil = new THREE.DirectionalLight('#fff1dc', 2.2);
 soleil.position.set(-4, 6, 6); soleil.castShadow = true;
 const appoint = new THREE.DirectionalLight('#e8eef5', 0.45); appoint.position.set(5, 4, 8); scene.add(appoint);
-soleil.shadow.mapSize.set(2048, 2048);
+soleil.shadow.mapSize.set(4096, 4096);
 Object.assign(soleil.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7 });
 soleil.shadow.bias = -0.0004; soleil.shadow.normalBias = 0.02;
 scene.add(soleil, soleil.target);
@@ -247,7 +247,7 @@ function matSol() {
     texParquet.repeat.set(1 / 1.44, 1 / 1.44);
   }
   // les UV du sol sont en mètres : une image couvre 1,44 m
-  return new THREE.MeshStandardMaterial({ map: texParquet, roughness: 0.6 });
+  return new THREE.MeshPhysicalMaterial({ map: texParquet, roughness: 0.42, clearcoat: 0.35, clearcoatRoughness: 0.35 });
 }
 
 // ---------- meubles dans la scène ----------
@@ -276,6 +276,7 @@ function oublier(id) {
   g.traverse((o) => { if (o.geometry && o.geometry.type !== 'BoxGeometry') o.geometry.dispose(); });
 }
 function reconstruire() {
+  if (rendu) quitterRendu();
   for (const id of [...groupes.keys()]) oublier(id);
   meubles.forEach(poser);
   majSelection(); majConflits(); rendre();
@@ -477,6 +478,7 @@ function taille() {
   renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
   if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
   if (premierCadrage) { premierCadrage = false; vue('perspective', true); }
+  if (typeof rendu !== 'undefined' && rendu) rendu.updateCamera();
   rendre();
 }
 new ResizeObserver(taille).observe(canvas);
@@ -490,8 +492,70 @@ function boucle(t) {
     rendre();
   }
   if (controles.update()) rendre();
+  if (rendu) { avancerRendu(); return; }
   if (besoinRendu) { masquerMursDevant(); dessiner(); besoinRendu = false; }
 }
+
+// ---------- rendu réaliste : calcul de lumière réel (path tracing), à la demande ----------
+// L'image se précise à chaque passe ; bouger la caméra relance le calcul, modifier la cuisine revient au temps réel.
+const PASSES = Math.max(5, +new URLSearchParams(location.search).get('passes') || 300);
+let rendu = null, ptModule = null, ptInstance = null, ptEnv = null, ptAvant = null, ptBarre = null;
+const bouton = $('#rendu-realiste'), barre = $('#rendu-barre');
+const ptPossible = !!renderer.extensions.get('EXT_color_buffer_float') && !matchMedia('(max-width: 760px)').matches;
+if (!ptPossible) bouton.hidden = true;
+
+async function lancerRendu() {
+  if (rendu || !ptPossible) return;
+  bouton.disabled = true; barre.hidden = false; $('#rendu-txt').textContent = 'Préparation de la scène…';
+  await new Promise((ok) => requestAnimationFrame(() => setTimeout(ok, 30)));
+  try {
+    ptModule ||= await import('pathtracer');
+    ptInstance ||= new ptModule.WebGLPathTracer(renderer);
+    const pt = ptInstance;
+    pt.bounces = 5; pt.filterGlossyFactor = 0.4; pt.tiles.set(2, 2); pt.renderScale = 0.85; pt.dynamicLowRes = true; pt.lowResScale = 0.2;
+    pt.renderDelay = 0; pt.fadeDuration = 0; pt.minSamples = 3; pt.rasterizeScene = true;
+    // le ciel : lumière douce du dessus, plus chaude côté fenêtres
+    if (!ptEnv) { ptEnv = new ptModule.GradientEquirectTexture(256); ptEnv.topColor.set('#f7f3ea'); ptEnv.bottomColor.set('#a39b8e'); ptEnv.exponent = 1.4; ptEnv.update(); }
+    ptAvant = { env: scene.environment, fond: scene.background, ei: scene.environmentIntensity };
+    scene.environment = ptEnv; scene.environmentIntensity = 1.15;
+    surligne.visible = false; conflits.visible = false; if (piece.userData.grille) piece.userData.grille.visible = false;
+    masquerMursDevant();
+    renderer.shadowMap.enabled = false;
+    pt.setScene(scene, camera);
+    rendu = pt; $('.config-scene').classList.add('en-rendu');
+    $('#rendu-txt').textContent = 'Rendu réaliste : 0 %';
+  } catch (err) {
+    console.warn('Rendu réaliste indisponible', err);
+    quitterRendu(); $('#rendu-txt').textContent = 'Rendu réaliste indisponible sur cet ordinateur.'; barre.hidden = false;
+    setTimeout(() => { barre.hidden = true; }, 4000);
+  }
+}
+function avancerRendu() {
+  const pt = rendu;
+  if (pt.samples < PASSES) pt.renderSample();
+  const pct = Math.min(100, Math.round((pt.samples / PASSES) * 100));
+  const fini = pt.samples >= PASSES;
+  $('#rendu-txt').textContent = fini ? 'Rendu réaliste terminé' : `Rendu réaliste : ${pct} %`;
+  $('#rendu-jauge').style.width = pct + '%';
+  barre.classList.toggle('fini', fini);
+}
+function quitterRendu() {
+  if (ptAvant) {
+    scene.environment = ptAvant.env; scene.environmentIntensity = ptAvant.ei; ptAvant = null;
+    renderer.shadowMap.enabled = true; renderer.shadowMap.needsUpdate = true;
+    surligne.visible = !!meubles.find((x) => x.id === selection); conflits.visible = true; majGrille();
+    renderer.setRenderTarget(null); renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+  }
+  rendu = null; $('.config-scene').classList.remove('en-rendu'); barre.hidden = true; barre.classList.remove('fini'); bouton.disabled = false; bouton.setAttribute('aria-pressed', 'false');
+  rendre();
+}
+bouton.addEventListener('click', () => { bouton.setAttribute('aria-pressed', 'true'); lancerRendu(); });
+$('#rendu-quitter').addEventListener('click', quitterRendu);
+$('#rendu-enregistrer').addEventListener('click', () => {
+  const a = document.createElement('a'); a.download = 'ma-cuisine-armony.jpg'; a.href = canvas.toDataURL('image/jpeg', 0.92); a.click();
+});
+// bouger la caméra relance le calcul à partir de la nouvelle vue
+controles.addEventListener('change', () => { if (rendu) { rendu.updateCamera(); } });
 
 // Vue en coupe : un mur placé entre la caméra et la pièce s'efface pour laisser voir la cuisine
 function masquerMursDevant() {
@@ -525,6 +589,7 @@ canvas.addEventListener('pointerdown', (e) => {
   const m = meubleSous(e);
   glisse = { x0: e.clientX, y0: e.clientY, m, bouge: false };
   if (!m) return;
+  if (rendu) quitterRendu();
   selection = m.id; majSelection();
   const p = new THREE.Vector3(); rayon.ray.intersectPlane(solPlan, p);
   glisse.dx = m.x - p.x; glisse.dz = m.z - p.z;
@@ -580,6 +645,7 @@ addEventListener('keydown', (e) => {
 });
 
 function apresChangementMeubles() {
+  if (rendu) quitterRendu();
   for (const id of [...groupes.keys()]) if (!meubles.some((m) => m.id === id)) oublier(id);
   meubles.forEach(poser);
   majSelection(); majConflits(); majListe(); majTitre(); memoriser();
@@ -828,6 +894,7 @@ $('#suiv').addEventListener('click', () => aller(etape + 1));
 
 // ---------- envoi ----------
 function capture() {
+  if (rendu) return new Promise((ok) => canvas.toBlob((b) => ok(b), 'image/jpeg', 0.9));
   const sel = surligne.visible; surligne.visible = false; conflits.visible = false;
   dessiner();
   surligne.visible = sel; conflits.visible = true;

@@ -10,13 +10,13 @@
   <link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/site.css?v=20261022c">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261022d">
   <script>
     // Le configurateur 3D se manipule à la souris, sur grand écran : sur téléphone, on invite à revenir sur ordinateur.
     if (matchMedia('(max-width: 760px)').matches) document.documentElement.classList.add('telephone');
     else document.head.insertAdjacentHTML('beforeend', '<link rel="modulepreload" href="assets/vendor/three/three.module.min.js">');
   </script>
-  <script type="importmap">{ "imports": { "three": "./assets/vendor/three/three.module.min.js", "three/addons/": "./assets/vendor/three/addons/" } }</script>
+  <script type="importmap">{ "imports": { "three": "./assets/vendor/three/three.module.min.js", "three/addons/": "./assets/vendor/three/addons/", "three/examples/jsm/": "./assets/vendor/three/addons/", "pathtracer": "./assets/vendor/three/pathtracer.module.min.js" } }</script>
 </head>
 <body data-univers="particuliers" class="page-config">
   <header class="entete defile"></header>
@@ -54,6 +54,13 @@
         <button data-vue="perspective">3D</button>
         <button data-vue="dessus">Vue de dessus</button>
         <button data-vue="face">Face</button>
+        <button id="rendu-realiste" class="rendu-bouton" aria-pressed="false" title="Calcule un rendu photo de votre cuisine">Rendu réaliste</button>
+      </div>
+      <div class="rendu-barre" id="rendu-barre" hidden>
+        <span id="rendu-txt">Rendu réaliste</span>
+        <span class="rendu-piste"><i id="rendu-jauge"></i></span>
+        <button type="button" id="rendu-enregistrer" class="seulement-fini">Enregistrer l'image</button>
+        <button type="button" id="rendu-quitter">Revenir à l'édition</button>
       </div>
       <p class="alerte-conflits" id="alerte-conflits" hidden></p>
       <p class="aide-scene" id="aide-scene">Faites glisser un meuble pour le déplacer : il s'aimante aux murs et à ses voisins.</p>
@@ -169,9 +176,9 @@
     </section>
   </main>
 
-  <script type="module" src="assets/js/site.js?v=20261022c"></script>
+  <script type="module" src="assets/js/site.js?v=20261022d"></script>
   <script type="module">
-    if (!document.documentElement.classList.contains('telephone')) import('./assets/js/configurateur.js?v=20261022c');
+    if (!document.documentElement.classList.contains('telephone')) import('./assets/js/configurateur.js?v=20261022d');
     else document.getElementById('partager-lien').addEventListener('click', async (e) => {
       const url = location.href.split('#')[0];
       if (navigator.share) { try { await navigator.share({ title: 'Configurateur FirstDiff', url }); } catch {} return; }

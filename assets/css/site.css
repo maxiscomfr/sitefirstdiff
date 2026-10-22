@@ -710,3 +710,18 @@ section { position: relative; }
 .config-ordi .actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; margin-top: 10px; }
 .config-ordi .actions .btn { justify-content: center; }
 .config-ordi .actions .lien { align-self: center; margin-top: 6px; }
+
+/* ---------- rendu réaliste ---------- */
+.config-scene .outils .rendu-bouton { margin-left: 10px; background: var(--noir); color: var(--ivoire); border-color: var(--or-clair); }
+.config-scene .outils .rendu-bouton:hover { background: var(--or-clair); color: var(--noir); }
+.config-scene .outils .rendu-bouton:disabled { opacity: .6; cursor: progress; }
+.rendu-barre { position: absolute; left: 24px; right: 24px; top: 20px; z-index: 3; display: flex; align-items: center; gap: 14px; padding: 10px 14px; background: rgba(12,11,10,.88); color: var(--ivoire); font-size: 12.5px; letter-spacing: .08em; }
+.rendu-barre[hidden] { display: none; }
+.rendu-piste { flex: 1; height: 2px; background: rgba(239,234,224,.18); position: relative; min-width: 60px; }
+.rendu-piste i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--or-clair); }
+.rendu-barre button { background: none; border: 1px solid rgba(239,234,224,.35); color: var(--ivoire); padding: 8px 12px; font: inherit; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
+.rendu-barre button:hover { background: var(--ivoire); color: var(--noir); }
+.rendu-barre .seulement-fini { display: none; border-color: var(--or-clair); color: var(--or-clair); }
+.rendu-barre.fini .seulement-fini { display: inline-block; }
+@media (max-width: 760px) { .rendu-barre { display: none !important; } .config-scene .outils .rendu-bouton { display: none; } }
+.config-scene.en-rendu .etiquette, .config-scene.en-rendu .aide-scene, .config-scene.en-rendu .selection, .config-scene.en-rendu .armony-filigrane { display: none; }
