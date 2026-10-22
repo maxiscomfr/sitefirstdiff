@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022p';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022r';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -98,6 +98,7 @@ const TYPES = [
   { id: 'cfour2', nom: 'Colonne four et tiroir chauffant', type: 'colonne', equip: 'four2', largeurs: [60], groupe: 'Colonnes', aide: 'Four en hauteur avec un second appareil en dessous.' },
   { id: 'cetroite', nom: 'Colonne étroite', type: 'colonne', largeurs: [15, 20, 30], groupe: 'Colonnes', aide: 'Rangement fin pour les épices, les plateaux ou les produits ménagers.' },
   { id: 'cmenage', nom: 'Colonne de rangement 2 portes', type: 'colonne', equip: 'deux', largeurs: [60, 70], groupe: 'Colonnes', aide: 'Deux portes superposées : balais, aspirateur, provisions.' },
+  { id: 'cpivot', nom: 'Porte pivotante de passage', type: 'colonne', equip: 'pivot', largeurs: [60, 70, 80, 90], groupe: 'Colonnes', aide: 'Une porte à la finition de vos façades, qui ferme un passage entre deux colonnes (jusqu’à 90 cm de large).' },
   { id: 'crgt', nom: 'Colonne rangement', type: 'colonne', largeurs: [30, 40, 45, 50, 60, 80], groupe: 'Colonnes' },
   { id: 'crgt2', nom: 'Colonne garde-manger 2 portes', type: 'colonne', equip: 'deux', largeurs: [80, 90, 100, 120], groupe: 'Colonnes' },
   { id: 'couv', nom: 'Colonne ouverte à étagères', type: 'colonne', equip: 'ouvert', largeurs: [45, 60], groupe: 'Colonnes' },
@@ -144,7 +145,7 @@ const SOUS = { 'Meubles bas': 'Rangements', 'Colonnes': 'Four et rangements', 'M
 const SOUS_PAR_ID = { hotte: 'Hottes', hotteint: 'Hottes', cfrigo: 'Froid et cave', cfrigocong: 'Froid et cave', camericain: 'Froid et cave', ccave: 'Froid et cave', ccongel: 'Froid et cave',
   evier: 'Évier et lavage', evier2: 'Évier et lavage', evierego: 'Évier et lavage', lvtiroir: 'Évier et lavage', lv: 'Évier et lavage', tri: 'Évier et lavage', bpoub: 'Évier et lavage',
   plaque: 'Cuisson', plaque4: 'Cuisson', plaqueport: 'Cuisson', fourplan: 'Cuisson', fourbas: 'Cuisson', micro: 'Cuisson', cfour: 'Four et rangements', cfourmo: 'Four et rangements', cfour2: 'Four et rangements',
-  frigoplan: 'Froid et cave', caveplan: 'Froid et cave', congplan: 'Froid et cave', table: 'Tables', ilotbar: 'Îlots', peninsule: 'Îlots', ilot: 'Îlots', ilotnu: 'Îlots', ilotplaque: 'Îlots', ilotevier: 'Îlots',
+  frigoplan: 'Froid et cave', cpivot: 'Passages', caveplan: 'Froid et cave', congplan: 'Froid et cave', table: 'Tables', ilotbar: 'Îlots', peninsule: 'Îlots', ilot: 'Îlots', ilotnu: 'Îlots', ilotplaque: 'Îlots', ilotevier: 'Îlots',
   habat: 'Ouvrants et vitrines', habat2: 'Ouvrants et vitrines', hvit: 'Ouvrants et vitrines', houv: 'Étagères et ouverts', etag: 'Étagères et ouverts', hegout: 'Étagères et ouverts',
   bouv: 'Étagères et ouverts', couv: 'Étagères et ouverts', bang: 'Angles', bcar: 'Angles', bcoul: 'Rangements' };
 export const FAMILLES_MEUBLES = TYPES.map(({ id, nom, type, groupe, largeurs, aide }) => {
@@ -401,6 +402,12 @@ function equiper(g, c, def, l, P, yPlan, zc = P / 2) {
 function colonne(g, c, def, l, P, H) {
   const { mats } = c; const zF = P - EP;
   if (def.equip === 'joue') { boite(g, mats.finition(c.fin, { largeur: P, hauteur: H }), l, H, P + 0.02, 0, H / 2, (P + 0.02) / 2); return; }
+  if (def.equip === 'pivot') {
+    // porte de passage : un vantail à la finition des façades, devant un fond sombre
+    boite(g, mats.fixe('ombre'), l, H, 0.02, 0, H / 2, zF - 0.1);
+    facade(g, c, l - 0.01, H - 0.02, 0, H / 2, zF);
+    return;
+  }
   if (def.equip === 'fileur') { boite(g, mats.finition(c.fin, { largeur: P, hauteur: H }), l, H, P - EP, 0, H / 2, (P - EP) / 2); return; }
   boite(g, mats.fixe('ombre'), l, PLINTHE, P - 0.06, 0, PLINTHE / 2, (P - 0.06) / 2);
   boite(g, mats.finition(c.fin, { largeur: P, hauteur: H }), l, H - PLINTHE, P - EP, 0, PLINTHE + (H - PLINTHE) / 2, (P - EP) / 2);

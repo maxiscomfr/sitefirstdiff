@@ -8,10 +8,7 @@ export const FORMES = {
 };
 export const OUVERTURES = {
   fenetre: { nom: 'Fenêtre', l: 1.2, h: 1.25, y: 1.0 },
-  porte: { nom: 'Porte de passage', l: 0.9, h: 2.1, y: 0 },
-  double: { nom: 'Double porte', l: 1.4, h: 2.1, y: 0 },
-  coulissante: { nom: 'Porte coulissante', l: 1.0, h: 2.1, y: 0 },
-  passage: { nom: 'Passage ouvert', l: 1.0, h: 2.1, y: 0 },
+  porte: { nom: 'Porte', l: 0.9, h: 2.1, y: 0 },
   baie: { nom: 'Porte-fenêtre', l: 1.6, h: 2.2, y: 0 },
 };
 export const PIECE_DEFAUT = { forme: 'rect', W: 5, D: 4.2, H: 2.6, hc: 2.25, aG: 90, aD: 90, Lx: 1.6, Lz: 1.4 };
@@ -90,7 +87,7 @@ export function recouvrement(A, B) {
 // Emprise d'une ouverture : la largeur de la baie, et la place à garder devant (passage ou ouvrant)
 export function empriseOuverture(o, lesMurs) {
   const mur = lesMurs[o.mur]; if (!mur) return null;
-  const prof = o.type === 'fenetre' ? 0.62 : o.type === 'coulissante' ? 0.2 : 0.9;
+  const prof = o.type === 'fenetre' ? 0.62 : 0.9;
   const { x, z } = surMur(mur, o.t);
   return { coins: coins({ x0: -o.l / 2, x1: o.l / 2, z0: 0, z1: prof }, x, z, mur.r), y0: o.y, y1: o.y + o.h };
 }

@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022p';
-import { FINITIONS } from './finitions.js?v=20261022p';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022r';
+import { FINITIONS } from './finitions.js?v=20261022r';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022p';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022r';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022p';
+  empriseOuverture } from './piece.js?v=20261022r';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -198,7 +198,7 @@ function menuiserie(o) {
   if (y0 > 0.01) plaque(l, 0.01, EP_MUR, x, y0, -EP_MUR / 2, MAT_MUR);
   for (const s of [-1, 1]) plaque(0.01, o.h, EP_MUR, x + s * l / 2, (y0 + y1) / 2, -EP_MUR / 2, MAT_MUR);
   // lumière du jour derrière
-  const jour = new THREE.Mesh(new THREE.PlaneGeometry(l, o.h), ['porte', 'double', 'coulissante'].includes(o.type) ? MAT_PORTE : MAT_JOUR);
+  const jour = new THREE.Mesh(new THREE.PlaneGeometry(l, o.h), o.type === 'porte' ? MAT_PORTE : MAT_JOUR);
   jour.position.set(x, (y0 + y1) / 2, -EP_MUR); g.add(jour);
   // cadre
   plaque(l + 2 * f, f, 0.03, x, y1 + f / 2, 0.012);
@@ -206,18 +206,6 @@ function menuiserie(o) {
   if (o.type === 'porte') {
     plaque(l - 0.01, o.h - 0.01, 0.04, x, (y0 + y1) / 2, -0.05, MAT_PORTE);
     plaque(0.14, 0.02, 0.05, x + l / 2 - 0.12, 1.02, -0.02, mats.fixe('inox'));
-  } else if (o.type === 'double') {
-    for (const s of [-1, 1]) {
-      plaque(l / 2 - 0.01, o.h - 0.01, 0.04, x + s * l / 4, (y0 + y1) / 2, -0.05, MAT_PORTE);
-      plaque(0.14, 0.02, 0.05, x + s * 0.06, 1.02, -0.02, mats.fixe('inox'));
-    }
-  } else if (o.type === 'coulissante') {
-    // vantail qui glisse devant le mur, rail en haut
-    plaque(l + 0.04, o.h - 0.02, 0.04, x + l / 2 * 0.35, (y0 + y1) / 2 - 0.01, 0.07, MAT_PORTE);
-    plaque(l * 2 + 0.06, 0.04, 0.05, x + l / 2, y1 + 0.03, 0.07, mats.fixe('inox'));
-    plaque(0.04, 0.2, 0.05, x - l / 2 + 0.09, 1.02, 0.1, mats.fixe('inox'));
-  } else if (o.type === 'passage') {
-    // simple ouverture dans le mur : cadre seul
   } else {
     if (y0 > 0.01) plaque(l + 0.06, 0.03, 0.2, x, y0 - 0.015, 0.05, MAT_MENUISERIE);
     const nb = l > 1.4 ? 3 : 2; const w = l / nb;
@@ -362,7 +350,15 @@ function placer(m, x, z) {
       let meilleur = 0.2, cible = null;
       for (const o of meubles) {
         if (o === m || libre(o) || !chevauchentEnHauteur(plage(o), plage(m))) continue;
-        // un meuble d'angle ne se colle pas sur le côté à un autre meuble : son flanc reste libre
+        // voisin à 90° (retour d'angle, péninsule) : on se cale contre son flanc s'il touche le même mur
+        if (Math.abs(Math.cos(o.r - m.r)) < 0.01) {
+          const pts = rect(o).map(([px, pz]) => projeter(mur, px, pz));
+          if (Math.min(...pts.map((q) => q.cote)) > 0.05) continue;
+          const t0 = Math.min(...pts.map((q) => q.t)), t1 = Math.max(...pts.map((q) => q.t));
+          for (const c of [t1 + l / 2, t0 - l / 2]) if (Math.abs(c - t) < meilleur) { meilleur = Math.abs(c - t); cible = c; }
+          continue;
+        }
+        // un meuble d'angle ne se colle pas bord à bord (180°) à un autre meuble : son flanc reste libre
         if (def(o).faces === 'angle' || d.faces === 'angle') continue;
         const po = projeter(mur, o.x, o.z);
         if (po.dist > 0.01 || Math.abs(Math.sin(o.r - m.r)) > 0.01 || Math.cos(o.r - m.r) < 0) continue;
