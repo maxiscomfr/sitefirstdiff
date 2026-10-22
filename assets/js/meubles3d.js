@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS } from './finitions.js?v=20261022e';
+import { FINITIONS } from './finitions.js?v=20261022h';
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
 
@@ -17,10 +17,10 @@ export const MODELES = {
   omicron: { nom: 'Omicron', porte: 'chant', note: 'Design · prise usinée à 33°' },
   diamond: { nom: 'Diamond', porte: 'chant', note: 'Design · chant sculpté' },
   riga: { nom: 'Riga', porte: 'rainure', note: 'Façade rainurée 3D, 23 mm' },
-  quadro: { nom: 'Quadro', porte: 'cadre', note: 'Cadre périmétral, 22 mm' },
-  skyline: { nom: 'Skyline', porte: 'alu', note: 'Cadre aluminium, verre, grès' },
-  etro: { nom: 'Etro', porte: 'lisse', note: 'PET et PVC' },
-  equa: { nom: 'Equa', porte: 'lisse', note: 'Laque mat UV' },
+  quadro: { nom: 'Quadro', porte: 'cadre', cadre: { b: 0.05, recul: 0.01 }, note: 'Timeless · façade à cadre, bois ou laque' },
+  skyline: { nom: 'Skyline', porte: 'alu', cadre: { b: 0.02, recul: 0.004 }, note: 'Tech · cadre aluminium, verre, grès' },
+  etro: { nom: 'Etro', porte: 'cadre', cadre: { b: 0.065, recul: 0.01 }, note: 'Timeless · façade à cadre, PET et PVC' },
+  equa: { nom: 'Equa', porte: 'cadre', cadre: { b: 0.055, recul: 0.009 }, note: 'Timeless · façade à cadre, laque mat UV' },
 };
 
 export const POIGNEES = {
@@ -147,10 +147,10 @@ export class Materiaux {
   constructor(surCharge) { this.cache = new Map(); this.surCharge = surCharge; }
   get(cle, fab) { if (!this.cache.has(cle)) this.cache.set(cle, fab()); return this.cache.get(cle); }
 
-  finition(id, { largeur = 0.6, hauteur = 0.7, rainure = false } = {}) {
+  finition(id, { largeur = 0.6, hauteur = 0.7, rainure = false, pivote = false } = {}) {
     const f = FIN[id] || FINITIONS[0];
     const kx = Math.round(largeur * 20) / 20, ky = Math.round(hauteur * 10) / 10;
-    return this.get(`f:${f.id}:${kx}:${ky}:${rainure}`, () => {
+    return this.get(`f:${f.id}:${kx}:${ky}:${rainure}:${pivote}`, () => {
       // laques brillantes et verres : vernis transparent ; bois et matières : relief tiré de l'échantillon
       const brillant = f.r <= 0.25;
       const mat = new THREE.MeshPhysicalMaterial({ color: f.tex ? '#ffffff' : f.couleur, roughness: f.r, metalness: f.m,
@@ -159,6 +159,7 @@ export class Materiaux {
         const t = texture(f.id, this.surCharge).clone();
         // l'échantillon fait environ 3 × 1 : on le répète pour garder un grain réaliste
         t.repeat.set(Math.max(0.35, kx / 0.6), Math.max(0.35, ky / 0.7)); t.needsUpdate = true;
+        if (pivote && /bois|chêne|noyer|châtaignier/i.test(f.famille)) { t.center.set(0.5, 0.5); t.rotation = Math.PI / 2; }
         mat.map = t; mat.bumpMap = t; mat.bumpScale = 0.25;
       }
       if (rainure) {
@@ -225,13 +226,21 @@ function facade(g, c, w, h, x, y, z, { horizontale = false } = {}) {
   const { mats, porte } = c;
   const mat = mats.finition(c.fin, { largeur: w, hauteur: h, rainure: porte === 'rainure' });
   if (porte === 'cadre' || porte === 'alu') {
-    const b = porte === 'alu' ? 0.018 : 0.06;
+    // cadre périmétral et panneau en retrait ; sur un bois, les traverses ont le fil horizontal comme le massif
+    const { b, recul } = c.cadre || { b: 0.05, recul: 0.008 };
     const mb = porte === 'alu' ? mats.fixe('alu') : mat;
-    boite(g, mb, w - JEU, b, EP, x, y + h / 2 - b / 2, z + EP / 2);
-    boite(g, mb, w - JEU, b, EP, x, y - h / 2 + b / 2, z + EP / 2);
+    const mt = porte === 'alu' ? mb : mats.finition(c.fin, { largeur: w, hauteur: b, pivote: true });
+    boite(g, mt, w - JEU, b, EP, x, y + h / 2 - b / 2, z + EP / 2);
+    boite(g, mt, w - JEU, b, EP, x, y - h / 2 + b / 2, z + EP / 2);
     boite(g, mb, b, h - 2 * b, EP, x - w / 2 + b / 2, y, z + EP / 2);
     boite(g, mb, b, h - 2 * b, EP, x + w / 2 - b / 2, y, z + EP / 2);
-    boite(g, mat, w - 2 * b, h - 2 * b, EP * 0.6, x, y, z + EP * 0.3);
+    boite(g, mat, w - 2 * b + 0.002, h - 2 * b + 0.002, EP - recul, x, y, z + (EP - recul) / 2);
+    // joint d'ombre au pied du cadre : il dessine le retrait du panneau
+    if (porte !== 'alu') {
+      const wi = w - 2 * b, hi = h - 2 * b, e = 0.004, zr = z + EP - recul + 0.0006, om = mats.fixe('ombre');
+      boite(g, om, wi, e, 0.0012, x, y + hi / 2 - e / 2, zr, false); boite(g, om, wi, e, 0.0012, x, y - hi / 2 + e / 2, zr, false);
+      boite(g, om, e, hi - 2 * e, 0.0012, x - wi / 2 + e / 2, y, zr, false); boite(g, om, e, hi - 2 * e, 0.0012, x + wi / 2 - e / 2, y, zr, false);
+    }
   } else {
     boiteArrondie(g, mat, w - JEU, h - JEU, EP, x, y, z + EP / 2);
   }
@@ -420,7 +429,7 @@ function chaise(g, c, x, z, r) {
 export function construireMeuble(m, cfg, mats) {
   const def = MEUBLES[m.type];
   const g = new THREE.Group();
-  const c = { mats, porte: MODELES[cfg.modele]?.porte || 'lisse', fin: m.accent ? cfg.accent : cfg.facade, accentFin: cfg.accent,
+  const c = { mats, porte: MODELES[cfg.modele]?.porte || 'lisse', cadre: MODELES[cfg.modele]?.cadre, fin: m.accent ? cfg.accent : cfg.facade, accentFin: cfg.accent,
     plan: cfg.plan, poignee: cfg.poignee, teinte: cfg.teinte };
   const l = def.l, P = PROFONDEUR[def.type], hc = cfg.hc || 2.25;
 
@@ -448,7 +457,8 @@ export function construireMeuble(m, cfg, mats) {
     const ep = Math.max(0.03, (EP_PLAN[FIN[c.plan]?.fid] || 0.03) * 2);
     const hBase = PLINTHE + CAISSON;
     const prof = def.bar ? 1.0 : 0.66;
-    boite(g, mats.finition(c.fin, { largeur: l, hauteur: hBase }), l, hBase - PLINTHE, 0.02, 0, PLINTHE + (hBase - PLINTHE) / 2, Pw / 2 + 0.01);
+    if (c.porte === 'cadre' || c.porte === 'alu') facade(g, { ...c, poignee: 'push' }, l, hBase - PLINTHE, 0, PLINTHE + (hBase - PLINTHE) / 2, Pw / 2);
+    else boite(g, mats.finition(c.fin, { largeur: l, hauteur: hBase }), l, hBase - PLINTHE, 0.02, 0, PLINTHE + (hBase - PLINTHE) / 2, Pw / 2 + 0.01);
     const zc = -Pw / 2 - 0.03 + prof / 2;
     boiteArrondie(g, mats.plan(c.plan, l), l + 0.04, ep, prof, 0, hBase + ep / 2, zc, 0.004);
     for (const s of [-1, 1]) boite(g, mats.plan(c.plan, 1), ep, hBase + ep, prof, s * (l / 2 + 0.02 + ep / 2), (hBase + ep) / 2, zc);
