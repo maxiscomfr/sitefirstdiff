@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022y';
-import { FINITIONS } from './finitions.js?v=20261022y';
+import { $, $$, brancherFormulaire } from './site.js?v=20261023a';
+import { FINITIONS } from './finitions.js?v=20261023a';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022y';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023a';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022y';
+  empriseOuverture } from './piece.js?v=20261023a';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -333,19 +333,36 @@ function majConflits() {
   $('#alerte-conflits').textContent = n ? `${n} meuble${n > 1 ? 's se chevauchent ou gênent' : ' chevauche ou gêne'} une ouverture` : '';
 }
 
-// Aimantation libre : un meuble se colle en retour à 90° contre l'extrémité d'un voisin (cuisine en L).
+// Aimantation libre : loin des murs, un meuble se colle à n'importe quel côté d'un voisin (côte à côte, dos à dos,
+// face à face, en retour à 90°), aligné sur un bord du voisin.
 function collerAuVoisin(m, x, z) {
-  const d = def(m), l = d.l;
-  let mieux = null, dmin = 0.45;
+  const d = def(m), l = d.l, P = PROFONDEUR[d.type];
+  const cour = [x + Math.sin(m.r) * P / 2, z + Math.cos(m.r) * P / 2]; // centre de l'emprise du meuble sous le curseur
+  let mieux = null, dmin = 0.5;
   for (const o of meubles) {
     if (o === m || libre(o) || !chevauchentEnHauteur(plage(o), plage(m))) continue;
-    const od = def(o), ol = od.l, ex = [Math.cos(o.r), -Math.sin(o.r)], ez = [Math.sin(o.r), Math.cos(o.r)];
-    const cand = [];
-    // retour à 90° : le dos du meuble contre l'extrémité du voisin
-    for (const s of [-1, 1]) {
-      cand.push({ r: o.r + s * Math.PI / 2, x: o.x + s * ex[0] * (ol / 2) + s * ez[0] * (l / 2) * s, z: o.z + s * ex[1] * (ol / 2) + s * ez[1] * (l / 2) * s });
+    const od = def(o), ol = od.l, Po = PROFONDEUR[od.type];
+    const eo = [Math.cos(o.r), -Math.sin(o.r)], zo = [Math.sin(o.r), Math.cos(o.r)];
+    for (let q = 0; q < 4; q++) {
+      const rel = q * Math.PI / 2, odd = q % 2 === 1, w = odd ? P : l, h = odd ? l : P;
+      const zm = [Math.sin(rel), Math.cos(rel)]; // axe « devant » du meuble posé, dans le repère du voisin
+      const centres = [
+        [ol / 2 + w / 2, h / 2], [ol / 2 + w / 2, Po - h / 2], [-ol / 2 - w / 2, h / 2], [-ol / 2 - w / 2, Po - h / 2],
+        [-ol / 2 + w / 2, Po + h / 2], [ol / 2 - w / 2, Po + h / 2], [0, Po + h / 2],
+        [-ol / 2 + w / 2, -h / 2], [ol / 2 - w / 2, -h / 2], [0, -h / 2],
+      ];
+      for (const [cx, cz] of centres) {
+        const ox = cx - zm[0] * P / 2, oz = cz - zm[1] * P / 2; // origine (dos) du meuble, repère du voisin
+        const k = { r: o.r + rel, x: o.x + ox * eo[0] + oz * zo[0], z: o.z + ox * eo[1] + oz * zo[1] };
+        const wc = [o.x + cx * eo[0] + cz * zo[0], o.z + cx * eo[1] + cz * zo[1]];
+        const dist = Math.hypot(wc[0] - cour[0], wc[1] - cour[1]);
+        if (dist >= dmin) continue;
+        const R = coins(emprise(m.type), k.x, k.z, k.r);
+        if (!R.every(([px, pz]) => dedans(CONTOUR, px, pz))) continue;
+        if (meubles.some((u) => u !== m && chevauchentEnHauteur(plage(u), plage(m)) && recouvrement(R, rect(u)) > 0.02)) continue;
+        dmin = dist; mieux = k;
+      }
     }
-    for (const k of cand) { const dist = Math.hypot(k.x - x, k.z - z); if (dist < dmin) { dmin = dist; mieux = k; } }
   }
   return mieux;
 }
@@ -386,7 +403,7 @@ function placer(m, x, z) {
       if (cible != null && cible >= l / 2 - 0.001 && cible <= mur.len - l / 2 + 0.001) t = cible;
       ({ x, z } = surMur(mur, t));
     } else {
-      // loin des murs : un meuble se cale en retour à 90° contre un voisin proche
+      // loin des murs : se cale côte à côte ou en retour contre un voisin proche
       const k = collerAuVoisin(m, x, z);
       if (k) { m.r = k.r; x = k.x; z = k.z; }
       [x, z] = garderDedans(m, x, z);
