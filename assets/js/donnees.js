@@ -118,5 +118,4 @@ export const CATALOGUES = [
   { titre: 'Collezione Anniversario 50', detail: 'L’édition anniversaire des 50 ans', fichier: 'catalogues/armony-collezione-50.pdf', marque: 'Armony' },
   { titre: 'Portraits Armony', detail: 'Les projets photographiés, finition par finition', fichier: 'catalogues/armony-portraits.pdf', marque: 'Armony' },
   { titre: 'Nuancier & matériaux', detail: 'Laques, stratifiés, bois, grès et Laminam', fichier: 'catalogues/armony-nuancier.pdf', marque: 'Armony' },
-  { titre: 'Tarif professionnel Armony', detail: 'Réservé aux revendeurs, envoyé après échange', fichier: null, marque: 'Armony' },
 ];

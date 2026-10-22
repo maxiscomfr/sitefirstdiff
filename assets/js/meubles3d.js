@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022l';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022m';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -31,11 +31,18 @@ export const POIGNEES = {
   logica: { nom: 'Logica', note: 'Prise encastrée' },
   push: { nom: 'Push-pull', note: 'Sans poignée' },
 };
+// teintes proposées au tarif : poignées (p. 53) et gorges (p. 59) ; `pour` = types d'ouverture concernés
 export const TEINTES_POIGNEE = {
-  noir: { nom: 'Noir anodisé', couleur: '#161616', r: 0.45, m: 0.6 },
-  titane: { nom: 'Titane', couleur: '#7f7d78', r: 0.3, m: 1 },
-  inox: { nom: 'Aluminium anodisé', couleur: '#bcbdbb', r: 0.25, m: 1 },
-  'antique-gold': { nom: 'Antique gold', couleur: '#a68a55', r: 0.32, m: 1 },
+  noir: { nom: 'Noir', couleur: '#161616', r: 0.45, m: 0.6, pour: ['gorge', 'maniglia', 'logica'] },
+  titane: { nom: 'Titane anodisé', couleur: '#7f7d78', r: 0.3, m: 1, pour: ['gorge', 'maniglia', 'logica'] },
+  inox: { nom: 'Aluminium', couleur: '#bcbdbb', r: 0.25, m: 1, pour: ['gorge', 'maniglia', 'logica'] },
+  'antique-gold': { nom: 'Antique gold', couleur: '#a68a55', r: 0.32, m: 1, pour: ['gorge', 'maniglia', 'logica'] },
+  blanc: { nom: 'Blanc', couleur: '#ecebe7', r: 0.5, m: 0.1, pour: ['maniglia', 'logica'] },
+  antracite: { nom: 'Anthracite', couleur: '#3a3b3d', r: 0.4, m: 0.7, pour: ['maniglia', 'logica'] },
+  'inox-brosse': { nom: 'Inox', couleur: '#c9cacb', r: 0.2, m: 1, pour: ['maniglia', 'logica'] },
+  'gold-look': { nom: 'Or look', couleur: '#c2a25f', r: 0.28, m: 1, pour: ['maniglia', 'logica'] },
+  moka: { nom: 'Moka', couleur: '#4b3a30', r: 0.45, m: 0.5, pour: ['maniglia', 'logica'] },
+  'canna-di-fucile': { nom: 'Canon de fusil', couleur: '#4a4d52', r: 0.3, m: 1, pour: ['maniglia', 'logica'] },
 };
 
 // Familles proposées en plan de travail

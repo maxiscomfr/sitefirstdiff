@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022l';
-import { FINITIONS } from './finitions.js?v=20261022l';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022m';
+import { FINITIONS } from './finitions.js?v=20261022m';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022l';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022m';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022l';
+  empriseOuverture } from './piece.js?v=20261022m';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -863,7 +863,9 @@ function majFinitions() {
   $('#nuancier-plans').innerHTML = nuancier(FINITIONS.filter((f) => f.plan), cfg.plan, 'data-plan', true);
   $('#nom-plan').textContent = `— ${FIN[cfg.plan].nom}, ${FIN[cfg.plan].famille}`;
   $('#opt-poignee').innerHTML = Object.entries(POIGNEES).map(([id, o]) => `<button class="opt" data-poignee="${id}" aria-pressed="${id === cfg.poignee && m.porte !== 'profil'}"${m.porte === 'profil' ? ' disabled' : ''}><b>${o.nom}</b><small>${o.note}</small></button>`).join('');
-  $('#nu-teinte').innerHTML = Object.entries(TEINTES_POIGNEE).map(([id, o]) => `<button class="teinte" data-teinte="${id}" aria-pressed="${id === cfg.teinte}" style="background:${o.couleur}" title="${o.nom}" aria-label="${o.nom}"></button>`).join('');
+  const usage = m.porte === 'profil' ? 'gorge' : cfg.poignee;
+  if (!TEINTES_POIGNEE[cfg.teinte]?.pour.includes(usage) && cfg.poignee !== 'push') cfg.teinte = 'noir';
+  $('#nu-teinte').innerHTML = Object.entries(TEINTES_POIGNEE).filter(([, o]) => o.pour.includes(usage)).map(([id, o]) => `<button class="teinte" data-teinte="${id}" aria-pressed="${id === cfg.teinte}" style="background:${o.couleur}" title="${o.nom}" aria-label="${o.nom}"></button>`).join('');
   $('#nom-teinte').innerHTML = m.porte === 'profil' ? `<b>${TEINTES_POIGNEE[cfg.teinte].nom}</b> — profilés et poignée System` : `<b>${TEINTES_POIGNEE[cfg.teinte].nom}</b>`;
   memoriser();
 }
