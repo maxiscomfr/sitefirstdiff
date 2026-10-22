@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS } from './finitions.js?v=20261022d';
+import { FINITIONS } from './finitions.js?v=20261022e';
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
 

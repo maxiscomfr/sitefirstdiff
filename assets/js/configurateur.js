@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022d';
-import { FINITIONS } from './finitions.js?v=20261022d';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022e';
+import { FINITIONS } from './finitions.js?v=20261022e';
 import { FIN, MODELES, POIGNEES, TEINTES_POIGNEE, FAMILLES_PLAN, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022d';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022e';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022d';
+  empriseOuverture } from './piece.js?v=20261022e';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'gres--pietra-grey',
@@ -498,8 +498,29 @@ function boucle(t) {
 
 // ---------- rendu réaliste : calcul de lumière réel (path tracing), à la demande ----------
 // L'image se précise à chaque passe ; bouger la caméra relance le calcul, modifier la cuisine revient au temps réel.
-const PASSES = Math.max(5, +new URLSearchParams(location.search).get('passes') || 300);
-let rendu = null, ptModule = null, ptInstance = null, ptEnv = null, ptAvant = null, ptBarre = null;
+const PASSES = Math.max(5, +new URLSearchParams(location.search).get('passes') || 500);
+let rendu = null, ptModule = null, ptInstance = null, ptEnv = null, ptAvant = null, ptSwaps = [];
+
+// Le path tracer ne gère pas le vernis (clearcoat) ni le relief (bump) de façon fiable selon les cartes graphiques :
+// ces surfaces ressortaient noires. Pendant le calcul, elles sont remplacées par des matériaux simples (couleur, texture,
+// brillance), et restituées ensuite.
+function simplifierMateriaux() {
+  const faits = new Map();
+  scene.traverse((o) => {
+    if (!o.isMesh || !o.material || Array.isArray(o.material)) return;
+    const m = o.material;
+    if (!(m.clearcoat > 0 || m.bumpMap || m.sheen > 0)) return;
+    if (!faits.has(m)) {
+      const brillant = m.clearcoat > 0;
+      faits.set(m, new THREE.MeshStandardMaterial({
+        color: m.color, map: m.map, roughness: brillant ? Math.max(0.16, m.roughness * 0.6) : m.roughness, metalness: m.metalness,
+        transparent: m.transparent, opacity: m.opacity, side: m.side,
+      }));
+    }
+    ptSwaps.push([o, m]); o.material = faits.get(m);
+  });
+}
+function restituerMateriaux() { for (const [o, m] of ptSwaps) o.material = m; ptSwaps = []; }
 const bouton = $('#rendu-realiste'), barre = $('#rendu-barre');
 const ptPossible = !!renderer.extensions.get('EXT_color_buffer_float') && !matchMedia('(max-width: 760px)').matches;
 if (!ptPossible) bouton.hidden = true;
@@ -519,7 +540,7 @@ async function lancerRendu() {
     ptAvant = { env: scene.environment, fond: scene.background, ei: scene.environmentIntensity };
     scene.environment = ptEnv; scene.environmentIntensity = 1.15;
     surligne.visible = false; conflits.visible = false; if (piece.userData.grille) piece.userData.grille.visible = false;
-    masquerMursDevant();
+    masquerMursDevant(); simplifierMateriaux();
     renderer.shadowMap.enabled = false;
     pt.setScene(scene, camera);
     rendu = pt; $('.config-scene').classList.add('en-rendu');
@@ -540,6 +561,7 @@ function avancerRendu() {
   barre.classList.toggle('fini', fini);
 }
 function quitterRendu() {
+  restituerMateriaux();
   if (ptAvant) {
     scene.environment = ptAvant.env; scene.environmentIntensity = ptAvant.ei; ptAvant = null;
     renderer.shadowMap.enabled = true; renderer.shadowMap.needsUpdate = true;
