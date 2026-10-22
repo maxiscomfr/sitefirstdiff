@@ -771,3 +771,4 @@ details.famille summary small { opacity: .6; }
   .matieres { grid-template-columns: 1fr; }
   .carte-guide { padding: 30px 22px; }
 }
+.types-meubles .aide { display: block; margin-top: 3px; font-size: 12px; line-height: 1.35; color: var(--gris-clair); opacity: .8; }

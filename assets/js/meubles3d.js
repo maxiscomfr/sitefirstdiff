@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022m';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022n';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -90,6 +90,11 @@ const TYPES = [
   // Meubles hauts
   { id: 'h1p', nom: 'Haut 1 porte', type: 'haut', faces: 'porte', largeurs: [30, 40, 45, 50, 60], groupe: 'Meubles hauts' },
   { id: 'h2p', nom: 'Haut 2 portes', type: 'haut', faces: 'portes', largeurs: [80, 90, 100, 120], groupe: 'Meubles hauts' },
+  { id: 'h39', nom: 'Haut bas, H.39', type: 'haut', faces: 'portes', h: 0.39, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Meuble haut peu haut, par exemple au-dessus d’une hotte ou d’une fenêtre.' },
+  { id: 'h52', nom: 'Haut intermédiaire, H.52', type: 'haut', faces: 'portes', h: 0.52, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Un peu plus haut qu’un meuble de 39 cm.' },
+  { id: 'h65', nom: 'Haut, H.65', type: 'haut', faces: 'portes', h: 0.65, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Hauteur courante, pour les cuisines sous plafond bas.' },
+  { id: 'h91', nom: 'Haut grande hauteur, H.91', type: 'haut', faces: 'portes', h: 0.91, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Monte plus haut pour gagner du rangement jusqu’au plafond.' },
+  { id: 'hegout', nom: 'Haut égouttoir', type: 'haut', faces: 'ouvert', largeurs: [60, 80, 90], groupe: 'Meubles hauts', aide: 'Meuble haut ouvert au-dessus de l’évier, pour faire sécher la vaisselle.' },
   { id: 'habat', nom: 'Haut abattant', type: 'haut', faces: 'abattant', h: 0.36, largeurs: [60, 80, 90, 120], groupe: 'Meubles hauts' },
   { id: 'habat2', nom: 'Haut double abattant', type: 'haut', faces: 'abattant2', largeurs: [60, 90, 120], groupe: 'Meubles hauts' },
   { id: 'hvit', nom: 'Haut vitrine', type: 'haut', faces: 'vitrine', largeurs: [40, 60, 90], groupe: 'Meubles hauts' },
@@ -100,17 +105,23 @@ const TYPES = [
   { id: 'ilotbar', nom: 'Îlot avec coin repas', type: 'ilot', bar: true, largeurs: [240, 300, 360], groupe: 'Îlots et tables' },
   { id: 'ilotevier', nom: 'Îlot avec évier', type: 'ilot', equip: 'evier', largeurs: [240, 300], groupe: 'Îlots et tables' },
   { id: 'table', nom: 'Table repas', type: 'table', largeurs: [160, 200, 240], groupe: 'Îlots et tables' },
-  // Finitions
-  { id: 'jouebas', nom: 'Joue de finition, bas', type: 'bas', faces: 'joue', largeurs: [3], groupe: 'Finitions' },
-  { id: 'jouecol', nom: 'Joue de finition, colonne', type: 'colonne', equip: 'joue', largeurs: [3], groupe: 'Finitions' },
-  { id: 'fileur', nom: 'Fileur', type: 'bas', faces: 'panneau', largeurs: [5, 10], groupe: 'Finitions' },
+  // Fileurs et finitions : les pièces qui habillent les espaces et les extrémités, pour une cuisine sans vide ni chant apparent
+  { id: 'fileur', nom: 'Fileur pour meuble bas', type: 'bas', faces: 'panneau', largeurs: [5, 10, 15], groupe: 'Fileurs et finitions', aide: 'Comble un espace entre un meuble bas et un mur ou un appareil.' },
+  { id: 'fcol', nom: 'Fileur de colonne', type: 'colonne', equip: 'fileur', largeurs: [5, 10, 15], groupe: 'Fileurs et finitions', aide: 'Comble l’espace entre une colonne et le mur.' },
+  { id: 'fhaut39', nom: 'Fileur de meuble haut, H.39', type: 'haut', faces: 'fileur', h: 0.39, largeurs: [5, 10, 15], groupe: 'Fileurs et finitions', aide: 'Comble l’espace à côté d’un meuble haut de 39 cm.' },
+  { id: 'fhaut52', nom: 'Fileur de meuble haut, H.52', type: 'haut', faces: 'fileur', h: 0.52, largeurs: [5, 10, 15], groupe: 'Fileurs et finitions', aide: 'Comble l’espace à côté d’un meuble haut de 52 cm.' },
+  { id: 'fhaut65', nom: 'Fileur de meuble haut, H.65', type: 'haut', faces: 'fileur', h: 0.65, largeurs: [5, 10, 15], groupe: 'Fileurs et finitions', aide: 'Comble l’espace à côté d’un meuble haut de 65 cm.' },
+  { id: 'fhaut78', nom: 'Fileur de meuble haut, H.78', type: 'haut', faces: 'fileur', h: 0.78, largeurs: [5, 10, 15], groupe: 'Fileurs et finitions', aide: 'Comble l’espace à côté d’un meuble haut de 78 cm.' },
+  { id: 'jouebas', nom: 'Joue de finition, bas', type: 'bas', faces: 'joue', largeurs: [3], groupe: 'Fileurs et finitions', aide: 'Habille le côté visible d’un meuble bas en bout de cuisine.' },
+  { id: 'jouecol', nom: 'Joue de finition, colonne', type: 'colonne', equip: 'joue', largeurs: [3], groupe: 'Fileurs et finitions', aide: 'Habille le côté visible d’une colonne en bout de cuisine.' },
+  { id: 'jouehaut', nom: 'Joue de finition, meuble haut', type: 'haut', faces: 'joue', largeurs: [3], groupe: 'Fileurs et finitions', aide: 'Habille le côté visible d’un meuble haut en bout de cuisine.' },
 ];
 export const MEUBLES = {};
 for (const t of TYPES) for (const cm of t.largeurs) {
   const { largeurs, id, ...d } = t;
   MEUBLES[`${id}-${cm}`] = { ...d, famille: id, l: cm / 100 };
 }
-export const FAMILLES_MEUBLES = TYPES.map(({ id, nom, groupe, largeurs }) => ({ id, nom, groupe, largeurs }));
+export const FAMILLES_MEUBLES = TYPES.map(({ id, nom, groupe, largeurs, aide }) => ({ id, nom, groupe, largeurs, aide }));
 // anciens identifiants (liens et sessions enregistrés avant l'élargissement du catalogue)
 export const ALIAS = { 'tiroirs-60': 'b3t-60', 'tiroirs-90': 'b3t-90', 'porte-45': 'b1p-45', 'porte-60': 'b1p-60',
   'col-four-60': 'cfour-60', 'col-frigo-60': 'cfrigo-60', 'col-rgt-45': 'crgt-45', 'col-rgt-60': 'crgt-60',
@@ -359,6 +370,7 @@ function equiper(g, c, def, l, P, yPlan, zc = P / 2) {
 function colonne(g, c, def, l, P, H) {
   const { mats } = c; const zF = P - EP;
   if (def.equip === 'joue') { boite(g, mats.finition(c.fin, { largeur: P, hauteur: H }), l, H, P + 0.02, 0, H / 2, (P + 0.02) / 2); return; }
+  if (def.equip === 'fileur') { boite(g, mats.finition(c.fin, { largeur: P, hauteur: H }), l, H, P - EP, 0, H / 2, (P - EP) / 2); return; }
   boite(g, mats.fixe('ombre'), l, PLINTHE, P - 0.06, 0, PLINTHE / 2, (P - 0.06) / 2);
   boite(g, mats.finition(c.fin, { largeur: P, hauteur: H }), l, H - PLINTHE, P - EP, 0, PLINTHE + (H - PLINTHE) / 2, (P - EP) / 2);
   // découpe verticale des portes : liste de [bas, haut]
@@ -406,6 +418,7 @@ function meubleHaut(g, c, def, l, P, hc) {
     return;
   }
   const H = def.h || 0.72, y0 = hc - H;
+  if (def.faces === 'joue' || def.faces === 'fileur') { boite(g, mats.finition(c.fin, { largeur: P, hauteur: H }), l, H, def.faces === 'joue' ? P : P - EP, 0, y0 + H / 2, (def.faces === 'joue' ? P : P - EP) / 2); return; }
   if (def.equip === 'hotte-integree') {
     boite(g, mats.fixe('inox'), l - 0.04, 0.05, 0.3, 0, y0 - 0.025, 0.17);
     boite(g, mats.fixe('led'), l - 0.12, 0.004, 0.04, 0, y0 - 0.052, 0.26, false);

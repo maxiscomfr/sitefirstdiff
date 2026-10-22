@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022m';
-import { FINITIONS } from './finitions.js?v=20261022m';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022n';
+import { FINITIONS } from './finitions.js?v=20261022n';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022m';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022n';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022m';
+  empriseOuverture } from './piece.js?v=20261022n';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -803,7 +803,7 @@ $('#palette').innerHTML = `<div class="essentiels">${ESSENTIELS.map(([t, nom]) =
   <details class="groupe-meubles">
     <summary>${gp}<small>${FAMILLES_MEUBLES.filter((f) => f.groupe === gp).length}</small></summary>
     <ul class="types-meubles">${FAMILLES_MEUBLES.filter((f) => f.groupe === gp).map((f) => `
-      <li><span>${f.nom}</span><div class="largeurs">${f.largeurs.map((l) => `<button type="button" data-ajout="${f.id}-${l}" aria-label="Ajouter ${f.nom} ${l} cm">${l}</button>`).join('')}</div></li>`).join('')}
+      <li><span>${f.nom}${f.aide ? `<small class="aide">${f.aide}</small>` : ''}</span><div class="largeurs">${f.largeurs.map((l) => `<button type="button" data-ajout="${f.id}-${l}" aria-label="Ajouter ${f.nom} ${l} cm">${l}</button>`).join('')}</div></li>`).join('')}
     </ul>
   </details>`).join('') + '</details>';
 $('#palette').addEventListener('click', (e) => {
