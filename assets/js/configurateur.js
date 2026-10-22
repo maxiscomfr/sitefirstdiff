@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022r';
-import { FINITIONS } from './finitions.js?v=20261022r';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022s';
+import { FINITIONS } from './finitions.js?v=20261022s';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022r';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022s';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022r';
+  empriseOuverture } from './piece.js?v=20261022s';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -333,6 +333,24 @@ function majConflits() {
   $('#alerte-conflits').textContent = n ? `${n} meuble${n > 1 ? 's se chevauchent ou gênent' : ' chevauche ou gêne'} une ouverture` : '';
 }
 
+// Aimantation libre : un meuble d'angle se colle en retour à 90° contre un voisin (et inversement).
+function collerAuVoisin(m, x, z) {
+  const d = def(m), l = d.l;
+  let mieux = null, dmin = 0.45;
+  for (const o of meubles) {
+    if (o === m || libre(o) || !chevauchentEnHauteur(plage(o), plage(m))) continue;
+    const od = def(o), ol = od.l, ex = [Math.cos(o.r), -Math.sin(o.r)], ez = [Math.sin(o.r), Math.cos(o.r)];
+    const cand = [];
+    // retour à 90°, uniquement avec un meuble d'angle : le dos du meuble contre l'extrémité du voisin
+    if (od.faces !== 'angle' && d.faces !== 'angle') continue;
+    for (const s of [-1, 1]) {
+      cand.push({ r: o.r + s * Math.PI / 2, x: o.x + s * ex[0] * (ol / 2) + s * ez[0] * (l / 2) * s, z: o.z + s * ex[1] * (ol / 2) + s * ez[1] * (l / 2) * s });
+    }
+    for (const k of cand) { const dist = Math.hypot(k.x - x, k.z - z); if (dist < dmin) { dmin = dist; mieux = k; } }
+  }
+  return mieux;
+}
+
 // Aimantation : contre le mur le plus proche, puis bord à bord avec les voisins du même mur.
 function placer(m, x, z) {
   const d = def(m); const l = d.l;
@@ -350,8 +368,9 @@ function placer(m, x, z) {
       let meilleur = 0.2, cible = null;
       for (const o of meubles) {
         if (o === m || libre(o) || !chevauchentEnHauteur(plage(o), plage(m))) continue;
-        // voisin à 90° (retour d'angle, péninsule) : on se cale contre son flanc s'il touche le même mur
+        // voisin à 90° : uniquement avec un meuble d'angle, on se cale contre son flanc s'il touche le même mur
         if (Math.abs(Math.cos(o.r - m.r)) < 0.01) {
+          if (def(o).faces !== 'angle' && d.faces !== 'angle') continue;
           const pts = rect(o).map(([px, pz]) => projeter(mur, px, pz));
           if (Math.min(...pts.map((q) => q.cote)) > 0.05) continue;
           const t0 = Math.min(...pts.map((q) => q.t)), t1 = Math.max(...pts.map((q) => q.t));
@@ -371,6 +390,8 @@ function placer(m, x, z) {
       if (cible != null && cible >= l / 2 - 0.001 && cible <= mur.len - l / 2 + 0.001) t = cible;
       ({ x, z } = surMur(mur, t));
     } else {
+      const k = collerAuVoisin(m, x, z);
+      if (k) { m.r = k.r; x = k.x; z = k.z; }
       [x, z] = garderDedans(m, x, z);
     }
   } else {
