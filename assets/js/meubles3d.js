@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022x';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022y';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -559,11 +559,12 @@ export function emprise(type) {
   return { x0: -def.l / 2, x1: def.l / 2, z0: 0, z1: P };
 }
 
-// Plan de travail continu : les meubles bas alignés et bord à bord partagent une seule dalle, sans coupure entre eux.
+// Plan de travail continu : les meubles bas alignés et bord à bord partagent une seule dalle, sans coupure entre eux,
+// et les rangées qui se rejoignent à angle droit forment une dalle en L.
 export function construirePlans(liste, cfg, mats) {
   const g = new THREE.Group();
   const ep = EP_PLAN[FIN[cfg.plan]?.fid] || 0.03;
-  const P = PROFONDEUR.bas;
+  const P = PROFONDEUR.bas + 0.02;
   const lignes = new Map();
   for (const m of liste) {
     const d = MEUBLES[m.type];
@@ -574,23 +575,57 @@ export function construirePlans(liste, cfg, mats) {
     if (!lignes.has(cle)) lignes.set(cle, []);
     lignes.get(cle).push({ t, l: d.l, r: m.r, dist, u, n });
   }
+  // 1. rangées : meubles alignés et bord à bord
+  const rangees = [];
   for (const items of lignes.values()) {
     items.sort((a, b) => a.t - b.t);
     let run = [items[0]];
-    const fermer = () => {
-      const a = run[0], z = run[run.length - 1];
-      const t0 = a.t - a.l / 2, t1 = z.t + z.l / 2, W = t1 - t0, tc = (t0 + t1) / 2;
-      const grp = new THREE.Group();
-      grp.position.set(tc * a.u[0] + a.dist * a.n[0], 0, tc * a.u[1] + a.dist * a.n[1]);
-      grp.rotation.y = a.r;
-      boiteArrondie(grp, mats.plan(cfg.plan, W), W, ep, P + 0.02, 0, PLINTHE + CAISSON + ep / 2, (P + 0.02) / 2, 0.004);
-      g.add(grp);
-    };
+    const fermer = () => { const a = run[0], z = run[run.length - 1]; rangees.push({ r: a.r, u: a.u, n: a.n, dist: a.dist, t0: a.t - a.l / 2, t1: z.t + z.l / 2 }); };
     for (let i = 1; i < items.length; i++) {
       const p = items[i - 1], q = items[i];
       if (Math.abs((q.t - q.l / 2) - (p.t + p.l / 2)) < 0.02) run.push(q); else { fermer(); run = [q]; }
     }
     fermer();
+  }
+  // emprise d'une rangée, dans le repère (u, n) d'un angle donné
+  const rectDans = (rg, r0) => {
+    const e0 = [Math.cos(r0), -Math.sin(r0)], z0 = [Math.sin(r0), Math.cos(r0)];
+    const pts = [[rg.t0, rg.dist], [rg.t1, rg.dist], [rg.t0, rg.dist + P], [rg.t1, rg.dist + P]].map(([t, b]) => {
+      const x = t * rg.u[0] + b * rg.n[0], z = t * rg.u[1] + b * rg.n[1];
+      return [x * e0[0] + z * e0[1], x * z0[0] + z * z0[1]];
+    });
+    const as = pts.map((q) => q[0]), bs = pts.map((q) => q[1]);
+    return [Math.min(...as), Math.max(...as), Math.min(...bs), Math.max(...bs)];
+  };
+  // 2. rangées qui se touchent à angle droit : une seule dalle
+  const comp = rangees.map((_, i) => i);
+  const racine = (i) => (comp[i] === i ? i : (comp[i] = racine(comp[i])));
+  for (let i = 0; i < rangees.length; i++) for (let j = i + 1; j < rangees.length; j++) {
+    if (Math.abs(Math.cos(rangees[i].r - rangees[j].r)) > 0.01) continue;
+    const A = rectDans(rangees[i], rangees[i].r), B = rectDans(rangees[j], rangees[i].r), tol = 0.03;
+    if (A[0] - tol <= B[1] && B[0] - tol <= A[1] && A[2] - tol <= B[3] && B[2] - tol <= A[3]) comp[racine(j)] = racine(i);
+  }
+  const groupes = new Map();
+  rangees.forEach((rg, i) => { const k = racine(i); if (!groupes.has(k)) groupes.set(k, []); groupes.get(k).push(rg); });
+  const y = PLINTHE + CAISSON + ep / 2;
+  for (const rgs of groupes.values()) {
+    const r0 = rgs[0].r;
+    const grp = new THREE.Group(); grp.rotation.y = r0; g.add(grp);
+    if (rgs.length === 1) {
+      const [a0, a1, b0, b1] = rectDans(rgs[0], r0);
+      boiteArrondie(grp, mats.plan(cfg.plan, a1 - a0), a1 - a0, ep, b1 - b0, (a0 + a1) / 2, y, (b0 + b1) / 2, 0.004);
+      continue;
+    }
+    // union de rectangles alignés : bandes horizontales sans recouvrement
+    const rects = rgs.map((rg) => rectDans(rg, r0));
+    const bs = [...new Set(rects.flatMap((q) => [q[2], q[3]].map((v) => Math.round(v * 1000) / 1000)))].sort((p, q) => p - q);
+    for (let k = 0; k < bs.length - 1; k++) {
+      const bm = (bs[k] + bs[k + 1]) / 2;
+      const ints = rects.filter((q) => q[2] <= bm && bm <= q[3]).map((q) => [q[0], q[1]]).sort((p, q) => p[0] - q[0]);
+      const fus = [];
+      for (const it of ints) { const l = fus[fus.length - 1]; if (l && it[0] <= l[1] + 0.03) l[1] = Math.max(l[1], it[1]); else fus.push([...it]); }
+      for (const [a0, a1] of fus) boite(grp, mats.plan(cfg.plan, a1 - a0), a1 - a0, ep, bs[k + 1] - bs[k], (a0 + a1) / 2, y, bm);
+    }
   }
   return g;
 }
