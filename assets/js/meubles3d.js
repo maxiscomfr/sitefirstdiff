@@ -3,24 +3,26 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS } from './finitions.js?v=20261022h';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022i';
+export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
 
 // Modèles du catalogue (p. 280-281) et façon de dessiner leurs façades
 export const MODELES = {
-  yota: { nom: 'Yota', porte: 'lisse', note: 'Essential · façade lisse 22 mm' },
-  rho: { nom: 'Rho', porte: 'lisse', note: 'Essential · stratifié Lamitech' },
+  rho: { nom: 'Rho', porte: 'lisse', note: 'Essential · façade lisse, stratifié Lamitech' },
+  rhojit: { nom: 'Rho JIT', porte: 'lisse', note: 'Essential · façade lisse, Lamitech JIT' },
   kappa: { nom: 'Kappa', porte: 'lisse', note: 'Essential · laque UV, X-Steel' },
   tau: { nom: 'Tau', porte: 'lisse', note: 'Essential · Fenix' },
+  yota: { nom: 'Yota', porte: 'lisse', note: 'Essential · façade lisse, laques et bois' },
   system: { nom: 'System', porte: 'profil', note: 'Signature · profilés métalliques' },
   omicron: { nom: 'Omicron', porte: 'chant', note: 'Design · prise usinée à 33°' },
   diamond: { nom: 'Diamond', porte: 'chant', note: 'Design · chant sculpté' },
-  riga: { nom: 'Riga', porte: 'rainure', note: 'Façade rainurée 3D, 23 mm' },
-  quadro: { nom: 'Quadro', porte: 'cadre', cadre: { b: 0.05, recul: 0.01 }, note: 'Timeless · façade à cadre, bois ou laque' },
-  skyline: { nom: 'Skyline', porte: 'alu', cadre: { b: 0.02, recul: 0.004 }, note: 'Tech · cadre aluminium, verre, grès' },
-  etro: { nom: 'Etro', porte: 'cadre', cadre: { b: 0.065, recul: 0.01 }, note: 'Timeless · façade à cadre, PET et PVC' },
+  riga: { nom: 'Riga', porte: 'rainure', note: 'Tactile · façade rainurée 3D, 23 mm' },
   equa: { nom: 'Equa', porte: 'cadre', cadre: { b: 0.055, recul: 0.009 }, note: 'Timeless · façade à cadre, laque mat UV' },
+  quadro: { nom: 'Quadro', porte: 'cadre', cadre: { b: 0.05, recul: 0.01 }, note: 'Timeless · façade à cadre, bois ou laque' },
+  etro: { nom: 'Etro', porte: 'cadre', cadre: { b: 0.065, recul: 0.01 }, note: 'Timeless · façade à cadre, PET et PVC' },
+  skyline: { nom: 'Skyline', porte: 'alu', cadre: { b: 0.02, recul: 0.004 }, note: 'Tech · cadre aluminium, verre, grès' },
 };
 
 export const POIGNEES = {

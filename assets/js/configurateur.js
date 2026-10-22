@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022h';
-import { FINITIONS } from './finitions.js?v=20261022h';
-import { FIN, MODELES, POIGNEES, TEINTES_POIGNEE, FAMILLES_PLAN, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022h';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022i';
+import { FINITIONS } from './finitions.js?v=20261022i';
+import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, FAMILLES_PLAN, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022i';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022h';
+  empriseOuverture } from './piece.js?v=20261022i';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'gres--pietra-grey',
@@ -59,7 +59,7 @@ function lireEtat() {
   else if (memo?.o != null) ouvertures = decoderOuvertures(memo.o);
   if (!MODELES[cfg.modele]) cfg.modele = 'yota';
   if (!FORMES[cfg.forme]) cfg.forme = 'rect';
-  for (const k of ['facade', 'accent', 'plan']) if (!FIN[cfg[k]]) cfg[k] = DEFAUT[k];
+  for (const k of ['facade', 'accent', 'plan']) { cfg[k] = FINITIONS_ALIAS[cfg[k]] || cfg[k]; if (!FIN[cfg[k]]) cfg[k] = DEFAUT[k]; }
 }
 lireEtat();
 const memoriser = () => { try { localStorage.setItem('firstdiff-config-v3', JSON.stringify({ cfg, m: encoderMeubles(), o: encoderOuvertures() })); } catch { /* rien */ } };
@@ -935,6 +935,7 @@ brancherFormulaire($('form[name="configuration-cuisine"]'), {
 });
 
 // ---------- démarrage ----------
+for (const k of ['facade', 'accent']) if (!compatible(FIN[cfg[k]])) cfg[k] = premiereCompatible(k === 'accent');
 construirePiece();
 if (meubles === null) meubles = depart('ilot').map((m) => ({ ...m, id: nouvelId() }));
 ouvertures.forEach(borner);
