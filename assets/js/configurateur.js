@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022n';
-import { FINITIONS } from './finitions.js?v=20261022n';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022p';
+import { FINITIONS } from './finitions.js?v=20261022p';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022n';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022p';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022n';
+  empriseOuverture } from './piece.js?v=20261022p';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -198,7 +198,7 @@ function menuiserie(o) {
   if (y0 > 0.01) plaque(l, 0.01, EP_MUR, x, y0, -EP_MUR / 2, MAT_MUR);
   for (const s of [-1, 1]) plaque(0.01, o.h, EP_MUR, x + s * l / 2, (y0 + y1) / 2, -EP_MUR / 2, MAT_MUR);
   // lumière du jour derrière
-  const jour = new THREE.Mesh(new THREE.PlaneGeometry(l, o.h), o.type === 'porte' ? MAT_PORTE : MAT_JOUR);
+  const jour = new THREE.Mesh(new THREE.PlaneGeometry(l, o.h), ['porte', 'double', 'coulissante'].includes(o.type) ? MAT_PORTE : MAT_JOUR);
   jour.position.set(x, (y0 + y1) / 2, -EP_MUR); g.add(jour);
   // cadre
   plaque(l + 2 * f, f, 0.03, x, y1 + f / 2, 0.012);
@@ -206,6 +206,18 @@ function menuiserie(o) {
   if (o.type === 'porte') {
     plaque(l - 0.01, o.h - 0.01, 0.04, x, (y0 + y1) / 2, -0.05, MAT_PORTE);
     plaque(0.14, 0.02, 0.05, x + l / 2 - 0.12, 1.02, -0.02, mats.fixe('inox'));
+  } else if (o.type === 'double') {
+    for (const s of [-1, 1]) {
+      plaque(l / 2 - 0.01, o.h - 0.01, 0.04, x + s * l / 4, (y0 + y1) / 2, -0.05, MAT_PORTE);
+      plaque(0.14, 0.02, 0.05, x + s * 0.06, 1.02, -0.02, mats.fixe('inox'));
+    }
+  } else if (o.type === 'coulissante') {
+    // vantail qui glisse devant le mur, rail en haut
+    plaque(l + 0.04, o.h - 0.02, 0.04, x + l / 2 * 0.35, (y0 + y1) / 2 - 0.01, 0.07, MAT_PORTE);
+    plaque(l * 2 + 0.06, 0.04, 0.05, x + l / 2, y1 + 0.03, 0.07, mats.fixe('inox'));
+    plaque(0.04, 0.2, 0.05, x - l / 2 + 0.09, 1.02, 0.1, mats.fixe('inox'));
+  } else if (o.type === 'passage') {
+    // simple ouverture dans le mur : cadre seul
   } else {
     if (y0 > 0.01) plaque(l + 0.06, 0.03, 0.2, x, y0 - 0.015, 0.05, MAT_MENUISERIE);
     const nb = l > 1.4 ? 3 : 2; const w = l / nb;
@@ -253,6 +265,7 @@ function matSol() {
 // ---------- meubles dans la scène ----------
 const groupes = new Map();
 const calqueMeubles = new THREE.Group(); scene.add(calqueMeubles);
+let calquePlans = new THREE.Group(); scene.add(calquePlans);
 let selection = null;
 const surligne = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mats.fixe('selection'));
 surligne.visible = false; surligne.renderOrder = 2; scene.add(surligne);
@@ -265,14 +278,21 @@ const plage = (m) => vertical(def(m), cfg.hc);
 const chevauchentEnHauteur = (a, b) => Math.min(a[1], b[1]) - Math.max(a[0], b[0]) > 0.02;
 const rect = (m) => coins(emprise(m.type), m.x, m.z, m.r);
 
+// plan de travail continu : recalculé dès qu'un meuble bouge ou change
+function majPlans() {
+  scene.remove(calquePlans);
+  calquePlans.traverse((o) => { if (o.geometry && o.geometry.type !== 'BoxGeometry') o.geometry.dispose(); });
+  calquePlans = construirePlans(meubles, cfg, mats); scene.add(calquePlans);
+}
 function poser(m) {
   let g = groupes.get(m.id);
   if (!g) { g = construireMeuble(m, cfg, mats); g.userData.id = m.id; groupes.set(m.id, g); calqueMeubles.add(g); }
   g.position.set(m.x, 0, m.z); g.rotation.y = m.r;
+  majPlans();
 }
 function oublier(id) {
   const g = groupes.get(id); if (!g) return;
-  calqueMeubles.remove(g); groupes.delete(id);
+  calqueMeubles.remove(g); groupes.delete(id); setTimeout(majPlans, 0);
   g.traverse((o) => { if (o.geometry && o.geometry.type !== 'BoxGeometry') o.geometry.dispose(); });
 }
 function reconstruire() {
@@ -339,9 +359,11 @@ function placer(m, x, z) {
       let t = Math.min(mur.len - l / 2, Math.max(l / 2, mieux.p.t));
       m.r = mur.r;
       // voisins sur le même mur dont la hauteur croise la sienne
-      let meilleur = 0.1, cible = null;
+      let meilleur = 0.2, cible = null;
       for (const o of meubles) {
         if (o === m || libre(o) || !chevauchentEnHauteur(plage(o), plage(m))) continue;
+        // un meuble d'angle ne se colle pas sur le côté à un autre meuble : son flanc reste libre
+        if (def(o).faces === 'angle' || d.faces === 'angle') continue;
         const po = projeter(mur, o.x, o.z);
         if (po.dist > 0.01 || Math.abs(Math.sin(o.r - m.r)) > 0.01 || Math.cos(o.r - m.r) < 0) continue;
         const ol = def(o).l;
@@ -790,7 +812,6 @@ $('#opt-modele').addEventListener('click', (e) => {
 });
 
 // ---------- palette de meubles : une ligne par type, une pastille par largeur ----------
-const groupesPalette = [...new Set(FAMILLES_MEUBLES.map((f) => f.groupe))];
 // les meubles les plus demandés en premier, le reste du catalogue replié en dessous
 const ESSENTIELS = [['b3t-60', 'Tiroirs'], ['b2p-90', 'Meuble bas'], ['evier-80', 'Évier'], ['lv-60', 'Lave-vaisselle'],
   ['plaque-80', 'Plaque'], ['hotte-90', 'Hotte'], ['cfour-60', 'Colonne four'], ['cfrigocong-60', 'Réfrigérateur'],
@@ -799,13 +820,20 @@ $('#palette').innerHTML = `<div class="essentiels">${ESSENTIELS.map(([t, nom]) =
   <button type="button" data-ajout="${t}"><b>${nom}</b><small>${t.split('-').pop()} cm</small><i aria-hidden="true">+</i></button>`).join('')}
   </div>
   <details class="catalogue-complet">
-    <summary>Tout le catalogue Armony <small>${Object.keys(MEUBLES).length} meubles</small></summary>` + groupesPalette.map((gp) => `
-  <details class="groupe-meubles">
-    <summary>${gp}<small>${FAMILLES_MEUBLES.filter((f) => f.groupe === gp).length}</small></summary>
-    <ul class="types-meubles">${FAMILLES_MEUBLES.filter((f) => f.groupe === gp).map((f) => `
-      <li><span>${f.nom}${f.aide ? `<small class="aide">${f.aide}</small>` : ''}</span><div class="largeurs">${f.largeurs.map((l) => `<button type="button" data-ajout="${f.id}-${l}" aria-label="Ajouter ${f.nom} ${l} cm">${l}</button>`).join('')}</div></li>`).join('')}
-    </ul>
-  </details>`).join('') + '</details>';
+    <summary>Tout le catalogue Armony <small>${Object.keys(MEUBLES).length} meubles</small></summary>` + [...new Set(FAMILLES_MEUBLES.map((f) => f.cat))].map((cat) => {
+  const dansCat = FAMILLES_MEUBLES.filter((f) => f.cat === cat);
+  const sous = [...new Set(dansCat.map((f) => f.groupe))];
+  return `
+  <details class="groupe-meubles categorie">
+    <summary>${cat}<small>${dansCat.length}</small></summary>` + sous.map((gp) => `
+    <details class="groupe-meubles sous-categorie">
+      <summary>${gp}<small>${dansCat.filter((f) => f.groupe === gp).length}</small></summary>
+      <ul class="types-meubles">${dansCat.filter((f) => f.groupe === gp).map((f) => `
+        <li><span>${f.nom}${f.aide ? `<small class="aide">${f.aide}</small>` : ''}</span><div class="largeurs">${f.largeurs.map((l) => `<button type="button" data-ajout="${f.id}-${l}" aria-label="Ajouter ${f.nom} ${l} cm">${l}</button>`).join('')}</div></li>`).join('')}
+      </ul>
+    </details>`).join('') + `
+  </details>`;
+}).join('') + '</details>';
 $('#palette').addEventListener('click', (e) => {
   const b = e.target.closest('[data-ajout]'); if (!b) return;
   const type = b.dataset.ajout;

@@ -772,3 +772,6 @@ details.famille summary small { opacity: .6; }
   .carte-guide { padding: 30px 22px; }
 }
 .types-meubles .aide { display: block; margin-top: 3px; font-size: 12px; line-height: 1.35; color: var(--gris-clair); opacity: .8; }
+.groupe-meubles.categorie > summary { font-size: 12px; letter-spacing: .22em; }
+.groupe-meubles.sous-categorie { margin-left: 12px; border-left: 1px solid rgba(239,234,224,.1); padding-left: 12px; }
+.groupe-meubles.sous-categorie > summary { opacity: .85; }

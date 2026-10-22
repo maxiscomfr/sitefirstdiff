@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022n';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022p';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -60,22 +60,32 @@ const TYPES = [
   { id: 'b2t', nom: 'Bas 2 tiroirs', type: 'bas', faces: 'tiroirs2', largeurs: [40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles bas' },
   { id: 'b3t', nom: 'Bas 3 tiroirs', type: 'bas', faces: 'tiroirs3', largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles bas' },
   { id: 'b4t', nom: 'Bas 4 tiroirs', type: 'bas', faces: 'tiroirs4', largeurs: [40, 50, 60], groupe: 'Meubles bas' },
+  { id: 'b1t', nom: 'Bas 1 grand tiroir', type: 'bas', faces: 'tiroirs1', largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles bas', aide: 'Un seul tiroir profond, pratique pour les grandes casseroles.' },
+  { id: 'bpoub', nom: 'Bas poubelles', type: 'bas', faces: 'tiroirs2', largeurs: [30, 40, 50, 60], groupe: 'Meubles bas', aide: 'Tiroirs équipés de bacs pour le tri des déchets.' },
+  { id: 'bcar', nom: 'Bas d’angle à plateaux tournants', type: 'bas', faces: 'angle', largeurs: [90, 100], groupe: 'Meubles bas', aide: 'Meuble d’angle dont les étagères sortent pour accéder au fond.' },
+  { id: 'bcol', nom: 'Bas étroit à coulissant', type: 'bas', faces: 'porte', largeurs: [15, 20, 25], groupe: 'Meubles bas', aide: 'Un étroit rangement qui se glisse entre deux meubles.' },
   { id: 'bcoul', nom: 'Coulissant épices et bouteilles', type: 'bas', faces: 'porte', largeurs: [15, 20, 30], groupe: 'Meubles bas' },
   { id: 'bouv', nom: 'Bas ouvert à étagères', type: 'bas', faces: 'ouvert', largeurs: [30, 45, 60], groupe: 'Meubles bas' },
   { id: 'bang', nom: 'Bas d’angle', type: 'bas', faces: 'angle', largeurs: [100, 110, 120], groupe: 'Meubles bas' },
   // Évier et lavage
-  { id: 'evier', nom: 'Évier 1 bac', type: 'bas', faces: 'portes', equip: 'evier', largeurs: [60, 80, 90], groupe: 'Évier et lavage' },
+  { id: 'evier', nom: 'Évier 1 bac', type: 'bas', faces: 'portes', equip: 'evier', largeurs: [60, 80, 90, 100], groupe: 'Évier et lavage' },
   { id: 'evier2', nom: 'Évier 2 bacs', type: 'bas', faces: 'portes', equip: 'evier2', largeurs: [100, 120], groupe: 'Évier et lavage' },
+  { id: 'evierego', nom: 'Évier avec égouttoir', type: 'bas', faces: 'portes', equip: 'evier', largeurs: [120, 140], groupe: 'Évier et lavage', aide: 'Un grand plan de travail intégré avec bac et zone d’égouttage.' },
+  { id: 'lvtiroir', nom: 'Bas sous évier à tiroirs', type: 'bas', faces: 'tiroirs2', largeurs: [60, 80, 90], groupe: 'Évier et lavage', aide: 'Tiroirs adaptés au passage des tuyaux sous l’évier.' },
   { id: 'lv', nom: 'Lave-vaisselle intégré', type: 'bas', faces: 'panneau', largeurs: [45, 60], groupe: 'Évier et lavage' },
   { id: 'tri', nom: 'Bas tri sélectif', type: 'bas', faces: 'tiroirs2', largeurs: [45, 60], groupe: 'Évier et lavage' },
   // Cuisson
   { id: 'plaque', nom: 'Plaque de cuisson sur tiroirs', type: 'bas', faces: 'tiroirs3', equip: 'plaque', largeurs: [60, 80, 90], groupe: 'Cuisson' },
+  { id: 'plaqueport', nom: 'Plaque de cuisson sur portes', type: 'bas', faces: 'portes', equip: 'plaque', largeurs: [80, 90, 100, 120], groupe: 'Cuisson', aide: 'Plaque posée sur un meuble à portes, pour ranger les grandes pièces.' },
+  { id: 'plaque4', nom: 'Plaque sur 2 tiroirs', type: 'bas', faces: 'tiroirs2', equip: 'plaque', largeurs: [60, 80, 90], groupe: 'Cuisson', aide: 'Deux grands tiroirs sous la plaque, faciles d’accès.' },
+  { id: 'micro', nom: 'Micro-ondes sous plan', type: 'bas', faces: 'four', largeurs: [60], groupe: 'Cuisson', aide: 'Niche pour un micro-ondes encastré sous le plan de travail.' },
   { id: 'fourplan', nom: 'Four sous plaque', type: 'bas', faces: 'four', equip: 'plaque', largeurs: [60], groupe: 'Cuisson' },
   { id: 'fourbas', nom: 'Four sous plan', type: 'bas', faces: 'four', largeurs: [60], groupe: 'Cuisson' },
   { id: 'hotte', nom: 'Hotte murale', type: 'haut', equip: 'hotte', largeurs: [60, 90, 120], groupe: 'Cuisson' },
   { id: 'hotteint', nom: 'Hotte intégrée sous meuble', type: 'haut', equip: 'hotte-integree', h: 0.42, largeurs: [60, 90], groupe: 'Cuisson' },
   // Froid et cave
   { id: 'frigoplan', nom: 'Réfrigérateur sous plan', type: 'bas', faces: 'panneau', largeurs: [60], groupe: 'Froid et cave' },
+  { id: 'congplan', nom: 'Congélateur sous plan', type: 'bas', faces: 'panneau', largeurs: [60], groupe: 'Froid et cave', aide: 'Un tiroir congélateur discret sous le plan de travail.' },
   { id: 'caveplan', nom: 'Cave à vin sous plan', type: 'bas', faces: 'vitre', largeurs: [30, 60], groupe: 'Froid et cave' },
   { id: 'cfrigo', nom: 'Colonne réfrigérateur', type: 'colonne', equip: 'frigo', largeurs: [60], groupe: 'Froid et cave' },
   { id: 'cfrigocong', nom: 'Colonne réfrigérateur-congélateur', type: 'colonne', equip: 'frigocong', largeurs: [60], groupe: 'Froid et cave' },
@@ -84,11 +94,15 @@ const TYPES = [
   // Colonnes
   { id: 'cfour', nom: 'Colonne four', type: 'colonne', equip: 'four', largeurs: [60], groupe: 'Colonnes' },
   { id: 'cfourmo', nom: 'Colonne four et micro-ondes', type: 'colonne', equip: 'four2', largeurs: [60], groupe: 'Colonnes' },
-  { id: 'crgt', nom: 'Colonne rangement', type: 'colonne', largeurs: [30, 40, 45, 50, 60], groupe: 'Colonnes' },
+  { id: 'ccongel', nom: 'Colonne congélateur', type: 'colonne', equip: 'frigo', largeurs: [60], groupe: 'Froid et cave', aide: 'Colonne dédiée au congélateur, à côté du réfrigérateur.' },
+  { id: 'cfour2', nom: 'Colonne four et tiroir chauffant', type: 'colonne', equip: 'four2', largeurs: [60], groupe: 'Colonnes', aide: 'Four en hauteur avec un second appareil en dessous.' },
+  { id: 'cetroite', nom: 'Colonne étroite', type: 'colonne', largeurs: [15, 20, 30], groupe: 'Colonnes', aide: 'Rangement fin pour les épices, les plateaux ou les produits ménagers.' },
+  { id: 'cmenage', nom: 'Colonne de rangement 2 portes', type: 'colonne', equip: 'deux', largeurs: [60, 70], groupe: 'Colonnes', aide: 'Deux portes superposées : balais, aspirateur, provisions.' },
+  { id: 'crgt', nom: 'Colonne rangement', type: 'colonne', largeurs: [30, 40, 45, 50, 60, 80], groupe: 'Colonnes' },
   { id: 'crgt2', nom: 'Colonne garde-manger 2 portes', type: 'colonne', equip: 'deux', largeurs: [80, 90, 100, 120], groupe: 'Colonnes' },
   { id: 'couv', nom: 'Colonne ouverte à étagères', type: 'colonne', equip: 'ouvert', largeurs: [45, 60], groupe: 'Colonnes' },
   // Meubles hauts
-  { id: 'h1p', nom: 'Haut 1 porte', type: 'haut', faces: 'porte', largeurs: [30, 40, 45, 50, 60], groupe: 'Meubles hauts' },
+  { id: 'h1p', nom: 'Haut 1 porte', type: 'haut', faces: 'porte', largeurs: [15, 20, 30, 40, 45, 50, 60], groupe: 'Meubles hauts' },
   { id: 'h2p', nom: 'Haut 2 portes', type: 'haut', faces: 'portes', largeurs: [80, 90, 100, 120], groupe: 'Meubles hauts' },
   { id: 'h39', nom: 'Haut bas, H.39', type: 'haut', faces: 'portes', h: 0.39, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Meuble haut peu haut, par exemple au-dessus d’une hotte ou d’une fenêtre.' },
   { id: 'h52', nom: 'Haut intermédiaire, H.52', type: 'haut', faces: 'portes', h: 0.52, largeurs: [30, 40, 45, 50, 60, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Un peu plus haut qu’un meuble de 39 cm.' },
@@ -102,6 +116,9 @@ const TYPES = [
   { id: 'etag', nom: 'Étagère murale', type: 'haut', faces: 'etagere', largeurs: [60, 90, 120, 180], groupe: 'Meubles hauts' },
   // Îlots et tables
   { id: 'ilot', nom: 'Îlot', type: 'ilot', largeurs: [180, 210, 240, 270, 300, 360], groupe: 'Îlots et tables' },
+  { id: 'ilotnu', nom: 'Îlot de préparation', type: 'ilot', equip: 'nu', largeurs: [120, 150, 180, 210, 240], groupe: 'Îlots et tables', aide: 'Un îlot sans plaque, pour préparer et ranger.' },
+  { id: 'peninsule', nom: 'Péninsule avec coin repas', type: 'ilot', bar: true, equip: 'nu', largeurs: [180, 210, 240], groupe: 'Îlots et tables', aide: 'Un îlot avec tabourets, qui sépare la cuisine du séjour.' },
+  { id: 'ilotplaque', nom: 'Îlot avec plaque', type: 'ilot', equip: 'plaque', largeurs: [210, 240, 300], groupe: 'Îlots et tables', aide: 'La cuisson au centre, face à vos invités.' },
   { id: 'ilotbar', nom: 'Îlot avec coin repas', type: 'ilot', bar: true, largeurs: [240, 300, 360], groupe: 'Îlots et tables' },
   { id: 'ilotevier', nom: 'Îlot avec évier', type: 'ilot', equip: 'evier', largeurs: [240, 300], groupe: 'Îlots et tables' },
   { id: 'table', nom: 'Table repas', type: 'table', largeurs: [160, 200, 240], groupe: 'Îlots et tables' },
@@ -121,7 +138,20 @@ for (const t of TYPES) for (const cm of t.largeurs) {
   const { largeurs, id, ...d } = t;
   MEUBLES[`${id}-${cm}`] = { ...d, famille: id, l: cm / 100 };
 }
-export const FAMILLES_MEUBLES = TYPES.map(({ id, nom, groupe, largeurs, aide }) => ({ id, nom, groupe, largeurs, aide }));
+// catégorie (meubles bas, colonnes…) puis sous-catégorie (évier, cuisson…), pour le catalogue
+const CATEGORIES = { bas: 'Meubles bas', colonne: 'Colonnes', haut: 'Meubles hauts', ilot: 'Îlots et tables', table: 'Îlots et tables' };
+const SOUS = { 'Meubles bas': 'Rangements', 'Colonnes': 'Four et rangements', 'Meubles hauts': 'Rangements', 'Îlots et tables': 'Îlots et tables' };
+const SOUS_PAR_ID = { hotte: 'Hottes', hotteint: 'Hottes', cfrigo: 'Froid et cave', cfrigocong: 'Froid et cave', camericain: 'Froid et cave', ccave: 'Froid et cave', ccongel: 'Froid et cave',
+  evier: 'Évier et lavage', evier2: 'Évier et lavage', evierego: 'Évier et lavage', lvtiroir: 'Évier et lavage', lv: 'Évier et lavage', tri: 'Évier et lavage', bpoub: 'Évier et lavage',
+  plaque: 'Cuisson', plaque4: 'Cuisson', plaqueport: 'Cuisson', fourplan: 'Cuisson', fourbas: 'Cuisson', micro: 'Cuisson', cfour: 'Four et rangements', cfourmo: 'Four et rangements', cfour2: 'Four et rangements',
+  frigoplan: 'Froid et cave', caveplan: 'Froid et cave', congplan: 'Froid et cave', table: 'Tables', ilotbar: 'Îlots', peninsule: 'Îlots', ilot: 'Îlots', ilotnu: 'Îlots', ilotplaque: 'Îlots', ilotevier: 'Îlots',
+  habat: 'Ouvrants et vitrines', habat2: 'Ouvrants et vitrines', hvit: 'Ouvrants et vitrines', houv: 'Étagères et ouverts', etag: 'Étagères et ouverts', hegout: 'Étagères et ouverts',
+  bouv: 'Étagères et ouverts', couv: 'Étagères et ouverts', bang: 'Angles', bcar: 'Angles', bcoul: 'Rangements' };
+export const FAMILLES_MEUBLES = TYPES.map(({ id, nom, type, groupe, largeurs, aide }) => {
+  const fin = groupe === 'Fileurs et finitions';
+  const cat = fin ? groupe : CATEGORIES[type];
+  return { id, nom, cat, groupe: fin ? 'Fileurs et joues' : (SOUS_PAR_ID[id] || SOUS[cat]), largeurs, aide };
+});
 // anciens identifiants (liens et sessions enregistrés avant l'élargissement du catalogue)
 export const ALIAS = { 'tiroirs-60': 'b3t-60', 'tiroirs-90': 'b3t-90', 'porte-45': 'b1p-45', 'porte-60': 'b1p-60',
   'col-four-60': 'cfour-60', 'col-frigo-60': 'cfrigo-60', 'col-rgt-45': 'crgt-45', 'col-rgt-60': 'crgt-60',
@@ -296,12 +326,13 @@ function caissonBas(g, c, l, P) {
 
 function planDeTravail(g, c, l, P, x = 0, z = 0) {
   const ep = EP_PLAN[FIN[c.plan]?.fid] || 0.03;
+  if (c.sansPlan) return PLINTHE + CAISSON + ep;
   boiteArrondie(g, c.mats.plan(c.plan, l), l, ep, P + 0.02, x, PLINTHE + CAISSON + ep / 2, z + (P + 0.02) / 2, 0.004);
   return PLINTHE + CAISSON + ep;
 }
 
 // Façades d'un meuble bas, de bas en haut, selon le découpage demandé
-const TIROIRS = { tiroirs2: [0.36, 0.64], tiroirs3: [0.28, 0.36, 0.36], tiroirs4: [0.22, 0.22, 0.28, 0.28] };
+const TIROIRS = { tiroirs1: [1], tiroirs2: [0.36, 0.64], tiroirs3: [0.28, 0.36, 0.36], tiroirs4: [0.22, 0.22, 0.28, 0.28] };
 function frontsBas(g, c, def, l, P) {
   const gorge = c.poignee === 'gorge' && c.porte !== 'profil';
   const hF = CAISSON - (gorge ? 0.035 : 0);
@@ -454,7 +485,7 @@ export function construireMeuble(m, cfg, mats) {
   const def = MEUBLES[m.type];
   const g = new THREE.Group();
   const c = { mats, porte: MODELES[cfg.modele]?.porte || 'lisse', cadre: MODELES[cfg.modele]?.cadre, fin: m.accent ? cfg.accent : cfg.facade, accentFin: cfg.accent,
-    plan: cfg.plan, poignee: cfg.poignee, teinte: cfg.teinte };
+    plan: cfg.plan, poignee: cfg.poignee, teinte: cfg.teinte, sansPlan: true };
   const l = def.l, P = PROFONDEUR[def.type], hc = cfg.hc || 2.25;
 
   if (def.type === 'bas') {
@@ -490,7 +521,7 @@ export function construireMeuble(m, cfg, mats) {
       const evier = new THREE.Group(); evier.rotation.y = Math.PI; evier.position.z = 0.2;
       equiper(evier, c, { equip: 'evier' }, l, Pw, hBase + ep, Pw / 2);
       g.add(evier);
-    } else {
+    } else if (def.equip !== 'nu') {
       boite(g, mats.fixe('verre'), 0.8, 0.006, 0.5, 0, hBase + ep + 0.003, -0.02);
     }
     if (def.bar) {
@@ -519,4 +550,40 @@ export function emprise(type) {
   if (def.faces === 'etagere') return { x0: -def.l / 2, x1: def.l / 2, z0: 0, z1: 0.25 };
   if (def.faces === 'joue' || def.equip === 'joue') return { x0: -def.l / 2, x1: def.l / 2, z0: 0, z1: P + 0.02 };
   return { x0: -def.l / 2, x1: def.l / 2, z0: 0, z1: P };
+}
+
+// Plan de travail continu : les meubles bas alignés et bord à bord partagent une seule dalle, sans coupure entre eux.
+export function construirePlans(liste, cfg, mats) {
+  const g = new THREE.Group();
+  const ep = EP_PLAN[FIN[cfg.plan]?.fid] || 0.03;
+  const P = PROFONDEUR.bas;
+  const lignes = new Map();
+  for (const m of liste) {
+    const d = MEUBLES[m.type];
+    if (d.type !== 'bas' || d.faces === 'joue') continue;
+    const u = [Math.cos(m.r), -Math.sin(m.r)], n = [Math.sin(m.r), Math.cos(m.r)];
+    const t = m.x * u[0] + m.z * u[1], dist = m.x * n[0] + m.z * n[1];
+    const cle = `${Math.round(m.r * 100)}|${Math.round(dist * 50)}`;
+    if (!lignes.has(cle)) lignes.set(cle, []);
+    lignes.get(cle).push({ t, l: d.l, r: m.r, dist, u, n });
+  }
+  for (const items of lignes.values()) {
+    items.sort((a, b) => a.t - b.t);
+    let run = [items[0]];
+    const fermer = () => {
+      const a = run[0], z = run[run.length - 1];
+      const t0 = a.t - a.l / 2, t1 = z.t + z.l / 2, W = t1 - t0, tc = (t0 + t1) / 2;
+      const grp = new THREE.Group();
+      grp.position.set(tc * a.u[0] + a.dist * a.n[0], 0, tc * a.u[1] + a.dist * a.n[1]);
+      grp.rotation.y = a.r;
+      boiteArrondie(grp, mats.plan(cfg.plan, W), W, ep, P + 0.02, 0, PLINTHE + CAISSON + ep / 2, (P + 0.02) / 2, 0.004);
+      g.add(grp);
+    };
+    for (let i = 1; i < items.length; i++) {
+      const p = items[i - 1], q = items[i];
+      if (Math.abs((q.t - q.l / 2) - (p.t + p.l / 2)) < 0.02) run.push(q); else { fermer(); run = [q]; }
+    }
+    fermer();
+  }
+  return g;
 }
