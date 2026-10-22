@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022i';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261022j';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -32,15 +32,17 @@ export const POIGNEES = {
   push: { nom: 'Push-pull', note: 'Sans poignée' },
 };
 export const TEINTES_POIGNEE = {
-  noir: { nom: 'Noir', couleur: '#161616', r: 0.45, m: 0.6 },
+  noir: { nom: 'Noir anodisé', couleur: '#161616', r: 0.45, m: 0.6 },
   titane: { nom: 'Titane', couleur: '#7f7d78', r: 0.3, m: 1 },
-  inox: { nom: 'Inox', couleur: '#bcbdbb', r: 0.25, m: 1 },
+  inox: { nom: 'Aluminium anodisé', couleur: '#bcbdbb', r: 0.25, m: 1 },
   'antique-gold': { nom: 'Antique gold', couleur: '#a68a55', r: 0.32, m: 1 },
 };
 
 // Familles proposées en plan de travail
-export const FAMILLES_PLAN = ['gres', 'fenix', 'corian', 'lamitech-materico'];
-const EP_PLAN = { gres: 0.03, fenix: 0.02, corian: 0.03, 'lamitech-materico': 0.04 };
+// épaisseur apparente des plans de travail, selon la matière du tarif (p. 313 et suivantes)
+const EP_PLAN = { 'plan-hpl': 0.04, 'plan-strat12': 0.012, 'plan-fenix': 0.02, 'plan-granit': 0.03, 'plan-marmo': 0.03, 'plan-corian': 0.03,
+  'plan-laminam': 0.012, 'plan-vetro-mat': 0.015, 'plan-vetro-brillant': 0.015, 'plan-vetro-met': 0.015, 'plan-inox': 0.01 };
+const PLAN_POLI = ['plan-laminam', 'plan-granit', 'plan-marmo'];
 
 // Le catalogue de meubles à poser : chaque type existe en plusieurs largeurs (en cm), comme dans le tarif Armony.
 // faces : façon de découper les façades ; equip : électroménager ou équipement dessiné sur le meuble.
@@ -176,8 +178,8 @@ export class Materiaux {
     const f = FIN[id] || FINITIONS[0];
     const k = Math.round(longueur * 10) / 10;
     return this.get(`p:${f.id}:${k}`, () => {
-      const mat = new THREE.MeshPhysicalMaterial({ color: f.tex ? '#ffffff' : f.couleur, roughness: Math.min(f.r, 0.5), metalness: 0,
-        clearcoat: f.fid === 'gres' ? 0.4 : 0, clearcoatRoughness: 0.3 });
+      const mat = new THREE.MeshPhysicalMaterial({ color: f.tex ? '#ffffff' : f.couleur, roughness: Math.min(f.r, 0.5), metalness: f.m || 0,
+        clearcoat: PLAN_POLI.includes(f.fid) ? 0.4 : 0, clearcoatRoughness: 0.3 });
       if (f.tex) { const t = texture(f.id, this.surCharge).clone(); t.repeat.set(Math.max(0.5, k / 1.2), 1); t.needsUpdate = true; mat.map = t; mat.bumpMap = t; mat.bumpScale = 0.12; }
       return mat;
     });

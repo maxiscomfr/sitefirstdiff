@@ -725,3 +725,8 @@ section { position: relative; }
 .rendu-barre.fini .seulement-fini { display: inline-block; }
 @media (max-width: 760px) { .rendu-barre { display: none !important; } .config-scene .outils .rendu-bouton { display: none; } }
 .config-scene.en-rendu .etiquette, .config-scene.en-rendu .aide-scene, .config-scene.en-rendu .selection, .config-scene.en-rendu .armony-filigrane { display: none; }
+details.famille { margin-bottom: 10px; }
+details.famille summary { display: flex; align-items: baseline; justify-content: space-between; cursor: pointer; list-style: none; padding: 6px 0; border-bottom: 1px solid var(--trait, rgba(255,255,255,.12)); margin-bottom: 10px; }
+details.famille summary::-webkit-details-marker { display: none; }
+details.famille summary h4 { margin: 0; }
+details.famille summary small { opacity: .6; }
