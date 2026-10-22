@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS } from './finitions.js?v=20261022b';
+import { FINITIONS } from './finitions.js?v=20261022c';
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
 
@@ -128,7 +128,7 @@ const cacheTex = new Map();
 function texture(id, surCharge) {
   if (!cacheTex.has(id)) {
     const t = chargeur.load(`assets/img/finitions/${id}.jpg`, () => surCharge?.());
-    t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8;
+    t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 16; t.minFilter = THREE.LinearMipmapLinearFilter;
     cacheTex.set(id, t);
   }
   return cacheTex.get(id);
@@ -159,11 +159,11 @@ export class Materiaux {
         const t = texture(f.id, this.surCharge).clone();
         // l'échantillon fait environ 3 × 1 : on le répète pour garder un grain réaliste
         t.repeat.set(Math.max(0.35, kx / 0.6), Math.max(0.35, ky / 0.7)); t.needsUpdate = true;
-        mat.map = t; mat.bumpMap = t; mat.bumpScale = 0.8;
+        mat.map = t; mat.bumpMap = t; mat.bumpScale = 0.25;
       }
       if (rainure) {
         const b = texRainures().clone(); b.needsUpdate = true; b.repeat.set(Math.max(1, Math.round(kx / 0.025)), 1);
-        mat.bumpMap = b; mat.bumpScale = 3;
+        mat.bumpMap = b; mat.bumpScale = 1.2;
       }
       return mat;
     });
@@ -175,7 +175,7 @@ export class Materiaux {
     return this.get(`p:${f.id}:${k}`, () => {
       const mat = new THREE.MeshPhysicalMaterial({ color: f.tex ? '#ffffff' : f.couleur, roughness: Math.min(f.r, 0.5), metalness: 0,
         clearcoat: f.fid === 'gres' ? 0.4 : 0, clearcoatRoughness: 0.3 });
-      if (f.tex) { const t = texture(f.id, this.surCharge).clone(); t.repeat.set(Math.max(0.5, k / 1.2), 1); t.needsUpdate = true; mat.map = t; mat.bumpMap = t; mat.bumpScale = 0.4; }
+      if (f.tex) { const t = texture(f.id, this.surCharge).clone(); t.repeat.set(Math.max(0.5, k / 1.2), 1); t.needsUpdate = true; mat.map = t; mat.bumpMap = t; mat.bumpScale = 0.12; }
       return mat;
     });
   }

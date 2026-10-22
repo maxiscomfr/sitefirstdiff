@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261022b';
-import { FINITIONS } from './finitions.js?v=20261022b';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022c';
+import { FINITIONS } from './finitions.js?v=20261022c';
 import { FIN, MODELES, POIGNEES, TEINTES_POIGNEE, FAMILLES_PLAN, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022b';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022c';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261022b';
+  empriseOuverture } from './piece.js?v=20261022c';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'gres--pietra-grey',
@@ -105,7 +105,9 @@ controles.enableDamping = true; controles.dampingFactor = 0.08;
 controles.minDistance = 2; controles.maxDistance = 20; controles.maxPolarAngle = Math.PI * 0.495;
 
 // occlusion ambiante (ombres de contact entre meubles, murs et sol) sur ordinateur et tablette
-const composer = matchMedia('(max-width: 760px)').matches ? null : new EffectComposer(renderer);
+// la cible de rendu du composer est multi-échantillonnée : sans cela l'antialiasing est perdu et les arêtes grésillent
+const composer = matchMedia('(max-width: 760px)').matches ? null
+  : new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
 if (composer) {
   composer.addPass(new RenderPass(scene, camera));
   const ao = new GTAOPass(scene, camera, 1, 1);
@@ -241,10 +243,11 @@ function matSol() {
     texParquet = new THREE.CanvasTexture(c);
     texParquet.colorSpace = THREE.SRGBColorSpace; texParquet.wrapS = texParquet.wrapT = THREE.RepeatWrapping;
     texParquet.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    texParquet.generateMipmaps = true; texParquet.minFilter = THREE.LinearMipmapLinearFilter;
     texParquet.repeat.set(1 / 1.44, 1 / 1.44);
   }
   // les UV du sol sont en mètres : une image couvre 1,44 m
-  return new THREE.MeshStandardMaterial({ map: texParquet, roughness: 0.55, bumpMap: texParquet, bumpScale: 0.3 });
+  return new THREE.MeshStandardMaterial({ map: texParquet, roughness: 0.6 });
 }
 
 // ---------- meubles dans la scène ----------
