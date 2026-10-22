@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261021d';
-import { FINITIONS } from './finitions.js?v=20261021d';
+import { $, $$, brancherFormulaire } from './site.js?v=20261022a';
+import { FINITIONS } from './finitions.js?v=20261022a';
 import { FIN, MODELES, POIGNEES, TEINTES_POIGNEE, FAMILLES_PLAN, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261021d';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261022a';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261021d';
+  empriseOuverture } from './piece.js?v=20261022a';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'gres--pietra-grey',
@@ -700,13 +700,21 @@ $('#opt-modele').addEventListener('click', (e) => {
 
 // ---------- palette de meubles : une ligne par type, une pastille par largeur ----------
 const groupesPalette = [...new Set(FAMILLES_MEUBLES.map((f) => f.groupe))];
-$('#palette').innerHTML = `<p class="compte-meubles">${Object.keys(MEUBLES).length} meubles, en ${FAMILLES_MEUBLES.length} types.</p>` + groupesPalette.map((gp, i) => `
-  <details class="groupe-meubles"${i < 2 ? ' open' : ''}>
+// les meubles les plus demandés en premier, le reste du catalogue replié en dessous
+const ESSENTIELS = [['b3t-60', 'Tiroirs'], ['b2p-90', 'Meuble bas'], ['evier-80', 'Évier'], ['lv-60', 'Lave-vaisselle'],
+  ['plaque-80', 'Plaque'], ['hotte-90', 'Hotte'], ['cfour-60', 'Colonne four'], ['cfrigocong-60', 'Réfrigérateur'],
+  ['h1p-60', 'Meuble haut'], ['ilot-240', 'Îlot']].filter(([t]) => MEUBLES[t]);
+$('#palette').innerHTML = `<div class="essentiels">${ESSENTIELS.map(([t, nom]) => `
+  <button type="button" data-ajout="${t}"><b>${nom}</b><small>${t.split('-').pop()} cm</small><i aria-hidden="true">+</i></button>`).join('')}
+  </div>
+  <details class="catalogue-complet">
+    <summary>Tout le catalogue Armony <small>${Object.keys(MEUBLES).length} meubles</small></summary>` + groupesPalette.map((gp) => `
+  <details class="groupe-meubles">
     <summary>${gp}<small>${FAMILLES_MEUBLES.filter((f) => f.groupe === gp).length}</small></summary>
     <ul class="types-meubles">${FAMILLES_MEUBLES.filter((f) => f.groupe === gp).map((f) => `
       <li><span>${f.nom}</span><div class="largeurs">${f.largeurs.map((l) => `<button type="button" data-ajout="${f.id}-${l}" aria-label="Ajouter ${f.nom} ${l} cm">${l}</button>`).join('')}</div></li>`).join('')}
     </ul>
-  </details>`).join('');
+  </details>`).join('') + '</details>';
 $('#palette').addEventListener('click', (e) => {
   const b = e.target.closest('[data-ajout]'); if (!b) return;
   const type = b.dataset.ajout;
@@ -800,15 +808,16 @@ function majRecap() { $('#recap').innerHTML = lignesRecap().map(([a, b]) => `<li
 
 // ---------- étapes ----------
 let etape = 0;
+const DERNIERE = $$('.panneau').length - 1;
 function aller(n) {
-  etape = Math.max(0, Math.min(4, n));
+  etape = Math.max(0, Math.min(DERNIERE, n));
   $$('.onglets button').forEach((b, i) => b.setAttribute('aria-selected', i === etape));
   $$('.panneau').forEach((p, i) => p.classList.toggle('actif', i === etape));
-  $('#etape-txt').textContent = `Étape ${etape + 1} / 5`;
+  $('#etape-txt').textContent = `Étape ${etape + 1} / ${DERNIERE + 1}`;
   $('#prec').style.visibility = etape ? 'visible' : 'hidden';
-  $('#suiv').style.visibility = etape < 4 ? 'visible' : 'hidden';
+  $('#suiv').style.visibility = etape < DERNIERE ? 'visible' : 'hidden';
   $('.panneaux').scrollTop = 0;
-  if (etape === 4) majRecap();
+  if (etape === DERNIERE) majRecap();
 }
 $$('.onglets button').forEach((b) => b.addEventListener('click', () => aller(+b.dataset.onglet)));
 $('#prec').addEventListener('click', () => aller(etape - 1));

@@ -1,6 +1,6 @@
 // Espace particuliers : grille des collections, carrousel des portraits, aperçu 3D.
-import { $, $$, chargerPhotos, ouvrirVisionneuse, brancherFormulaire, glisser, observer } from './site.js?v=20261021d';
-import { COLLECTIONS, PORTRAITS, ORDRE_PORTRAITS } from './donnees.js?v=20261021d';
+import { $, $$, chargerPhotos, ouvrirVisionneuse, brancherFormulaire, glisser, observer } from './site.js?v=20261022a';
+import { COLLECTIONS, PORTRAITS, ORDRE_PORTRAITS } from './donnees.js?v=20261022a';
 
 const fleche = '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1v14M1 8h14" stroke="currentColor"/></svg>';
 

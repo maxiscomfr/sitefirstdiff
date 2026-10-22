@@ -10,7 +10,7 @@
   <link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/site.css?v=20261021d">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261022a">
   <link rel="modulepreload" href="assets/vendor/three/three.module.min.js">
   <script type="importmap">{ "imports": { "three": "./assets/vendor/three/three.module.min.js", "three/addons/": "./assets/vendor/three/addons/" } }</script>
 </head>
@@ -46,67 +46,70 @@
       <div class="onglets" role="tablist">
         <button role="tab" aria-selected="true" data-onglet="0"><span>i.</span>Pièce</button>
         <button role="tab" aria-selected="false" data-onglet="1"><span>ii.</span>Meubles</button>
-        <button role="tab" aria-selected="false" data-onglet="2"><span>iii.</span>Façades</button>
-        <button role="tab" aria-selected="false" data-onglet="3"><span>iv.</span>Plan</button>
-        <button role="tab" aria-selected="false" data-onglet="4"><span>v.</span>Envoyer</button>
+        <button role="tab" aria-selected="false" data-onglet="2"><span>iii.</span>Finitions</button>
+        <button role="tab" aria-selected="false" data-onglet="3"><span>iv.</span>Envoyer</button>
       </div>
 
       <div class="panneaux">
         <div class="panneau actif" role="tabpanel" data-panneau="0">
-          <h3>Forme de la pièce</h3>
-          <div class="opt-grille trois" id="opt-forme">
-            <button class="opt" data-forme="rect"><b>Rectangle</b><small>Quatre murs droits</small></button>
-            <button class="opt" data-forme="L"><b>En L</b><small>Un angle rentrant</small></button>
-            <button class="opt" data-forme="biais"><b>En biais</b><small>Angles hors 90°</small></button>
-          </div>
-          <h3>Cotes exactes</h3>
-          <div class="cotes">
-            <label class="cote"><span>Mur du fond</span><input id="cote-W" inputmode="numeric"><i>cm</i></label>
-            <label class="cote"><span>Profondeur</span><input id="cote-D" inputmode="numeric"><i>cm</i></label>
-            <label class="cote" data-pour-forme="L"><span>Largeur de la découpe</span><input id="cote-Lx" inputmode="numeric"><i>cm</i></label>
-            <label class="cote" data-pour-forme="L"><span>Profondeur de la découpe</span><input id="cote-Lz" inputmode="numeric"><i>cm</i></label>
-            <label class="cote" data-pour-forme="biais"><span>Angle du mur de gauche</span><input id="cote-aG" inputmode="numeric"><i>°</i></label>
-            <label class="cote" data-pour-forme="biais"><span>Angle du mur de droite</span><input id="cote-aD" inputmode="numeric"><i>°</i></label>
-            <label class="cote"><span>Hauteur sous plafond</span><input id="cote-H" inputmode="numeric"><i>cm</i></label>
-            <label class="cote"><span>Hauteur des colonnes</span><select id="cote-hc"></select></label>
-          </div>
-          <ul class="longueurs-murs" id="longueurs-murs"></ul>
-          <h3>Portes et fenêtres</h3>
-          <div class="ajout-ouverture" id="ajout-ouverture">
-            <button type="button" data-ouverture="fenetre">+ Fenêtre</button>
-            <button type="button" data-ouverture="porte">+ Porte</button>
-            <button type="button" data-ouverture="baie">+ Porte-fenêtre</button>
-          </div>
-          <ul class="liste-ouvertures" id="liste-ouvertures"></ul>
-          <h3>Point de départ</h3>
+          <h3>Votre implantation</h3>
           <div class="opt-grille" id="opt-depart">
             <button class="opt" data-depart="lineaire"><b>Linéaire</b><small>Tout sur le mur du fond</small></button>
             <button class="opt" data-depart="angle"><b>En L</b><small>Fond et mur de droite</small></button>
             <button class="opt" data-depart="ilot"><b>Avec îlot</b><small>Un mur et un îlot</small></button>
             <button class="opt" data-depart="vide"><b>Pièce vide</b><small>Je pose tout moi-même</small></button>
           </div>
-          <h3>Modèle Armony</h3>
-          <div class="opt-grille" id="opt-modele"></div>
+          <h3>Dimensions de la pièce</h3>
+          <div class="cotes">
+            <label class="cote"><span>Mur du fond</span><input id="cote-W" inputmode="numeric"><i>cm</i></label>
+            <label class="cote"><span>Profondeur</span><input id="cote-D" inputmode="numeric"><i>cm</i></label>
+          </div>
+          <details class="avance">
+            <summary>Plus d'options <small>forme, hauteurs, portes et fenêtres</small></summary>
+            <h3>Forme de la pièce</h3>
+            <div class="opt-grille trois" id="opt-forme">
+            <button class="opt" data-forme="rect"><b>Rectangle</b><small>Quatre murs droits</small></button>
+            <button class="opt" data-forme="L"><b>En L</b><small>Un angle rentrant</small></button>
+            <button class="opt" data-forme="biais"><b>En biais</b><small>Angles hors 90°</small></button>
+          </div>
+            <h3>Cotes et hauteurs</h3>
+            <div class="cotes">
+              <label class="cote" data-pour-forme="L"><span>Largeur de la découpe</span><input id="cote-Lx" inputmode="numeric"><i>cm</i></label>
+              <label class="cote" data-pour-forme="L"><span>Profondeur de la découpe</span><input id="cote-Lz" inputmode="numeric"><i>cm</i></label>
+              <label class="cote" data-pour-forme="biais"><span>Angle du mur de gauche</span><input id="cote-aG" inputmode="numeric"><i>°</i></label>
+              <label class="cote" data-pour-forme="biais"><span>Angle du mur de droite</span><input id="cote-aD" inputmode="numeric"><i>°</i></label>
+              <label class="cote"><span>Hauteur sous plafond</span><input id="cote-H" inputmode="numeric"><i>cm</i></label>
+              <label class="cote"><span>Hauteur des colonnes</span><select id="cote-hc"></select></label>
+            </div>
+            <ul class="longueurs-murs" id="longueurs-murs"></ul>
+            <h3>Portes et fenêtres</h3>
+            <div class="ajout-ouverture" id="ajout-ouverture">
+            <button type="button" data-ouverture="fenetre">+ Fenêtre</button>
+            <button type="button" data-ouverture="porte">+ Porte</button>
+            <button type="button" data-ouverture="baie">+ Porte-fenêtre</button>
+          </div>
+          <ul class="liste-ouvertures" id="liste-ouvertures"></ul>
+          </details>
         </div>
 
         <div class="panneau" role="tabpanel" data-panneau="1">
-          <p class="mention" style="margin:0 0 22px">Ajoutez un meuble, puis faites-le glisser dans la pièce. Il s'aimante aux murs et aux meubles voisins.</p>
+          <p class="mention" style="margin:0 0 22px">Touchez un meuble pour l'ajouter, puis faites-le glisser dans la pièce.</p>
           <div id="palette"></div>
           <h3 style="margin-top:30px">Vos meubles <span id="nb-meubles"></span></h3>
           <ul class="liste-meubles" id="liste-meubles"></ul>
         </div>
 
         <div class="panneau" role="tabpanel" data-panneau="2">
+          <h3>Modèle Armony</h3>
+          <div class="opt-grille" id="opt-modele"></div>
+          <h3>Façades</h3>
           <div class="bascule-cible" role="group" aria-label="Façades à modifier">
             <button type="button" data-cible="facade" aria-pressed="true">Façades principales<small id="nom-facade"></small></button>
             <button type="button" data-cible="accent" aria-pressed="false">Façades d'accent<small id="nom-accent"></small></button>
           </div>
           <p class="mention" id="note-modele" style="margin:14px 0 24px"></p>
           <div id="nuancier-facades"></div>
-        </div>
-
-        <div class="panneau" role="tabpanel" data-panneau="3">
-          <h3>Plan de travail <small id="nom-plan" style="text-transform:none;letter-spacing:0;color:var(--ivoire)"></small></h3>
+          <h3 style="margin-top:30px">Plan de travail <small id="nom-plan" style="text-transform:none;letter-spacing:0;color:var(--ivoire)"></small></h3>
           <div id="nuancier-plans"></div>
           <h3 style="margin-top:30px">Poignées</h3>
           <div class="opt-grille" id="opt-poignee"></div>
@@ -115,7 +118,7 @@
           <p class="nom-teinte" id="nom-teinte"></p>
         </div>
 
-        <div class="panneau" role="tabpanel" data-panneau="4">
+        <div class="panneau" role="tabpanel" data-panneau="3">
           <h3>Votre composition</h3>
           <ul class="recap" id="recap"></ul>
           <form class="form" name="configuration-cuisine" method="POST" action="merci.html?demande=chiffrage" data-netlify="true" netlify-honeypot="adresse-web" enctype="multipart/form-data">
@@ -142,13 +145,13 @@
 
       <div class="config-pied">
         <button class="lien" id="prec" type="button" style="background:none;border-left:0;border-right:0;border-top:0;cursor:pointer">Précédent</button>
-        <span class="etape-txt" id="etape-txt">Étape 1 / 5</span>
+        <span class="etape-txt" id="etape-txt">Étape 1 / 4</span>
         <button class="btn or" id="suiv" type="button">Suivant <span class="fleche"></span></button>
       </div>
     </section>
   </main>
 
-  <script type="module" src="assets/js/site.js?v=20261021d"></script>
-  <script type="module" src="assets/js/configurateur.js?v=20261021d"></script>
+  <script type="module" src="assets/js/site.js?v=20261022a"></script>
+  <script type="module" src="assets/js/configurateur.js?v=20261022a"></script>
 </body>
 </html>
