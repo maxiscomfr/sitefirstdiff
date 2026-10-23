@@ -613,6 +613,7 @@ section { position: relative; }
 .largeurs { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; max-width: 60%; }
 .largeurs button { min-width: 38px; height: 30px; padding: 0 6px; background: none; border: 1px solid var(--ligne); color: var(--ivoire); font: inherit; font-size: 13px; cursor: pointer; transition: background .25s, color .25s, border-color .25s; }
 .largeurs button:hover, .largeurs button.ajoute { background: var(--or-clair); border-color: var(--or-clair); color: var(--noir); }
+.largeurs button:disabled { opacity: .3; cursor: not-allowed; background: none; border-color: var(--ligne); color: var(--ivoire); }
 .config-scene .alerte-conflits { position: absolute; left: 24px; bottom: 124px; margin: 0; padding: 7px 14px; background: #c0603a; color: #fff; font-size: 12.5px; z-index: 2; white-space: nowrap; }
 .config-scene .alerte-conflits[hidden] { display: none; }
 @media (max-width: 760px) { .config-scene .alerte-conflits { left: 12px; bottom: 56px; font-size: 11.5px; } }

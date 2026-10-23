@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261023g';
-import { FINITIONS } from './finitions.js?v=20261023g';
+import { $, $$, brancherFormulaire } from './site.js?v=20261023h';
+import { FINITIONS } from './finitions.js?v=20261023h';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023g';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023h';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261023g';
+  empriseOuverture } from './piece.js?v=20261023h';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -888,6 +888,7 @@ $('#palette').innerHTML = `<div class="essentiels">${ESSENTIELS.map(([t, nom]) =
 }).join('') + '</details>';
 $('#palette').addEventListener('click', (e) => {
   const b = e.target.closest('[data-ajout]'); if (!b) return;
+  if (b.disabled) return;
   const type = b.dataset.ajout;
   const m = { id: nouvelId(), type, x: 0, z: 0, r: 0 };
   placeLibre(m); meubles.push(m); selection = m.id;
@@ -932,6 +933,7 @@ function majTitre() {
   $('#sous-modele').textContent = `${[...new Set(meubles.map((x) => FIN[x.fin || cfg.facade].nom))].slice(0, 3).join(' & ') || FIN[cfg.facade].nom} · ${meubles.length} meuble${meubles.length > 1 ? 's' : ''}`;
 }
 function majFinitions() {
+  $$('[data-ajout]').forEach((b) => { const d = MEUBLES[b.dataset.ajout]; const ok = !d?.modeles || d.modeles.includes(cfg.modele); b.disabled = !ok; b.title = ok ? '' : `Non disponible avec ${MODELES[cfg.modele].nom} (${d.modeles.map((k) => MODELES[k].nom).join(', ')} seulement)`; });
   const m = MODELES[cfg.modele];
   const modC = cfg.modele;
   $$('#opt-modele [data-modele]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.modele === modC));

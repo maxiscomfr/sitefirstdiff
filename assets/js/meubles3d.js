@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261023g';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261023h';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -113,6 +113,7 @@ const TYPES = [
   { id: 'h91', nom: 'Haut grande hauteur, H.91', type: 'haut', faces: 'portes', h: 0.91, largeurs: [15, 30, 40, 45, 50, 60, 75, 80, 90, 100, 120], groupe: 'Meubles hauts', aide: 'Monte plus haut pour gagner du rangement jusqu’au plafond.' },
   { id: 'hegout', nom: 'Haut égouttoir', type: 'haut', faces: 'ouvert', largeurs: [60, 80, 90], groupe: 'Meubles hauts', aide: 'Meuble haut ouvert au-dessus de l’évier, pour faire sécher la vaisselle.' },
   { id: 'hang', nom: 'Haut d’angle', type: 'haut', faces: 'angle', largeurs: [65, 70], groupe: 'Meubles hauts', aide: 'Meuble haut d’angle en L de 65 × 65 cm (ou 70 × 70) : il ferme le coin quand deux rangées de meubles hauts se rejoignent à 90°.' },
+  { id: 'hang52', nom: 'Haut d’angle H.52', type: 'haut', faces: 'angle', h: 0.52, largeurs: [65], modeles: ['skyline', 'equa', 'etro'], groupe: 'Meubles hauts', aide: 'Haut d’angle de 52 cm de haut, en 65 × 65 cm. Disponible avec les modèles Skyline, Equa et Etro.' },
   { id: 'hang2', nom: 'Haut d’angle H.91', type: 'haut', faces: 'angle', h: 0.91, largeurs: [65, 70], groupe: 'Meubles hauts', aide: 'Haut d’angle grande hauteur, pour monter jusqu’au plafond.' },
   { id: 'habat', nom: 'Haut abattant', type: 'haut', faces: 'abattant', h: 0.39, largeurs: [60, 80, 90, 120], groupe: 'Meubles hauts' },
   { id: 'habat2', nom: 'Haut double abattant', type: 'haut', faces: 'abattant2', largeurs: [60, 90, 120], groupe: 'Meubles hauts' },
@@ -150,7 +151,7 @@ const SOUS_PAR_ID = { hotte: 'Hottes', hotteint: 'Hottes', cfrigo: 'Froid et cav
   evier: 'Évier et lavage', evier2: 'Évier et lavage', evierego: 'Évier et lavage', lvtiroir: 'Évier et lavage', lv: 'Évier et lavage', tri: 'Évier et lavage', bpoub: 'Évier et lavage',
   plaque: 'Cuisson', plaque4: 'Cuisson', plaqueport: 'Cuisson', fourplan: 'Cuisson', fourbas: 'Cuisson', micro: 'Cuisson', cfour: 'Four et rangements', cfourmo: 'Four et rangements', cfour2: 'Four et rangements',
   frigoplan: 'Froid et cave', cpivot: 'Passages', caveplan: 'Froid et cave', congplan: 'Froid et cave', table: 'Tables', ilotbar: 'Îlots', peninsule: 'Îlots', ilot: 'Îlots', ilotnu: 'Îlots', ilotplaque: 'Îlots', ilotevier: 'Îlots',
-  hang: 'Angles', hang2: 'Angles', habat: 'Ouvrants et vitrines', habat2: 'Ouvrants et vitrines', hvit: 'Ouvrants et vitrines', houv: 'Étagères et ouverts', etag: 'Étagères et ouverts', hegout: 'Étagères et ouverts',
+  hang: 'Angles', hang2: 'Angles', hang52: 'Angles', habat: 'Ouvrants et vitrines', habat2: 'Ouvrants et vitrines', hvit: 'Ouvrants et vitrines', houv: 'Étagères et ouverts', etag: 'Étagères et ouverts', hegout: 'Étagères et ouverts',
   bouv: 'Étagères et ouverts', couv: 'Étagères et ouverts', bang: 'Angles', bcar: 'Angles', bcoul: 'Rangements' };
 export const FAMILLES_MEUBLES = TYPES.map(({ id, nom, type, groupe, largeurs, aide }) => {
   const fin = groupe === 'Fileurs et finitions';

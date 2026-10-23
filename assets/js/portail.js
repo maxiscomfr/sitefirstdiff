@@ -1,7 +1,7 @@
 // Portail d'entrée : une cuisine Armony en 3D qui change de « portrait » en continu.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/RoomEnvironment.js';
-import { construireCuisine, installerStudio, Materiaux, FACADES, PLANS } from './cuisine3d.js?v=20261023g';
+import { construireCuisine, installerStudio, Materiaux, FACADES, PLANS } from './cuisine3d.js?v=20261023h';
 
 const PORTRAITS = [
   { nom: 'Portrait 01 · System + Yota', cfg: { modele: 'system', facade: 'polaris-midnight', accent: 'noce-elegante', plan: 'onyx-white', profil: 'noir' } },
