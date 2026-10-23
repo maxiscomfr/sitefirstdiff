@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261023f';
-import { FINITIONS } from './finitions.js?v=20261023f';
+import { $, $$, brancherFormulaire } from './site.js?v=20261023g';
+import { FINITIONS } from './finitions.js?v=20261023g';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023f';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023g';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261023f';
+  empriseOuverture } from './piece.js?v=20261023g';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -307,10 +307,8 @@ function majSelection() {
   if (m) {
     boiteOrientee(surligne, m, 0.04);
     $('#sel-nom').textContent = `${def(m).nom} · ${cm(def(m).l)}`;
-    $('#sel-finition').title = `Finition : ${FIN[m.fin || cfg.facade].nom}`;
   }
   $$('#liste-meubles li').forEach((li) => li.classList.toggle('choisi', li.dataset.id === selection));
-  try { if (etape === 2) majFinitions(); } catch { /* démarrage */ }
   rendre();
 }
 
@@ -731,7 +729,6 @@ function action(nom) {
     const l = def(m).l;
     meubles.push(c); placer(c, m.x + Math.cos(m.r) * l, m.z - Math.sin(m.r) * l); selection = c.id;
   }
-  if (nom === 'finition') { cible = 'sel'; aller(2); majFinitions(); return; }
   if (nom === 'supprimer') { meubles = meubles.filter((x) => x !== m); selection = null; }
   apresChangementMeubles();
 }
@@ -861,16 +858,8 @@ $('#opt-depart').addEventListener('click', (e) => {
 $('#opt-modele').innerHTML = Object.entries(MODELES).map(([id, o]) => `<button class="opt" data-modele="${id}"><b>${o.nom}</b><small>${o.note}</small></button>`).join('');
 $('#opt-modele').addEventListener('click', (e) => {
   const b = e.target.closest('[data-modele]'); if (!b) return;
-  const ms = meubles.find((x) => x.id === selection);
-  if (cible === 'sel' && ms) {
-    ms.modele = b.dataset.modele;
-    if (!compatible(FIN[ms.fin || cfg.facade], ms.modele)) ms.fin = premiereCompatible(false, ms.modele);
-  } else {
-    cfg.modele = b.dataset.modele;
-    meubles.forEach((x) => { delete x.modele; });
-    if (!compatible(FIN[cfg.facade])) cfg.facade = premiereCompatible(false);
-    for (const m of meubles) if (m.fin && !compatible(FIN[m.fin])) delete m.fin;
-  }
+  cfg.modele = b.dataset.modele;
+  if (!compatible(FIN[cfg.facade])) cfg.facade = premiereCompatible(false);
   majFinitions(); reconstruire();
 });
 
@@ -944,18 +933,11 @@ function majTitre() {
 }
 function majFinitions() {
   const m = MODELES[cfg.modele];
-  const ms0 = meubles.find((x) => x.id === selection);
-  const modC = cible === 'sel' && ms0 ? (ms0.modele || cfg.modele) : cfg.modele;
+  const modC = cfg.modele;
   $$('#opt-modele [data-modele]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.modele === modC));
   majTitre();
   $('#note-modele').textContent = `${FINITIONS.filter((f) => compatible(f, modC)).length} finitions du catalogue Armony 2026 disponibles pour ${MODELES[modC].nom}.`;
-  const ms = meubles.find((x) => x.id === selection);
-  if (cible === 'sel' && !ms) cible = 'facade';
-  $('#nom-facade').textContent = 'même finition partout';
-  $('#nom-accent').textContent = ms ? `${def(ms).nom} · ${FIN[ms.fin || cfg.facade].nom}` : 'sélectionnez un meuble dans la pièce';
-  $('#btn-sel').disabled = !ms;
-  $$('[data-cible]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.cible === cible));
-  $('#nuancier-facades').innerHTML = nuancier(FINITIONS.filter((f) => compatible(f, modC)), cible === 'sel' ? (ms.fin || cfg.facade) : cfg.facade, 'data-fin');
+  $('#nuancier-facades').innerHTML = nuancier(FINITIONS.filter((f) => compatible(f, modC)), cfg.facade, 'data-fin');
   $('#nuancier-plans').innerHTML = nuancier(FINITIONS.filter((f) => f.plan), cfg.plan, 'data-plan', true);
   $('#nom-plan').textContent = `— ${FIN[cfg.plan].nom}, ${FIN[cfg.plan].famille}`;
   $('#opt-poignee').innerHTML = Object.entries(POIGNEES).map(([id, o]) => `<button class="opt" data-poignee="${id}" aria-pressed="${id === cfg.poignee && m.porte !== 'profil'}"${m.porte === 'profil' ? ' disabled' : ''}><b>${o.nom}</b><small>${o.note}</small></button>`).join('');
@@ -965,15 +947,10 @@ function majFinitions() {
   $('#nom-teinte').innerHTML = m.porte === 'profil' ? `<b>${TEINTES_POIGNEE[cfg.teinte].nom}</b> — profilés et poignée System` : `<b>${TEINTES_POIGNEE[cfg.teinte].nom}</b>`;
   memoriser();
 }
-$$('[data-cible]').forEach((b) => b.addEventListener('click', () => { cible = b.dataset.cible; majFinitions(); }));
 document.addEventListener('click', (e) => {
   const f = e.target.closest('[data-fin]'), p = e.target.closest('[data-plan]'), h = e.target.closest('[data-poignee]'), t = e.target.closest('[data-teinte]');
   if (!(f || p || h || t)) return;
-  if (f) {
-    const ms = meubles.find((x) => x.id === selection);
-    if (cible === 'sel' && ms) ms.fin = f.dataset.fin;
-    else { cfg.facade = f.dataset.fin; meubles.forEach((x) => { delete x.fin; if (x.modele && !compatible(FIN[cfg.facade], x.modele)) delete x.modele; }); }
-  }
+  if (f) cfg.facade = f.dataset.fin;
   if (p) cfg.plan = p.dataset.plan;
   if (h) cfg.poignee = h.dataset.poignee;
   if (t) cfg.teinte = t.dataset.teinte;
