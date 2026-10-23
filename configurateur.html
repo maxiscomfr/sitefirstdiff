@@ -10,7 +10,7 @@
   <link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/site.css?v=20261023d">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261023f">
   <script>
     // Le configurateur 3D se manipule à la souris, sur grand écran : sur téléphone, on invite à revenir sur ordinateur.
     if (matchMedia('(max-width: 760px)').matches) document.documentElement.classList.add('telephone');
@@ -47,7 +47,7 @@
         <span class="sel-nom" id="sel-nom"></span>
         <button type="button" data-action="pivoter" title="Pivoter (R)">Pivoter</button>
         <button type="button" data-action="dupliquer">Dupliquer</button>
-        <button type="button" data-action="finition" id="sel-finition">Accent</button>
+        <button type="button" data-action="finition" id="sel-finition">Finition</button>
         <button type="button" data-action="supprimer" title="Supprimer (Suppr)">Supprimer</button>
       </div>
       <div class="outils" role="group" aria-label="Points de vue">
@@ -125,13 +125,13 @@
         </div>
 
         <div class="panneau" role="tabpanel" data-panneau="2">
-          <h3>Modèle Armony</h3>
-          <div class="opt-grille" id="opt-modele"></div>
-          <h3>Façades</h3>
+          <h3>Finition des meubles</h3>
           <div class="bascule-cible" role="group" aria-label="Façades à modifier">
-            <button type="button" data-cible="facade" aria-pressed="true">Façades principales<small id="nom-facade"></small></button>
-            <button type="button" data-cible="accent" aria-pressed="false">Façades d'accent<small id="nom-accent"></small></button>
+            <button type="button" data-cible="facade" aria-pressed="true">Tous les meubles<small id="nom-facade"></small></button>
+            <button type="button" id="btn-sel" data-cible="sel" aria-pressed="false">Le meuble choisi<small id="nom-accent"></small></button>
           </div>
+          <h3 style="margin-top:22px">Modèle Armony</h3>
+          <div class="opt-grille" id="opt-modele"></div>
           <p class="mention" id="note-modele" style="margin:14px 0 24px"></p>
           <div id="nuancier-facades"></div>
           <h3 style="margin-top:30px">Plan de travail <small id="nom-plan" style="text-transform:none;letter-spacing:0;color:var(--ivoire)"></small></h3>
@@ -176,9 +176,9 @@
     </section>
   </main>
 
-  <script type="module" src="assets/js/site.js?v=20261023d"></script>
+  <script type="module" src="assets/js/site.js?v=20261023f"></script>
   <script type="module">
-    if (!document.documentElement.classList.contains('telephone')) import('./assets/js/configurateur.js?v=20261023d');
+    if (!document.documentElement.classList.contains('telephone')) import('./assets/js/configurateur.js?v=20261023f');
     else document.getElementById('partager-lien').addEventListener('click', async (e) => {
       const url = location.href.split('#')[0];
       if (navigator.share) { try { await navigator.share({ title: 'Configurateur FirstDiff', url }); } catch {} return; }

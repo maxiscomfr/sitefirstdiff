@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261023d';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261023f';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -505,7 +505,8 @@ function chaise(g, c, x, z, r) {
 export function construireMeuble(m, cfg, mats) {
   const def = MEUBLES[m.type];
   const g = new THREE.Group();
-  const c = { mats, porte: MODELES[cfg.modele]?.porte || 'lisse', cadre: MODELES[cfg.modele]?.cadre, fin: m.accent ? cfg.accent : cfg.facade, accentFin: cfg.accent,
+  const mod = MODELES[m.modele] || MODELES[cfg.modele];
+  const c = { mats, porte: mod?.porte || 'lisse', cadre: mod?.cadre, fin: m.fin || cfg.facade, accentFin: m.fin || cfg.facade,
     plan: cfg.plan, poignee: cfg.poignee, teinte: cfg.teinte, sansPlan: true };
   const l = def.l, P = PROFONDEUR[def.type], hc = cfg.hc || 2.16;
 

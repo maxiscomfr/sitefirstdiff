@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261023d';
-import { FINITIONS } from './finitions.js?v=20261023d';
+import { $, $$, brancherFormulaire } from './site.js?v=20261023f';
+import { FINITIONS } from './finitions.js?v=20261023f';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023d';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261023f';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261023d';
+  empriseOuverture } from './piece.js?v=20261023f';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -29,15 +29,15 @@ let compteur = 0;
 const nouvelId = () => 'm' + (++compteur);
 
 function encoderMeubles() {
-  return meubles.map((m) => [m.type, m.x.toFixed(2), m.z.toFixed(2), deg(m.r), m.accent ? 1 : 0, ...(m.miroir ? [1] : [])].join('~')).join('_');
+  return meubles.map((m) => [m.type, m.x.toFixed(2), m.z.toFixed(2), deg(m.r), 0, m.miroir ? 1 : 0, m.fin || '', m.modele || ''].join('~')).join('_');
 }
 function decoderMeubles(s, enDegres) {
   return s.split('_').filter(Boolean).map((t) => {
-    let [type, x, z, r, a, mi] = t.split('~');
+    let [type, x, z, r, , mi, fin, mod] = t.split('~');
     type = ALIAS[type] || type;
     // les anciens liens notaient la rotation en quarts de tour
     const angle = enDegres ? (+r * Math.PI) / 180 : +r * QUART;
-    return MEUBLES[type] ? { id: nouvelId(), type, x: +x, z: +z, r: angle, accent: a === '1', miroir: mi === '1' } : null;
+    return MEUBLES[type] ? { id: nouvelId(), type, x: +x, z: +z, r: angle, miroir: mi === '1', ...(fin && FIN[fin] ? { fin } : {}), ...(mod && MODELES[mod] ? { modele: mod } : {}) } : null;
   }).filter(Boolean);
 }
 const encoderOuvertures = () => ouvertures.map((o) => [o.type, o.mur, o.t.toFixed(2), o.l.toFixed(2), o.h.toFixed(2), o.y.toFixed(2)].join('~')).join('_');
@@ -59,7 +59,8 @@ function lireEtat() {
   else if (memo?.o != null) ouvertures = decoderOuvertures(memo.o);
   if (!MODELES[cfg.modele]) cfg.modele = 'yota';
   if (!FORMES[cfg.forme]) cfg.forme = 'rect';
-  for (const k of ['facade', 'accent', 'plan']) { cfg[k] = FINITIONS_ALIAS[(k === 'plan' ? 'plan:' : '') + cfg[k]] || FINITIONS_ALIAS[cfg[k]] || cfg[k]; if (!FIN[cfg[k]]) cfg[k] = DEFAUT[k]; }
+  for (const m of meubles || []) if (m.fin) { m.fin = FINITIONS_ALIAS[m.fin] || m.fin; if (!FIN[m.fin]) delete m.fin; }
+  for (const k of ['facade', 'plan']) { cfg[k] = FINITIONS_ALIAS[(k === 'plan' ? 'plan:' : '') + cfg[k]] || FINITIONS_ALIAS[cfg[k]] || cfg[k]; if (!FIN[cfg[k]]) cfg[k] = DEFAUT[k]; }
 }
 lireEtat();
 const memoriser = () => { try { localStorage.setItem('firstdiff-config-v3', JSON.stringify({ cfg, m: encoderMeubles(), o: encoderOuvertures() })); } catch { /* rien */ } };
@@ -287,7 +288,7 @@ function reconstruire() {
   if (rendu) quitterRendu();
   for (const id of [...groupes.keys()]) oublier(id);
   meubles.forEach(poser);
-  majSelection(); majConflits(); rendre();
+  majListe(); majSelection(); majConflits(); rendre();
 }
 
 // boîte orientée qui entoure un meuble (sélection, conflits)
@@ -306,10 +307,10 @@ function majSelection() {
   if (m) {
     boiteOrientee(surligne, m, 0.04);
     $('#sel-nom').textContent = `${def(m).nom} · ${cm(def(m).l)}`;
-    $('#sel-finition').textContent = m.accent ? 'Principale' : 'Accent';
-    $('#sel-finition').title = m.accent ? 'Passer en finition principale' : 'Passer en finition d’accent';
+    $('#sel-finition').title = `Finition : ${FIN[m.fin || cfg.facade].nom}`;
   }
   $$('#liste-meubles li').forEach((li) => li.classList.toggle('choisi', li.dataset.id === selection));
+  try { if (etape === 2) majFinitions(); } catch { /* démarrage */ }
   rendre();
 }
 
@@ -494,7 +495,7 @@ function depart(nom) {
     const mur = MURS[i]; let t = t0;
     for (const type of types) {
       const l = MEUBLES[type].l; if (t + l > mur.len + 0.001) break;
-      L.push({ type, ...surMur(mur, t + l / 2), r: mur.r, accent: accentParDefaut(MEUBLES[type].type) }); t += l;
+      L.push({ type, ...surMur(mur, t + l / 2), r: mur.r }); t += l;
     }
     return t;
   };
@@ -517,7 +518,7 @@ function depart(nom) {
     const long = types.reduce((s, t) => s + MEUBLES[t].l, 0);
     ligne(types, 0, Math.max(0, (fond.len - long) / 2));
     const bb = boiteSol();
-    L.push({ type: fond.len > 4.4 ? 'ilot-240' : 'ilot-180', x: (bb.x0 + bb.x1) / 2, z: 2.0, r: 0, accent: true });
+    L.push({ type: fond.len > 4.4 ? 'ilot-240' : 'ilot-180', x: (bb.x0 + bb.x1) / 2, z: 2.0, r: 0 });
   }
   return L;
 }
@@ -730,7 +731,7 @@ function action(nom) {
     const l = def(m).l;
     meubles.push(c); placer(c, m.x + Math.cos(m.r) * l, m.z - Math.sin(m.r) * l); selection = c.id;
   }
-  if (nom === 'finition') { m.accent = !m.accent; oublier(m.id); }
+  if (nom === 'finition') { cible = 'sel'; aller(2); majFinitions(); return; }
   if (nom === 'supprimer') { meubles = meubles.filter((x) => x !== m); selection = null; }
   apresChangementMeubles();
 }
@@ -860,8 +861,16 @@ $('#opt-depart').addEventListener('click', (e) => {
 $('#opt-modele').innerHTML = Object.entries(MODELES).map(([id, o]) => `<button class="opt" data-modele="${id}"><b>${o.nom}</b><small>${o.note}</small></button>`).join('');
 $('#opt-modele').addEventListener('click', (e) => {
   const b = e.target.closest('[data-modele]'); if (!b) return;
-  cfg.modele = b.dataset.modele;
-  for (const k of ['facade', 'accent']) if (!compatible(FIN[cfg[k]])) cfg[k] = premiereCompatible(k === 'accent');
+  const ms = meubles.find((x) => x.id === selection);
+  if (cible === 'sel' && ms) {
+    ms.modele = b.dataset.modele;
+    if (!compatible(FIN[ms.fin || cfg.facade], ms.modele)) ms.fin = premiereCompatible(false, ms.modele);
+  } else {
+    cfg.modele = b.dataset.modele;
+    meubles.forEach((x) => { delete x.modele; });
+    if (!compatible(FIN[cfg.facade])) cfg.facade = premiereCompatible(false);
+    for (const m of meubles) if (m.fin && !compatible(FIN[m.fin])) delete m.fin;
+  }
   majFinitions(); reconstruire();
 });
 
@@ -891,7 +900,7 @@ $('#palette').innerHTML = `<div class="essentiels">${ESSENTIELS.map(([t, nom]) =
 $('#palette').addEventListener('click', (e) => {
   const b = e.target.closest('[data-ajout]'); if (!b) return;
   const type = b.dataset.ajout;
-  const m = { id: nouvelId(), type, x: 0, z: 0, r: 0, accent: accentParDefaut(MEUBLES[type].type) };
+  const m = { id: nouvelId(), type, x: 0, z: 0, r: 0 };
   placeLibre(m); meubles.push(m); selection = m.id;
   apresChangementMeubles();
   b.classList.add('ajoute'); setTimeout(() => b.classList.remove('ajoute'), 600);
@@ -901,7 +910,7 @@ function majListe() {
   $('#nb-meubles').textContent = meubles.length ? `(${meubles.length})` : '';
   $('#liste-meubles').innerHTML = meubles.length ? meubles.map((m) => {
     const d = def(m);
-    return `<li data-id="${m.id}"><button type="button" class="choisir">${d.nom} <small>${cm(d.l)}${m.accent ? ' · accent' : ''}</small></button><button type="button" class="retirer" aria-label="Retirer ${d.nom}">×</button></li>`;
+    return `<li data-id="${m.id}"><button type="button" class="choisir">${d.nom} <small>${cm(d.l)}${m.modele || m.fin ? ` · ${[m.modele && MODELES[m.modele].nom, m.fin && FIN[m.fin].nom].filter(Boolean).join(' ')}` : ''}</small></button><button type="button" class="retirer" aria-label="Retirer ${d.nom}">×</button></li>`;
   }).join('') : '<li class="vide">Aucun meuble pour l’instant.</li>';
   $$('#liste-meubles li').forEach((li) => li.classList.toggle('choisi', li.dataset.id === selection));
 }
@@ -913,9 +922,9 @@ $('#liste-meubles').addEventListener('click', (e) => {
 
 // ---------- nuanciers ----------
 let cible = 'facade';
-const compatible = (f) => !!f && f.modeles.includes(cfg.modele);
-const premiereCompatible = (texture) => {
-  const l = FINITIONS.filter(compatible);
+const compatible = (f, mod = cfg.modele) => !!f && f.modeles.includes(mod);
+const premiereCompatible = (texture, mod = cfg.modele) => {
+  const l = FINITIONS.filter((f) => compatible(f, mod));
   return ((texture && l.find((f) => f.tex)) || l[0] || FIN[DEFAUT.facade]).id;
 };
 function nuancier(liste, actif, attr, replier = false) {
@@ -930,18 +939,23 @@ function nuancier(liste, actif, attr, replier = false) {
   }).join('');
 }
 function majTitre() {
-  $('#nom-modele').textContent = MODELES[cfg.modele].nom;
-  $('#sous-modele').textContent = `${FIN[cfg.facade].nom} & ${FIN[cfg.accent].nom} · ${meubles.length} meuble${meubles.length > 1 ? 's' : ''}`;
+  $('#nom-modele').textContent = [...new Set(meubles.map((x) => MODELES[x.modele || cfg.modele].nom))].join(' + ') || MODELES[cfg.modele].nom;
+  $('#sous-modele').textContent = `${[...new Set(meubles.map((x) => FIN[x.fin || cfg.facade].nom))].slice(0, 3).join(' & ') || FIN[cfg.facade].nom} · ${meubles.length} meuble${meubles.length > 1 ? 's' : ''}`;
 }
 function majFinitions() {
   const m = MODELES[cfg.modele];
-  $$('#opt-modele [data-modele]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.modele === cfg.modele));
+  const ms0 = meubles.find((x) => x.id === selection);
+  const modC = cible === 'sel' && ms0 ? (ms0.modele || cfg.modele) : cfg.modele;
+  $$('#opt-modele [data-modele]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.modele === modC));
   majTitre();
-  $('#note-modele').textContent = `${FINITIONS.filter(compatible).length} finitions du catalogue Armony 2026 disponibles pour ${m.nom}.`;
-  $('#nom-facade').textContent = `${FIN[cfg.facade].nom} · ${FIN[cfg.facade].famille}`;
-  $('#nom-accent').textContent = `${FIN[cfg.accent].nom} · ${FIN[cfg.accent].famille}`;
+  $('#note-modele').textContent = `${FINITIONS.filter((f) => compatible(f, modC)).length} finitions du catalogue Armony 2026 disponibles pour ${MODELES[modC].nom}.`;
+  const ms = meubles.find((x) => x.id === selection);
+  if (cible === 'sel' && !ms) cible = 'facade';
+  $('#nom-facade').textContent = 'même finition partout';
+  $('#nom-accent').textContent = ms ? `${def(ms).nom} · ${FIN[ms.fin || cfg.facade].nom}` : 'sélectionnez un meuble dans la pièce';
+  $('#btn-sel').disabled = !ms;
   $$('[data-cible]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.cible === cible));
-  $('#nuancier-facades').innerHTML = nuancier(FINITIONS.filter(compatible), cfg[cible], 'data-fin');
+  $('#nuancier-facades').innerHTML = nuancier(FINITIONS.filter((f) => compatible(f, modC)), cible === 'sel' ? (ms.fin || cfg.facade) : cfg.facade, 'data-fin');
   $('#nuancier-plans').innerHTML = nuancier(FINITIONS.filter((f) => f.plan), cfg.plan, 'data-plan', true);
   $('#nom-plan').textContent = `— ${FIN[cfg.plan].nom}, ${FIN[cfg.plan].famille}`;
   $('#opt-poignee').innerHTML = Object.entries(POIGNEES).map(([id, o]) => `<button class="opt" data-poignee="${id}" aria-pressed="${id === cfg.poignee && m.porte !== 'profil'}"${m.porte === 'profil' ? ' disabled' : ''}><b>${o.nom}</b><small>${o.note}</small></button>`).join('');
@@ -955,7 +969,11 @@ $$('[data-cible]').forEach((b) => b.addEventListener('click', () => { cible = b.
 document.addEventListener('click', (e) => {
   const f = e.target.closest('[data-fin]'), p = e.target.closest('[data-plan]'), h = e.target.closest('[data-poignee]'), t = e.target.closest('[data-teinte]');
   if (!(f || p || h || t)) return;
-  if (f) cfg[cible] = f.dataset.fin;
+  if (f) {
+    const ms = meubles.find((x) => x.id === selection);
+    if (cible === 'sel' && ms) ms.fin = f.dataset.fin;
+    else { cfg.facade = f.dataset.fin; meubles.forEach((x) => { delete x.fin; if (x.modele && !compatible(FIN[cfg.facade], x.modele)) delete x.modele; }); }
+  }
   if (p) cfg.plan = p.dataset.plan;
   if (h) cfg.poignee = h.dataset.poignee;
   if (t) cfg.teinte = t.dataset.teinte;
@@ -967,13 +985,12 @@ document.addEventListener('click', (e) => {
 function lignesRecap() {
   const m = MODELES[cfg.modele];
   const compte = {};
-  for (const x of meubles) { const d = def(x); const k = `${d.nom} ${cm(d.l)}${x.accent ? ' (accent)' : ''}`; compte[k] = (compte[k] || 0) + 1; }
+  for (const x of meubles) { const d = def(x); const k = `${d.nom} ${cm(d.l)} · ${MODELES[x.modele || cfg.modele].nom} ${FIN[x.fin || cfg.facade].nom}`; compte[k] = (compte[k] || 0) + 1; }
   const lineaire = meubles.filter((x) => ['bas', 'colonne'].includes(def(x).type)).reduce((s, x) => s + def(x).l, 0);
   const forme = cfg.forme === 'L' ? `en L (découpe ${cm(cfg.Lx)} × ${cm(cfg.Lz)})` : cfg.forme === 'biais' ? `murs en biais (angles ${cfg.aG}° et ${cfg.aD}°)` : 'rectangulaire';
   return [
     ['Modèle', `Armony ${m.nom}`],
-    ['Façades', `${FIN[cfg.facade].nom} (${FIN[cfg.facade].famille})`],
-    ['Accent', `${FIN[cfg.accent].nom} (${FIN[cfg.accent].famille})`],
+    ['Finition de base', `${FIN[cfg.facade].nom} (${FIN[cfg.facade].famille})`],
     ['Plan de travail', `${FIN[cfg.plan].nom} (${FIN[cfg.plan].famille})`],
     ['Poignées', m.porte === 'profil' ? `Poignée System, ${TEINTES_POIGNEE[cfg.teinte].nom}` : `${POIGNEES[cfg.poignee].nom}, ${TEINTES_POIGNEE[cfg.teinte].nom}`],
     ['Pièce', `${forme}, ${cm(cfg.W)} × ${cm(cfg.D)}, ${cm(cfg.H)} sous plafond`],
@@ -1024,7 +1041,8 @@ brancherFormulaire($('form[name="configuration-cuisine"]'), {
 });
 
 // ---------- démarrage ----------
-for (const k of ['facade', 'accent']) if (!compatible(FIN[cfg[k]])) cfg[k] = premiereCompatible(k === 'accent');
+if (!compatible(FIN[cfg.facade])) cfg.facade = premiereCompatible(false);
+for (const m of meubles || []) if (m.fin && !compatible(FIN[m.fin], m.modele || cfg.modele)) delete m.fin;
 construirePiece();
 if (meubles === null) meubles = depart('ilot').map((m) => ({ ...m, id: nouvelId() }));
 ouvertures.forEach(borner);
