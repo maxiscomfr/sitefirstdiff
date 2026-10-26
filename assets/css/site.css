@@ -354,7 +354,7 @@ section { position: relative; }
 .portail-centre .armony { width: min(520px, 76vw); margin: 0 auto; filter: drop-shadow(0 10px 40px rgba(0,0,0,.5)); }
 .portail-centre p { margin: 22px 0 0; font-family: var(--serif); font-style: italic; font-size: clamp(20px, 2.2vw, 28px); color: var(--ivoire-2); }
 .portail-centre .presente { font-family: var(--titre); font-style: normal; font-size: 11.5px; letter-spacing: .4em; text-transform: uppercase; color: var(--or-clair); margin: 0 0 22px; }
-.portes { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr; z-index: 3; }
+.portes { position: absolute; left: 0; right: 0; bottom: 46px; display: grid; grid-template-columns: 1fr 1fr; z-index: 3; }
 .porte { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 34px var(--marge) clamp(36px, 6vh, 64px); border-top: 1px solid var(--ligne); transition: background .7s var(--ease); overflow: hidden; }
 .porte + .porte { border-left: 1px solid var(--ligne); text-align: right; align-items: flex-end; }
 .porte::before { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(168,147,90,.22), transparent); opacity: 0; transition: opacity .7s var(--ease); }
@@ -476,7 +476,6 @@ section { position: relative; }
   .porte p { display: none; }
   .porte .btn { display: none; }
   .finition-courante { display: none; }
-  .portail-haut .contact { display: none; }
   .config { grid-template-columns: 1fr; grid-template-rows: 46svh 1fr; height: auto; min-height: 100svh; }
   .config-panneau { border-left: 0; }
   .panneaux { overflow: visible; padding: 24px 20px; }
@@ -776,3 +775,49 @@ details.famille summary small { opacity: .6; }
 .groupe-meubles.categorie > summary { font-size: 12px; letter-spacing: .22em; }
 .groupe-meubles.sous-categorie { margin-left: 12px; border-left: 1px solid rgba(239,234,224,.1); padding-left: 12px; }
 .groupe-meubles.sous-categorie > summary { opacity: .85; }
+
+/* ---------- bandeau de certifications, contact du pied, barre d'action mobile, avis et réalisations ---------- */
+.certifs { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 28px; padding: 0 0 46px; margin-bottom: 46px; border-bottom: 1px solid var(--ligne); font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: var(--gris-clair); }
+.certifs span { color: var(--gris); }
+.certifs b { font-weight: 400; color: var(--ivoire); padding: 8px 16px; border: 1px solid var(--ligne); }
+.contact-pied { font-style: normal; }
+.pied a { display: inline-block; padding: 2px 0; }
+.pied .contact-pied li, .pied nav li { line-height: 1.5; }
+.lien-evitement { position: absolute; left: 12px; top: -60px; z-index: 300; padding: 12px 18px; background: var(--or-clair); color: var(--noir); font-size: 14px; }
+.lien-evitement:focus { top: 12px; }
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--or-clair); outline-offset: 3px; }
+.champ [aria-invalid="true"] { border-color: #e2a76f; }
+.champ input, .champ select, .champ textarea { min-height: 44px; }
+.btn, .burger, .echantillon { min-height: 44px; }
+.avis-liste, .real-liste { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 26px; margin-top: 46px; }
+.avis-carte { margin: 0; padding: 32px 28px; border: 1px solid var(--ligne); }
+.avis-carte blockquote { margin: 0 0 22px; font-family: var(--serif, serif); font-style: italic; font-size: 22px; line-height: 1.4; }
+.avis-carte blockquote p { margin: 0; }
+.avis-carte figcaption { font-size: 13px; letter-spacing: .08em; color: var(--gris-clair); }
+.avis-carte figcaption b { font-weight: 400; color: var(--ivoire); }
+.real-carte .photo { aspect-ratio: 4 / 3; margin-bottom: 18px; }
+.real-carte h3 { margin: 0 0 6px; }
+.real-carte .meta { color: var(--or-clair); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 10px; }
+.page-simple h2 { margin-top: 40px; }
+.page-simple p, .page-simple li { max-width: 70ch; line-height: 1.7; }
+.page-simple a { color: var(--or-clair); text-decoration: underline; text-underline-offset: 3px; }
+.a-completer { background: rgba(226, 167, 111, .16); color: #e2a76f; padding: 0 6px; }
+.barre-action { display: none; }
+@media (max-width: 760px) {
+  .barre-action { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; padding-bottom: env(safe-area-inset-bottom); background: var(--ligne); box-shadow: 0 -10px 30px rgba(0,0,0,.35); }
+  .barre-action a { display: flex; align-items: center; justify-content: center; min-height: 52px; background: rgba(12, 11, 10, .96); color: var(--ivoire); font-size: 12.5px; letter-spacing: .22em; text-transform: uppercase; }
+  .barre-action a.or { background: var(--or-clair); color: var(--noir); }
+  .avec-barre { padding-bottom: 54px; }
+  .certifs { gap: 10px 14px; letter-spacing: .16em; font-size: 11px; }
+}
+.pied h2.t { margin: 0 0 18px; font-family: inherit; font-weight: 400; font-size: 11.5px; letter-spacing: .28em; text-transform: uppercase; color: var(--or-clair); }
+.nav .appel { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--ivoire); font-size: 12.5px; letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; }
+.nav .appel .num { letter-spacing: .08em; color: var(--or-clair); }
+.portail-haut .contact .num { margin-left: 10px; color: var(--or-clair); letter-spacing: .08em; }
+@media (max-width: 1180px) { .nav .appel .num { display: none; } }
+@media (max-width: 760px) { .portail-haut .contact .num { display: none; } .nav .appel .appel-lib { display: inline; } }
+
+.portail-pied { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 6px 26px; min-height: 46px; padding: 6px var(--marge); overflow-x: auto; background: rgba(7, 7, 6, .92); border-top: 1px solid var(--ligne); font-size: 12px; letter-spacing: .08em; color: var(--gris-clair); white-space: nowrap; }
+.portail-pied a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ivoire); }
+.portail-pied address { font-style: normal; }
+@media (max-width: 760px) { .portail-pied { justify-content: flex-start; gap: 4px 20px; } }

@@ -1,13 +1,13 @@
 // Espace professionnels : catalogues, showroom, parcours de prise de rendez-vous.
-import { $, $$, brancherFormulaire, observer } from './site.js?v=20261023h';
-import { CATALOGUES, CONTACT } from './donnees.js?v=20261023h';
+import { $, $$, brancherFormulaire, observer } from './site.js?v=20261023i';
+import { CATALOGUES, CONTACT } from './donnees.js?v=20261023i';
 
 // ---------- catalogues ----------
 const liste = $('#liste-catalogues');
 liste.innerHTML = CATALOGUES.map((c, i) => `
   <a class="catalogue revele${i % 3 ? ' revele-d' + (i % 3) : ''}" data-i="${i}" href="${c.fichier || '#rendez-vous'}"${c.fichier ? ' download' : ''}>
     <div class="couv">
-      ${c.marque === 'Armony' ? '<img src="assets/img/logos/armony-sombre.png" alt="Armony" width="103" height="24">' : `<span style="letter-spacing:.3em;text-transform:uppercase;font-size:15px">${c.marque}</span>`}
+      ${c.marque === 'Armony' ? '<img src="assets/img/logos/armony-sombre.webp" alt="Armony" width="103" height="24">' : `<span style="letter-spacing:.3em;text-transform:uppercase;font-size:15px">${c.marque}</span>`}
       <span class="tag">${c.fichier ? 'PDF' : 'Sur demande'}</span>
     </div>
     <h3>${c.titre}</h3>

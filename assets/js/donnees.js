@@ -1,6 +1,30 @@
 // Contenus du site : coordonnées, collections et portraits Armony, catalogues.
 // Tout ce qui peut changer sans toucher au design se modifie ici.
 
+// Éditeur du site (mentions légales) : les valeurs vides s'affichent comme « à compléter ».
+export const EDITEUR = {
+  societe: 'MAXIS',
+  forme: '',
+  siret: '',
+  siege: '',
+  directeur: '',
+};
+
+// Avis clients : n'ajouter que de vrais avis, avec l'accord de la personne. La section apparaît dès le premier avis.
+// Modèle : { texte: 'Phrase du client', nom: 'Prénom N.', ville: 'Ville', date: 'Mois 2026' }
+export const AVIS = [];
+
+// Réalisations : projets livrés, avec date et ville. La section apparaît dès la première réalisation.
+// Modèle : { titre: 'Cuisine Yota, rénovation', ville: 'Tours', date: 'Septembre 2026', image: '2017/05/Portrait27-SKYLINE-YOTA-RIGA-1-WEB.webp', texte: 'Deux lignes sur le projet' }
+export const REALISATIONS = [];
+
+export const CERTIFICATIONS = ['ISO 9001', 'ISO 14001', 'FSC', 'CARB2'];
+
+export function itineraire() {
+  const dest = CONTACT.adresse ? `${CONTACT.adresse}, ${CONTACT.ville}` : `FirstDiff, ${CONTACT.ville}`;
+  return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(dest);
+}
+
 export const CONTACT = {
   societe: 'FirstDiff',
   interlocuteur: 'Jérôme Rivault',
@@ -10,6 +34,11 @@ export const CONTACT = {
   showroom: 'Showroom FirstDiff — Tours Nord',
   ville: '37100 Tours',
   acces: 'Sur rendez-vous uniquement',
+  // à compléter : rue et numéro du showroom (la ligne « Itinéraire » et l'adresse affichée s'en servent)
+  adresse: '',
+  horaires: 'Sur rendez-vous',
+  // à compléter si besoin : jours et plages d'ouverture, par exemple 'Du lundi au vendredi, 9 h – 18 h'
+  horairesDetail: '',
   secteur: [
     ['37', 'Indre-et-Loire'], ['41', 'Loir-et-Cher'], ['86', 'Vienne'], ['85', 'Vendée'],
     ['79', 'Deux-Sèvres'], ['17', 'Charente-Maritime'], ['16', 'Charente'], ['87', 'Haute-Vienne'],
@@ -115,7 +144,10 @@ export const ORDRE_PORTRAITS = ['p01', 'p27', 'p12', 'p05', 'p13', 'p02', 'p18',
 // Un catalogue dont le fichier est absent s'affiche « sur demande ».
 export const CATALOGUES = [
   { titre: 'Armony Collection 2026', detail: 'Les douze collections, toutes les finitions', fichier: 'catalogues/armony-collection-2026.pdf', marque: 'Armony' },
-  { titre: 'Collezione Anniversario 50', detail: 'L’édition anniversaire des 50 ans', fichier: 'catalogues/armony-collezione-50.pdf', marque: 'Armony' },
-  { titre: 'Portraits Armony', detail: 'Les projets photographiés, finition par finition', fichier: 'catalogues/armony-portraits.pdf', marque: 'Armony' },
-  { titre: 'Nuancier & matériaux', detail: 'Laques, stratifiés, bois, grès et Laminam', fichier: 'catalogues/armony-nuancier.pdf', marque: 'Armony' },
+  // à remettre quand le PDF sera déposé dans /catalogues/ :
+  // { titre: 'Collezione Anniversario 50', detail: 'L’édition anniversaire des 50 ans', fichier: 'catalogues/armony-collezione-50.pdf', marque: 'Armony' },
+  // à remettre quand le PDF sera déposé dans /catalogues/ :
+  // { titre: 'Portraits Armony', detail: 'Les projets photographiés, finition par finition', fichier: 'catalogues/armony-portraits.pdf', marque: 'Armony' },
+  // à remettre quand le PDF sera déposé dans /catalogues/ :
+  // { titre: 'Nuancier & matériaux', detail: 'Laques, stratifiés, bois, grès et Laminam', fichier: 'catalogues/armony-nuancier.pdf', marque: 'Armony' },
 ];

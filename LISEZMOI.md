@@ -51,3 +51,10 @@ Le script copie les images dans `assets/img/armony/` et bascule le site dessus. 
 - Accueil sur téléphone : images fixes de la scène 3D (`assets/img/accueil/`, refaites avec `outils/images-accueil.mjs`), la 3D reste sur ordinateur et tablette.
 - Configurateur : ombres de contact, arêtes adoucies, laques vernies, parquet ; mention « esquisse indicative ».
 - Après toute modification d'un script ou du CSS, changer le suffixe `?v=` dans les pages et les imports, pour que les visiteurs reçoivent la nouvelle version.
+
+## À compléter (mise à jour du 26 octobre 2026)
+
+- `assets/js/donnees.js` : `CONTACT.adresse` (rue du showroom), `CONTACT.horairesDetail`, `EDITEUR` (forme juridique, SIRET, siège, directeur de la publication), `AVIS` et `REALISATIONS` (les sections n'apparaissent que remplies, avec de vrais avis et de vraies réalisations).
+- `mentions-legales.html` et `confidentialite.html` : les champs surlignés « [à compléter] » (forme juridique, SIREN/SIRET, siège, directeur de la publication, adresse du showroom, durée de conservation à valider).
+- Adresse du site : `python3 outils/seo.py https://votre-domaine.fr` met à jour canonical, Open Graph, JSON-LD, sitemap.xml et robots.txt. À relancer après chaque changement de titre ou de description (listés dans le script).
+- Catalogues : trois PDF sont désactivés dans `donnees.js` (Collezione Anniversario 50, Portraits, Nuancier) tant que les fichiers ne sont pas déposés dans `/catalogues/`.

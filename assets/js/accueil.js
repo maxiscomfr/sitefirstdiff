@@ -12,12 +12,12 @@ const q = new URLSearchParams(location.search);
 const leger = q.get('capture') == null && (matchMedia('(max-width: 760px)').matches || navigator.connection?.saveData);
 
 if (!leger) {
-  import('./portail.js?v=20261023h');
+  import('./portail.js?v=20261023i');
 } else {
   const fond = document.createElement('div');
   fond.className = 'portail-fixe';
   fond.setAttribute('aria-hidden', 'true');
-  fond.innerHTML = IMAGES.map((_, i) => `<img src="assets/img/accueil/portrait-${i}.jpg" alt="" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} decoding="async">`).join('');
+  fond.innerHTML = IMAGES.map((_, i) => `<img src="assets/img/accueil/portrait-${i}.webp" alt="" width="1076" height="2329" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} decoding="async">`).join('');
   document.getElementById('scene3d').replaceWith(fond);
   const imgs = fond.querySelectorAll('img');
   const etiquette = document.querySelector('.finition-courante');

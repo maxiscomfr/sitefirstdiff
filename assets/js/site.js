@@ -1,5 +1,5 @@
 // Comportements communs : en-tête, pied de page, apparitions, photos, visionneuse, formulaires.
-import { CONTACT, photo, photoDistante, PHOTOS_LOCALES } from './donnees.js?v=20261023h';
+import { CONTACT, AVIS, REALISATIONS, CERTIFICATIONS, itineraire, photo, photoDistante, PHOTOS_LOCALES } from './donnees.js?v=20261023i';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -19,12 +19,13 @@ function entete() {
   const ici = location.pathname.split('/').pop() || 'index.html';
   el.innerHTML = `
     <a class="marques" href="index.html" aria-label="FirstDiff × Armony — accueil">
-      <img src="assets/img/logos/firstdiff-ligne-${logo}.png" alt="FirstDiff" width="160" height="38">
+      <img src="assets/img/logos/firstdiff-ligne-${logo}.webp" alt="FirstDiff" width="160" height="38">
       <span class="x" aria-hidden="true">×</span>
-      <img class="armony" src="assets/img/logos/armony-${logo}.png" alt="Armony Cucine" width="86" height="20">
+      <img class="armony" src="assets/img/logos/armony-${logo}.webp" alt="Armony Cucine" width="86" height="20">
     </a>
     <nav class="nav" id="nav">
       ${liens.map(([h, t]) => `<a href="${h}"${h === ici ? ' aria-current="page"' : ''}>${t}</a>`).join('')}
+      <a class="appel" href="tel:${CONTACT.telephoneLien}" aria-label="Appeler le ${CONTACT.telephone}"><span class="appel-lib">Appeler</span> <span class="num">${CONTACT.telephone}</span></a>
       <span class="bascule" role="group" aria-label="Changer d'espace">
         <a href="particuliers.html"${univers !== 'pro' ? ' aria-current="true"' : ''}>Particuliers</a>
         <a href="professionnels.html"${univers === 'pro' ? ' aria-current="true"' : ''}>Pros</a>
@@ -45,32 +46,84 @@ function entete() {
 function pied() {
   const el = $('footer.pied');
   if (!el) return;
+  const adresse = CONTACT.adresse ? `${CONTACT.adresse}<br>${CONTACT.ville}` : `${CONTACT.showroom}<br>${CONTACT.ville}`;
   el.innerHTML = `
   <div class="conteneur">
+    <div class="certifs" aria-label="Certifications d’Armony Cucine">
+      <span>Armony Cucine</span>${CERTIFICATIONS.map((c) => `<b>${c}</b>`).join('')}
+    </div>
     <div class="pied-haut">
       <div class="pied-logo">
-        <img src="assets/img/logos/firstdiff-clair.png" alt="FirstDiff — concept intérieur design" width="210" height="111" loading="lazy">
-        <img class="armony" src="assets/img/logos/armony-clair.png" alt="Armony Cucine" width="170" height="40" loading="lazy">
+        <img src="assets/img/logos/firstdiff-clair.webp" alt="FirstDiff, concept intérieur design" width="210" height="111" loading="lazy">
+        <img class="armony" src="assets/img/logos/armony-clair.webp" alt="Armony Cucine" width="170" height="40" loading="lazy">
       </div>
-      <div>
-        <h4>Particuliers</h4>
-        <ul><li><a href="particuliers.html#collections">Collections Armony</a></li><li><a href="particuliers.html#portraits">Portraits</a></li><li><a href="configurateur.html">Composer ma cuisine</a></li><li><a href="particuliers.html#contact">Être rappelé</a></li></ul>
-      </div>
-      <div>
-        <h4>Professionnels</h4>
-        <ul><li><a href="professionnels.html#catalogues">Catalogues</a></li><li><a href="professionnels.html#showroom">Showroom Tours Nord</a></li><li><a href="professionnels.html#rendez-vous">Prendre rendez-vous</a></li></ul>
-      </div>
-      <div>
-        <h4>Contact</h4>
-        <ul><li><a href="tel:${CONTACT.telephoneLien}">${CONTACT.telephone}</a></li><li><a href="mailto:${CONTACT.email}">${CONTACT.email}</a></li><li>${CONTACT.showroom}<br>${CONTACT.ville}</li></ul>
-      </div>
+      <nav aria-label="Particuliers">
+        <h2 class="t">Particuliers</h2>
+        <ul><li><a href="particuliers.html">Cuisines Armony</a></li><li><a href="particuliers.html#collections">Collections</a></li><li><a href="particuliers.html#portraits">Portraits</a></li><li><a href="configurateur.html">Composer ma cuisine</a></li><li><a href="particuliers.html#contact">Être rappelé</a></li></ul>
+      </nav>
+      <nav aria-label="Professionnels">
+        <h2 class="t">Professionnels</h2>
+        <ul><li><a href="professionnels.html">Armony dans votre magasin</a></li><li><a href="professionnels.html#catalogues">Catalogues</a></li><li><a href="professionnels.html#showroom">Showroom Tours Nord</a></li><li><a href="professionnels.html#rendez-vous">Prendre rendez-vous</a></li></ul>
+      </nav>
+      <address class="contact-pied">
+        <h2 class="t">Contact</h2>
+        <ul>
+          <li><a href="tel:${CONTACT.telephoneLien}">${CONTACT.telephone}</a></li>
+          <li><a href="mailto:${CONTACT.email}">${CONTACT.email}</a></li>
+          <li>${adresse}</li>
+          <li>${CONTACT.horairesDetail ? CONTACT.horairesDetail + ', ' : ''}${CONTACT.horaires.toLowerCase()}</li>
+          <li><a href="${itineraire()}" target="_blank" rel="noopener">Itinéraire <span class="sr">(Google Maps, nouvelle fenêtre)</span></a></li>
+        </ul>
+      </address>
     </div>
-    <div class="grand-armony" aria-hidden="true"><img src="assets/img/logos/armony-clair.png" alt="" loading="lazy"></div>
+    <div class="grand-armony" aria-hidden="true"><img src="assets/img/logos/armony-clair.webp" alt="" loading="lazy" width="520" height="121"></div>
     <div class="pied-bas">
-      <span>© ${new Date().getFullYear()} FirstDiff — Un intérieur d’exception</span>
-      <span><a href="mentions-legales.html">Mentions légales</a> · Armony Cucine est une marque d’Armony Cucine S.p.A., Italie</span>
+      <span>© ${new Date().getFullYear()} FirstDiff, un intérieur d’exception</span>
+      <span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a> · Armony Cucine est une marque d’Armony Cucine S.p.A., Italie</span>
     </div>
   </div>`;
+}
+
+function piedPortail() {
+  const el = $('footer.portail-pied');
+  if (!el) return;
+  const adresse = CONTACT.adresse ? `${CONTACT.adresse}, ${CONTACT.ville}` : `${CONTACT.showroom}, ${CONTACT.ville}`;
+  el.innerHTML = `<a href="tel:${CONTACT.telephoneLien}">${CONTACT.telephone}</a><a href="mailto:${CONTACT.email}">${CONTACT.email}</a>
+    <address>${adresse} · ${CONTACT.horaires.toLowerCase()}</address><a href="${itineraire()}" target="_blank" rel="noopener">Itinéraire<span class="sr"> (nouvelle fenêtre)</span></a>
+    <a href="mentions-legales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a>`;
+}
+
+// ---------- barre d'action sur téléphone : appeler / être rappelé ----------
+function barreAction() {
+  if (document.body.classList.contains('page-config') || document.body.classList.contains('portail')) return;
+  const rappel = univers === 'pro' ? 'professionnels.html#rendez-vous' : 'particuliers.html#contact';
+  document.body.insertAdjacentHTML('beforeend', `
+    <div class="barre-action" role="group" aria-label="Nous contacter">
+      <a href="tel:${CONTACT.telephoneLien}">Appeler</a>
+      <a class="or" href="${rappel}">Être rappelé</a>
+    </div>`);
+  document.body.classList.add('avec-barre');
+}
+
+// ---------- avis clients et réalisations : n'apparaissent que remplis ----------
+function confiance() {
+  const avis = $('#avis'), real = $('#realisations');
+  if (avis && AVIS.length) {
+    $('.liste', avis).innerHTML = AVIS.map((a) => `<figure class="avis-carte revele"><blockquote><p>${a.texte}</p></blockquote><figcaption><b>${a.nom}</b>${a.ville ? `, ${a.ville}` : ''}${a.date ? ` · ${a.date}` : ''}</figcaption></figure>`).join('');
+    avis.hidden = false;
+  }
+  if (real && REALISATIONS.length) {
+    $('.liste', real).innerHTML = REALISATIONS.map((r) => `<article class="real-carte revele"><div class="photo" data-photo="${r.image}" data-alt="${r.titre}, ${r.ville}"></div><h3>${r.titre}</h3><p class="meta">${r.ville} · ${r.date}</p>${r.texte ? `<p>${r.texte}</p>` : ''}</article>`).join('');
+    real.hidden = false;
+  }
+}
+
+// texte alternatif tiré du nom du fichier : « Portrait27-SKYLINE-YOTA-RIGA-1-WEB.webp » devient « Cuisine Armony, portrait 27, Skyline, Yota, Riga »
+function altPhoto(chemin = '') {
+  const mots = chemin.split('/').pop().replace(/\.\w+$/, '').split('-').filter((m) => m && !/^(\d|WEB|HD|EVI)/i.test(m) || /^portrait\d+/i.test(m));
+  const portrait = mots[0]?.match(/^portrait(\d+)/i);
+  const reste = mots.slice(1).map((m) => m[0].toUpperCase() + m.slice(1).toLowerCase());
+  return ['Cuisine Armony Cucine', portrait ? `portrait ${portrait[1]}` : '', ...reste].filter(Boolean).join(', ');
 }
 
 // ---------- photos Armony avec repli élégant ----------
@@ -79,7 +132,7 @@ export function chargerPhotos(racine = document) {
     if (box.dataset.pret) return;
     box.dataset.pret = '1';
     let img = $('img', box);
-    if (!img) { img = document.createElement('img'); img.alt = box.dataset.alt || ''; box.appendChild(img); }
+    if (!img) { img = document.createElement('img'); img.alt = box.dataset.alt || altPhoto(box.dataset.photo); box.appendChild(img); }
     img.loading = box.dataset.eager ? 'eager' : 'lazy';
     img.decoding = 'async';
     img.classList.add('charge');
@@ -201,9 +254,19 @@ export async function envoyerFormulaire(form, extra = {}) {
 
 export function brancherFormulaire(form, { avant, apres } = {}) {
   const etat = $('.etat-envoi', form);
+  form.noValidate = true; // les messages d'erreur sont affichés par le site, en français, sous le formulaire
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!form.reportValidity()) return;
+    form.querySelectorAll('[aria-invalid]').forEach((c) => c.removeAttribute('aria-invalid'));
+    if (!form.checkValidity()) {
+      const invalides = [...form.elements].filter((c) => c.willValidate && !c.validity.valid);
+      invalides.forEach((c) => c.setAttribute('aria-invalid', 'true'));
+      const noms = [...new Set(invalides.map((c) => (c.type === 'checkbox' && c.name === 'accord' ? 'votre accord pour être recontacté' : (c.closest('.champ')?.querySelector('label, .legende-champ')?.textContent || c.name)).trim().toLowerCase()))];
+      etat.className = 'etat-envoi erreur';
+      etat.textContent = `Merci de compléter : ${noms.join(', ')}.`;
+      invalides[0].focus();
+      return;
+    }
     const bouton = $('[type=submit]', form);
     bouton.disabled = true; etat.className = 'etat-envoi'; etat.textContent = 'Envoi en cours…';
     try {
@@ -229,8 +292,17 @@ export function glisser(piste) {
 }
 
 // ---------- démarrage ----------
+document.body.insertAdjacentHTML('afterbegin', '<a class="lien-evitement" href="#contenu">Aller au contenu</a>');
+{
+  const principal = $$('main').find((m) => getComputedStyle(m).display !== 'none') || $('main');
+  if (principal && !principal.id) principal.id = 'contenu';
+  if (principal) principal.tabIndex = -1;
+}
 entete();
 pied();
+piedPortail();
+barreAction();
+confiance();
 transitions();
 chargerPhotos();
 observerApparitions = apparitions();
