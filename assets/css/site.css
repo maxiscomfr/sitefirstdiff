@@ -821,3 +821,20 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .portail-pied a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ivoire); }
 .portail-pied address { font-style: normal; }
 @media (max-width: 760px) { .portail-pied { justify-content: flex-start; gap: 4px 20px; } }
+
+/* ---------- blanc dominant, noir en contraste ---------- */
+.clair .page-simple a, .section-claire .avis-carte a { color: var(--noir); }
+.section-claire .avis-carte { border-color: var(--ligne-sombre); }
+.section-claire .avis-carte figcaption { color: #666; }
+.section-claire .avis-carte figcaption b { color: var(--noir); }
+.section-claire .real-carte .meta { color: #666; }
+.clair .page-simple p, .clair .page-simple li { color: #333; }
+.clair .a-completer { background: rgba(0, 0, 0, .08); color: #8a3b12; }
+.clair .lien-evitement { background: var(--noir); color: var(--ivoire); }
+.entete.defile { background: rgba(10, 10, 10, .94); }
+.clair .entete.defile { background: rgba(255, 255, 255, .92); }
+.clair .btn.plein, .section-claire .btn.plein { background: var(--noir); border-color: var(--noir); color: var(--ivoire); }
+.clair .btn.plein::before, .section-claire .btn.plein::before { background: var(--ivoire); }
+.clair .btn.plein:hover, .section-claire .btn.plein:hover { color: var(--noir); }
+.section-claire .consent, .clair .consent { color: #555; }
+.section-claire .etat-envoi { color: #333; }
