@@ -3,7 +3,7 @@
 // en mettant z = 0 et s'étend vers l'avant (+z) sur sa profondeur.
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261023i';
+import { FINITIONS, FINITIONS_ALIAS } from './finitions.js?v=20261023j';
 export { FINITIONS_ALIAS };
 
 export const FIN = Object.fromEntries(FINITIONS.map((f) => [f.id, f]));
@@ -253,7 +253,7 @@ export class Materiaux {
       alu: () => new THREE.MeshStandardMaterial({ color: '#8d8c88', roughness: 0.35, metalness: 1 }),
       led: () => new THREE.MeshBasicMaterial({ color: '#ffe2b0' }),
       cuir: () => new THREE.MeshStandardMaterial({ color: '#2a2420', roughness: 0.7 }),
-      selection: () => new THREE.MeshBasicMaterial({ color: '#a8935a', transparent: true, opacity: 0.22, depthWrite: false }),
+      selection: () => new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.22, depthWrite: false }),
       conflit: () => new THREE.MeshBasicMaterial({ color: '#c0603a', transparent: true, opacity: 0.25, depthWrite: false }),
     };
     return this.get('x:' + nom, defs[nom]);
