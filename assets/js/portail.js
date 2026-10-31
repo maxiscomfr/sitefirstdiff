@@ -1,7 +1,7 @@
 // Portail d'entrée : une cuisine Armony en 3D qui change de « portrait » en continu.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/RoomEnvironment.js';
-import { construireCuisine, installerStudio, Materiaux, FACADES, PLANS } from './cuisine3d.js?v=20261031q';
+import { construireCuisine, installerStudio, Materiaux, FACADES, PLANS } from './cuisine3d.js?v=20261031s';
 
 const PORTRAITS = [
   { nom: 'Portrait 01 · System + Yota', cfg: { modele: 'system', facade: 'polaris-midnight', accent: 'noce-elegante', plan: 'onyx-white', profil: 'noir' } },
@@ -11,7 +11,7 @@ const PORTRAITS = [
   { nom: 'Portrait 13 · Yota', cfg: { modele: 'yota', facade: 'talco', accent: 'blu-petrolio', plan: 'calacatta-black', profil: 'titane' } },
   { nom: 'Portrait 18 · Rho', cfg: { modele: 'rho', facade: 'x-black', accent: 'noce-elegante', plan: 'smoke-stone', profil: 'noir' } },
 ];
-const BASE = { implantation: 'ilot', longueur: 5.4, colonnes: 3, hauts: false, cascade: true, hotte: 'aucune', bar: true, suspensions: true };
+const BASE = { implantation: 'ilot', longueur: 5.4, colonnes: 3, hauts: 'verriere', cascade: true, hotte: 'aucune', bar: true, suspensions: true };
 
 const canvas = document.getElementById('scene3d');
 const etiquette = document.querySelector('.finition-courante');

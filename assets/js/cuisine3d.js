@@ -302,6 +302,51 @@ function hauts(ctx, L, matId) {
   return g;
 }
 
+// Hauts à façades vitrées (verrières) : cadre fin, verre, fond et étagères éclairés par des LED.
+function hautsVerriere(ctx, L) {
+  const g = new THREE.Group(); const { mats } = ctx;
+  const y0 = 1.5, H = 0.78, P = 0.34, ep = 0.02;
+  const n = Math.max(1, Math.round(L / 0.6)); const w = L / n;
+  const cadre = mats.profil(ctx.profil);
+  const verre = new THREE.MeshStandardMaterial({ color: '#c9d4d6', transparent: true, opacity: 0.2, roughness: 0.05, metalness: 0.1, depthWrite: false });
+  const lueur = new THREE.MeshBasicMaterial({ color: '#ffd9a3' });
+  const fond = new THREE.MeshStandardMaterial({ color: '#241d17', roughness: 0.6, emissive: '#ffb866', emissiveIntensity: 0.16 });
+  // caisson ouvert : fond, dessus, dessous, flancs
+  boite(g, fond, L, H, 0.01, L / 2, y0 + H / 2, 0.005);
+  boite(g, cadre, L, 0.02, P, L / 2, y0 + H - 0.01, P / 2);
+  boite(g, cadre, L, 0.02, P, L / 2, y0 + 0.01, P / 2);
+  for (let i = 0; i <= n; i++) boite(g, cadre, 0.02, H, P, i * w, y0 + H / 2, P / 2);
+  // étagères et LED : une sous chaque étagère, une sous le meuble
+  const niveaux = [y0 + H * 0.36, y0 + H * 0.68];
+  for (const y of niveaux) {
+    boite(g, cadre, L - 0.02, 0.012, P - 0.04, L / 2, y, P / 2, false);
+    boite(g, lueur, L - 0.06, 0.006, 0.014, L / 2, y - 0.009, 0.06, false);
+  }
+  boite(g, lueur, L - 0.06, 0.006, 0.014, L / 2, y0 + H - 0.023, 0.06, false);
+  boite(g, lueur, L - 0.04, 0.006, 0.02, L / 2, y0 - 0.004, P - 0.06, false);
+  // objets : verres et vaisselle simples posés sur les étagères
+  for (let i = 0; i < n; i++) {
+    const cx = w * i + w / 2;
+    for (const y of [y0 + 0.012, ...niveaux.map((v) => v + 0.012)]) {
+      for (const dx of [-0.13, 0, 0.13]) {
+        const v = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.026, 0.1, 16), verre);
+        v.position.set(cx + dx, y + 0.05, 0.14); g.add(v);
+      }
+    }
+  }
+  // portes vitrées avec cadre fin
+  for (let i = 0; i < n; i++) {
+    const x = w * i + w / 2, z = P + ep / 2, b = 0.025;
+    boite(g, cadre, w - JEU, b, ep, x, y0 + H - b / 2, z);
+    boite(g, cadre, w - JEU, b, ep, x, y0 + b / 2, z);
+    boite(g, cadre, b, H - 2 * b, ep, x - w / 2 + b / 2, y0 + H / 2, z);
+    boite(g, cadre, b, H - 2 * b, ep, x + w / 2 - b / 2, y0 + H / 2, z);
+    const vitre = boite(g, verre, w - 2 * b, H - 2 * b, 0.004, x, y0 + H / 2, z, false); vitre.renderOrder = 2;
+    boite(g, cadre, 0.012, 0.16, 0.012, x + w / 2 - 0.07, y0 + H / 2 - 0.2, z + 0.015, false);
+  }
+  return g;
+}
+
 function ilot(ctx, L, D) {
   const g = new THREE.Group(); const { mats } = ctx;
   const P = 0.6;
@@ -387,7 +432,7 @@ export function construireCuisine(cfg, mats = new Materiaux()) {
   });
   const bas = ligneBasse(ctx, Lbas, { facade: c.facade, equip });
   bas.position.x = x0 + Lcol; racine.add(bas);
-  if (c.hauts) { const h = hauts(ctx, Lbas, c.facade); h.position.x = x0 + Lcol; racine.add(h); }
+  if (c.hauts) { const h = c.hauts === 'verriere' ? hautsVerriere(ctx, Lbas) : hauts(ctx, Lbas, c.facade); h.position.x = x0 + Lcol; racine.add(h); }
   if (!avecIlot && c.hotte !== 'aucune') {
     const xm = x0 + Lcol + (Lbas / nMod) * (Math.floor(nMod * 0.3) + 0.5);
     if (!c.hauts) boite(racine, mats.profil(c.profil), 0.9, 0.05, 0.5, xm, 1.75, 0.25);
