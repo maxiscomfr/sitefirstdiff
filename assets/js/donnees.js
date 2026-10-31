@@ -30,7 +30,7 @@ export const CONTACT = {
   interlocuteur: 'Jérôme Rivault',
   telephone: '+33 6 64 35 77 28',
   telephoneLien: '+33664357728',
-  email: 'jrivault@firstdiff.fr',
+  email: 'contact@firstdiff.com',
   showroom: 'Showroom FirstDiff — Tours Nord',
   ville: '37100 Tours',
   acces: 'Sur rendez-vous uniquement',

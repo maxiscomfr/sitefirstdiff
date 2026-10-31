@@ -17,7 +17,7 @@ if len(sys.argv) > 1:
     FICHIER_ADRESSE.write_text(sys.argv[1].rstrip('/') + '\n')
 SITE = (FICHIER_ADRESSE.read_text().strip() if FICHIER_ADRESSE.exists() else 'https://SITE_A_COMPLETER').rstrip('/')
 
-TEL, MAIL = '+33664357728', 'jrivault@firstdiff.fr'
+TEL, MAIL = '+33664357728', 'contact@firstdiff.com'
 DESC_ACCUEIL = 'FirstDiff présente les cuisines italiennes Armony Cucine à Tours : collections, configurateur 3D et showroom à Tours Nord, pour particuliers et professionnels.'
 PAGES = [
     dict(f='index.html', url='/', titre='Cuisines italiennes Armony à Tours | FirstDiff', desc=DESC_ACCUEIL, nom='Accueil'),
