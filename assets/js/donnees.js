@@ -5,7 +5,7 @@
 export const EDITEUR = {
   societe: 'MAXIS',
   forme: '',
-  siret: '',
+  siret: '938 105 533 00013',
   siege: '',
   directeur: '',
 };
@@ -36,9 +36,9 @@ export const CONTACT = {
   acces: 'Sur rendez-vous uniquement',
   // à compléter : rue et numéro du showroom (la ligne « Itinéraire » et l'adresse affichée s'en servent)
   adresse: '',
-  horaires: 'Sur rendez-vous',
+  horaires: 'Tous les jours, 9 h – 19 h',
   // à compléter si besoin : jours et plages d'ouverture, par exemple 'Du lundi au vendredi, 9 h – 18 h'
-  horairesDetail: '',
+  horairesDetail: 'Visites sur rendez-vous · téléphone de 9 h à 19 h',
   secteur: [
     ['37', 'Indre-et-Loire'], ['41', 'Loir-et-Cher'], ['86', 'Vienne'], ['85', 'Vendée'],
     ['79', 'Deux-Sèvres'], ['17', 'Charente-Maritime'], ['16', 'Charente'], ['87', 'Haute-Vienne'],
