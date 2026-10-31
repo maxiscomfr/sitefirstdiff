@@ -432,7 +432,10 @@ export function construireCuisine(cfg, mats = new Materiaux()) {
   });
   const bas = ligneBasse(ctx, Lbas, { facade: c.facade, equip });
   bas.position.x = x0 + Lcol; racine.add(bas);
-  if (c.hauts) { const h = c.hauts === 'verriere' ? hautsVerriere(ctx, Lbas) : hauts(ctx, Lbas, c.facade); h.position.x = x0 + Lcol; racine.add(h); }
+  if (c.hauts === 'verriere') {
+    // deux meubles hauts vitrés seulement, centrés sur la ligne
+    const Lv = Math.min(1.2, Lbas); const h = hautsVerriere(ctx, Lv); h.position.x = x0 + Lcol + (Lbas - Lv) / 2; racine.add(h);
+  } else if (c.hauts) { const h = hauts(ctx, Lbas, c.facade); h.position.x = x0 + Lcol; racine.add(h); }
   if (!avecIlot && c.hotte !== 'aucune') {
     const xm = x0 + Lcol + (Lbas / nMod) * (Math.floor(nMod * 0.3) + 0.5);
     if (!c.hauts) boite(racine, mats.profil(c.profil), 0.9, 0.05, 0.5, xm, 1.75, 0.25);
