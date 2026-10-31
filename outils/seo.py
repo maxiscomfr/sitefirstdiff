@@ -64,7 +64,7 @@ def bloc(p, html):
             '@type': 'LocalBusiness', '@id': SITE + '/#entreprise', 'name': 'FirstDiff', 'url': SITE + '/', 'logo': SITE + '/assets/img/og.jpg',
             'description': 'Cuisines italiennes Armony Cucine : collections, configurateur 3D, showroom à Tours Nord, sur rendez-vous.',
             'url': SITE + '/', 'image': img, 'telephone': '+33 6 64 35 77 28', 'email': MAIL,
-            'address': {'@type': 'PostalAddress', 'postalCode': '37100', 'addressLocality': 'Tours', 'addressCountry': 'FR'},
+            'address': {'@type': 'PostalAddress', 'streetAddress': '4 bis place de la Tranchée', 'postalCode': '37100', 'addressLocality': 'Tours', 'addressCountry': 'FR'},
             'areaServed': [{'@type': 'AdministrativeArea', 'name': n} for _, n in secteur],
         }]
         if p['url'] != '/':

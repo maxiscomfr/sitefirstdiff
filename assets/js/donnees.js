@@ -35,7 +35,7 @@ export const CONTACT = {
   ville: '37100 Tours',
   acces: 'Sur rendez-vous uniquement',
   // à compléter : rue et numéro du showroom (la ligne « Itinéraire » et l'adresse affichée s'en servent)
-  adresse: '',
+  adresse: '4 bis place de la Tranchée',
   horaires: 'Tous les jours, 9 h – 19 h',
   // à compléter si besoin : jours et plages d'ouverture, par exemple 'Du lundi au vendredi, 9 h – 18 h'
   horairesDetail: 'Visites sur rendez-vous · téléphone de 9 h à 19 h',

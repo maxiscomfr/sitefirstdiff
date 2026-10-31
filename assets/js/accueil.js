@@ -12,7 +12,7 @@ const q = new URLSearchParams(location.search);
 const leger = q.get('capture') == null && (matchMedia('(max-width: 760px)').matches || navigator.connection?.saveData);
 
 if (!leger) {
-  import('./portail.js?v=20261031m');
+  import('./portail.js?v=20261031n');
 } else {
   const fond = document.createElement('div');
   fond.className = 'portail-fixe';
