@@ -28,7 +28,7 @@
   <link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="preload" href="assets/fonts/jost-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/css/site.css?v=20261031o">
+  <link rel="stylesheet" href="assets/css/site.css?v=20261031p">
   <script>
     // Le configurateur 3D se manipule à la souris, sur grand écran : sur téléphone, on invite à revenir sur ordinateur.
     if (matchMedia('(max-width: 760px)').matches) document.documentElement.classList.add('telephone');
@@ -196,9 +196,9 @@
     </section>
   </main>
 
-  <script type="module" src="assets/js/site.js?v=20261031o"></script>
+  <script type="module" src="assets/js/site.js?v=20261031p"></script>
   <script type="module">
-    if (!document.documentElement.classList.contains('telephone')) import('./assets/js/configurateur.js?v=20261031o');
+    if (!document.documentElement.classList.contains('telephone')) import('./assets/js/configurateur.js?v=20261031p');
     else document.getElementById('partager-lien').href = 'mailto:?subject=' + encodeURIComponent('Configurateur de cuisine 3D FirstDiff') + '&body=' + encodeURIComponent('À ouvrir sur ordinateur pour composer ma cuisine Armony : ' + location.href.split('#')[0]);
   </script>
 </body>
