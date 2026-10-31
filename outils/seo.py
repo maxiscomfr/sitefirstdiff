@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from datetime import date
 """Balises de référencement du site : title, description, canonical, Open Graph, Twitter, JSON-LD,
 sitemap.xml et robots.txt.
 
@@ -60,7 +61,7 @@ def bloc(p, html):
                    f'<meta name="twitter:title" content="{t}">', f'<meta name="twitter:description" content="{d}">',
                    f'<meta name="twitter:image" content="{img}">']
         graphe = [{
-            '@type': 'LocalBusiness', '@id': SITE + '/#entreprise', 'name': 'FirstDiff',
+            '@type': 'LocalBusiness', '@id': SITE + '/#entreprise', 'name': 'FirstDiff', 'url': SITE + '/', 'logo': SITE + '/assets/img/og.jpg',
             'description': 'Cuisines italiennes Armony Cucine : collections, configurateur 3D, showroom à Tours Nord, sur rendez-vous.',
             'url': SITE + '/', 'image': img, 'telephone': '+33 6 64 35 77 28', 'email': MAIL,
             'address': {'@type': 'PostalAddress', 'postalCode': '37100', 'addressLocality': 'Tours', 'addressCountry': 'FR'},
@@ -93,6 +94,6 @@ for p in PAGES:
 
 urls = [p for p in PAGES if not p.get('noindex')]
 (RACINE / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    ''.join(f'  <url><loc>{SITE}{p["url"]}</loc><changefreq>monthly</changefreq><priority>{"1.0" if p["url"] == "/" else "0.8" if p["url"] in ("/particuliers.html", "/professionnels.html", "/configurateur.html") else "0.3"}</priority></url>\n' for p in urls) + '</urlset>\n')
+    ''.join(f'  <url><loc>{SITE}{p["url"]}</loc><lastmod>{date.today().isoformat()}</lastmod><changefreq>monthly</changefreq><priority>{"1.0" if p["url"] == "/" else "0.8" if p["url"] in ("/particuliers.html", "/professionnels.html", "/configurateur.html") else "0.3"}</priority></url>\n' for p in urls) + '</urlset>\n')
 (RACINE / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n')
 print('Adresse du site :', SITE)

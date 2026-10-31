@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://SITE_A_COMPLETER/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://SITE_A_COMPLETER/particuliers.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://SITE_A_COMPLETER/professionnels.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://SITE_A_COMPLETER/configurateur.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://SITE_A_COMPLETER/mentions-legales.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://SITE_A_COMPLETER/confidentialite.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.firstdiff.com/</loc><lastmod>2026-10-31</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.firstdiff.com/particuliers.html</loc><lastmod>2026-10-31</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.firstdiff.com/professionnels.html</loc><lastmod>2026-10-31</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.firstdiff.com/configurateur.html</loc><lastmod>2026-10-31</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.firstdiff.com/mentions-legales.html</loc><lastmod>2026-10-31</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.firstdiff.com/confidentialite.html</loc><lastmod>2026-10-31</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
 </urlset>
