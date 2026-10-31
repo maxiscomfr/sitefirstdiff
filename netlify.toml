@@ -39,13 +39,6 @@
   [headers.values]
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
 
-# un seul domaine canonique : www.firstdiff.com
-[[redirects]]
-  from = "https://firstdiff.com/*"
-  to = "https://www.firstdiff.com/:splat"
-  status = 301
-  force = true
-
 [[redirects]]
   from = "/index.html"
   to = "/"
