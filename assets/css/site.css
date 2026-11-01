@@ -838,3 +838,23 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .clair .btn.plein:hover, .section-claire .btn.plein:hover { color: var(--noir); }
 .section-claire .consent, .clair .consent { color: #555; }
 .section-claire .etat-envoi { color: #333; }
+
+/* ---------- pages locales (cuisine italienne à <ville>) ---------- */
+.heros-ville { min-height: 82svh; }
+.heros-ville h1 { margin-top: 20px; }
+.fil { font-size: 13px; letter-spacing: .08em; color: rgba(255,255,255,.75); margin-bottom: 26px; }
+.fil a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.3); }
+.fil a:hover { color: #fff; }
+.ville-texte { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(32px, 6vw, 100px); align-items: start; }
+.ville-texte p { font-size: 18px; line-height: 1.75; color: #444; max-width: 62ch; margin: 0 0 18px; }
+.ville-conseil { padding-top: 0; }
+.villes { list-style: none; margin: 32px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 12px; }
+.villes a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border: 1px solid rgba(10,10,10,.2); color: var(--noir); text-decoration: none; letter-spacing: .06em; transition: background .3s, color .3s; }
+.villes a:hover, .villes a:focus-visible { background: var(--noir); color: var(--ivoire); }
+@media (max-width: 900px) { .ville-texte { grid-template-columns: 1fr; } }
+.pied-villes { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; padding: 22px 0; border-top: 1px solid var(--ligne); font-size: 13px; letter-spacing: .06em; }
+.pied-villes span { color: var(--gris-clair); margin-right: 4px; }
+.pied-villes a { color: inherit; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.pied-villes a:hover { text-decoration: underline; }
+.heros-ville .heros-fond::after { background: linear-gradient(90deg, rgba(10,10,10,.82) 0%, rgba(10,10,10,.55) 45%, rgba(10,10,10,.2) 100%), linear-gradient(180deg, rgba(10,10,10,.5) 0%, rgba(10,10,10,0) 30%, rgba(10,10,10,.6) 100%); }
+@media (max-width: 900px) { .heros-ville .heros-fond::after { background: rgba(10,10,10,.62); } }

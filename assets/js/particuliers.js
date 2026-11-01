@@ -1,6 +1,6 @@
 // Espace particuliers : grille des collections, carrousel des portraits, aperçu 3D.
-import { $, $$, chargerPhotos, ouvrirVisionneuse, brancherFormulaire, glisser, observer } from './site.js?v=20261031u';
-import { COLLECTIONS, PORTRAITS, ORDRE_PORTRAITS } from './donnees.js?v=20261031u';
+import { $, $$, chargerPhotos, ouvrirVisionneuse, brancherFormulaire, glisser, observer } from './site.js?v=20261101b';
+import { COLLECTIONS, PORTRAITS, ORDRE_PORTRAITS } from './donnees.js?v=20261101b';
 
 const fleche = '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1v14M1 8h14" stroke="currentColor"/></svg>';
 
@@ -32,11 +32,11 @@ grille.addEventListener('click', (e) => {
 const piste = $('#piste-portraits');
 piste.innerHTML = ORDRE_PORTRAITS.map((id) => {
   const p = PORTRAITS[id];
-  return `<article class="portrait" data-id="${id}" tabindex="0" role="button" aria-label="Ouvrir ${p.titre}">
+  return `<div class="portrait" data-id="${id}" tabindex="0" role="button" aria-label="${p.titre} ${p.modeles}, voir les photos">
     <div class="photo" data-photo="${p.images[0]}" data-alt="${p.titre}, cuisine Armony ${p.modeles}" data-libelle="${p.titre}"></div>
     <div class="meta"><h3>${p.titre}</h3><span class="modeles">${p.modeles}</span></div>
     <ul>${p.finitions.slice(0, 3).map((f) => `<li>${f}</li>`).join('')}</ul>
-  </article>`;
+  </div>`;
 }).join('');
 chargerPhotos(piste);
 glisser(piste);

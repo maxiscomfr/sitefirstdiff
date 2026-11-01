@@ -151,3 +151,6 @@ export const CATALOGUES = [
   // à remettre quand le PDF sera déposé dans /catalogues/ :
   // { titre: 'Nuancier & matériaux', detail: 'Laques, stratifiés, bois, grès et Laminam', fichier: 'catalogues/armony-nuancier.pdf', marque: 'Armony' },
 ];
+
+// Pages locales (générées par outils/villes.py) : liens du pied de page.
+export const VILLES = [['cuisine-italienne-tours.html', 'Tours'], ['cuisine-italienne-amboise.html', 'Amboise'], ['cuisine-italienne-blois.html', 'Blois'], ['cuisine-italienne-poitiers.html', 'Poitiers'], ['cuisine-italienne-niort.html', 'Niort'], ['cuisine-italienne-la-rochelle.html', 'La Rochelle'], ['cuisine-italienne-angouleme.html', 'Angoulême'], ['cuisine-italienne-limoges.html', 'Limoges'], ['cuisine-italienne-bordeaux.html', 'Bordeaux']];

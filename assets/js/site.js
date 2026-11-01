@@ -1,5 +1,5 @@
 // Comportements communs : en-tête, pied de page, apparitions, photos, visionneuse, formulaires.
-import { CONTACT, AVIS, REALISATIONS, CERTIFICATIONS, itineraire, photo, photoDistante, PHOTOS_LOCALES } from './donnees.js?v=20261031u';
+import { CONTACT, AVIS, REALISATIONS, CERTIFICATIONS, itineraire, photo, photoDistante, PHOTOS_LOCALES, VILLES } from './donnees.js?v=20261101b';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -77,6 +77,7 @@ function pied() {
       </address>
     </div>
     <div class="grand-armony" aria-hidden="true"><img src="assets/img/logos/armony-clair.webp" alt="" loading="lazy" width="520" height="121"></div>
+    <nav class="pied-villes" aria-label="Cuisines Armony par ville"><span>Cuisine italienne à</span>${VILLES.map(([f, n]) => `<a href="${f}">${n}</a>`).join('')}</nav>
     <div class="pied-bas">
       <span>© ${new Date().getFullYear()} FirstDiff, un intérieur d’exception</span>
       <span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a> · Armony Cucine est une marque d’Armony Cucine S.p.A., Italie</span>

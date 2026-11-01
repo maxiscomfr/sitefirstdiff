@@ -32,6 +32,10 @@ PAGES = [
     dict(f='merci.html', url='/merci.html', titre='Demande envoyée | FirstDiff', desc='Votre demande est bien arrivée chez FirstDiff.', nom='Merci', noindex=True),
     dict(f='404.html', url='/404.html', titre='Page introuvable | FirstDiff', desc='Cette page n’existe pas.', nom='Page introuvable', noindex=True),
 ]
+sys.path.insert(0, str(RACINE / 'outils'))
+from villes import VILLES, fichier as fichier_ville
+PAGES += [dict(f=fichier_ville(v), url='/' + fichier_ville(v), titre=v['titre'] + ' | FirstDiff', desc=v['desc'],
+               nom=v['ville'], parent='particuliers', ville=True) for v in VILLES]
 secteur = re.findall(r"\['(\d\d)', '([^']+)'\]", (RACINE / 'assets/js/donnees.js').read_text())
 PAGE_PAR_URL = {p['url']: p for p in PAGES}
 
@@ -94,6 +98,6 @@ for p in PAGES:
 
 urls = [p for p in PAGES if not p.get('noindex')]
 (RACINE / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    ''.join(f'  <url><loc>{SITE}{p["url"]}</loc><lastmod>{date.today().isoformat()}</lastmod><changefreq>monthly</changefreq><priority>{"1.0" if p["url"] == "/" else "0.8" if p["url"] in ("/particuliers.html", "/professionnels.html", "/configurateur.html") else "0.3"}</priority></url>\n' for p in urls) + '</urlset>\n')
+    ''.join(f'  <url><loc>{SITE}{p["url"]}</loc><lastmod>{date.today().isoformat()}</lastmod><changefreq>monthly</changefreq><priority>{"1.0" if p["url"] == "/" else "0.8" if p["url"] in ("/particuliers.html", "/professionnels.html", "/configurateur.html") else "0.7" if p.get("ville") else "0.3"}</priority></url>\n' for p in urls) + '</urlset>\n')
 (RACINE / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n')
 print('Adresse du site :', SITE)
