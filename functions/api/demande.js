@@ -56,6 +56,12 @@ export async function onRequestPost({ request, env }) {
       method: 'POST', headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(corps),
     });
   } catch (e) { console.log('Resend injoignable', e.message); return reponse(request, false, nom, 'Service d’envoi injoignable'); }
-  if (!r.ok) { console.log('Resend', r.status, await r.text()); return reponse(request, false, nom, 'Envoi refusé'); }
+  if (!r.ok) { const detail = await r.text(); console.log('Resend', r.status, detail); return reponse(request, false, nom, `Resend ${r.status} : ${detail.slice(0, 300)}`); }
   return reponse(request, true, nom);
+}
+
+// Diagnostic : /api/demande dans le navigateur indique si la fonction tourne et si la clé est réglée (sans la montrer).
+export async function onRequestGet({ env }) {
+  return new Response(JSON.stringify({ fonction: 'ok', cle_resend: env.RESEND_API_KEY ? 'présente' : 'ABSENTE', destinataire: env.MAIL_TO || 'contact@firstdiff.com' }),
+    { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
 }

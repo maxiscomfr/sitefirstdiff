@@ -245,7 +245,7 @@ export async function envoyerFormulaire(form, extra = {}) {
   const donnees = new FormData(form);
   for (const [k, v] of Object.entries(extra)) v instanceof Blob ? donnees.set(k, v, 'composition.jpg') : donnees.set(k, v);
   const r = await fetch('/api/demande', { method: 'POST', body: donnees, headers: { Accept: 'application/json' } });
-  if (!r.ok) throw new Error('Envoi refusé (' + r.status + ')');
+  if (!r.ok) throw new Error('Envoi refusé (' + r.status + ') ' + (await r.text().catch(() => '')));
 }
 
 export function brancherFormulaire(form, { avant, apres } = {}) {
