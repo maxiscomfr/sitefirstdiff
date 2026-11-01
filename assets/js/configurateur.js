@@ -7,12 +7,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { $, $$, brancherFormulaire } from './site.js?v=20261101d';
-import { FINITIONS } from './finitions.js?v=20261101d';
+import { $, $$, brancherFormulaire } from './site.js?v=20261101e';
+import { FINITIONS } from './finitions.js?v=20261101e';
 import { FIN, FINITIONS_ALIAS, MODELES, POIGNEES, TEINTES_POIGNEE, MEUBLES, FAMILLES_MEUBLES, ALIAS, PROFONDEUR,
-  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261101d';
+  HAUTEURS_COLONNE, Materiaux, construireMeuble, construirePlans, emprise, vertical, accentParDefaut } from './meubles3d.js?v=20261101e';
 import { FORMES, OUVERTURES, PIECE_DEFAUT, contour, murs, projeter, surMur, dedans, coins, recouvrement,
-  empriseOuverture } from './piece.js?v=20261101d';
+  empriseOuverture } from './piece.js?v=20261101e';
 
 const QUART = Math.PI / 2;
 const DEFAUT = { modele: 'yota', facade: 'laccato-micalizzato--talco', accent: 'noce--noce', plan: 'plan-laminam--pietra-grey',
@@ -1010,7 +1010,12 @@ function capture() {
 brancherFormulaire($('form[name="configuration-cuisine"]'), {
   avant: async () => {
     const extra = {
-      configuration: lignesRecap().map(([a, b]) => (a.endsWith('×') ? `${a} ${b}` : `${a} : ${b}`)).join('\n'),
+      configuration: (() => {
+        const l = lignesRecap();
+        const infos = l.filter(([a]) => !a.endsWith('×')).map(([a, b]) => `${a} : ${b}`);
+        const meubles = l.filter(([a]) => a.endsWith('×')).map(([a, b]) => `${a} ${b}`);
+        return ['— COMPOSITION —', ...infos, '', `— MEUBLES (${meubles.length} lignes) —`, ...meubles].join('\n');
+      })(),
       lien_3d: lienPartage(),
     };
     const image = await capture();

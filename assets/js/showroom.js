@@ -1,5 +1,5 @@
 // Page « Visiter le showroom » : choix du jour (3 semaines à venir) et de l'heure d'arrivée (9 h à 18 h).
-import { $, brancherFormulaire } from './site.js?v=20261101d';
+import { $, brancherFormulaire } from './site.js?v=20261101e';
 
 const form = $('form[name="visite-showroom"]');
 const jours = $('#jours'), creneaux = $('#creneaux');
