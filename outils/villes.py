@@ -209,6 +209,7 @@ def page(v, version):
           <h2 class="titre revele revele-d1">Un projet<br><span class="italique">à {e(v['ville'])} ?</span></h2>
           <p class="chapo revele revele-d2" style="margin-top:22px">Appelez-nous de 9 h à 19 h, ou laissez vos coordonnées : nous vous rappelons.</p>
           <p class="revele revele-d3" style="margin-top:26px"><a class="lien" data-tel href="tel:+33664357728">+33 6 64 35 77 28</a></p>
+          <p class="revele revele-d3"><a class="lien" href="showroom.html">Réserver une visite au showroom</a></p>
           <p class="revele revele-d3"><a class="lien" href="particuliers.html#contact">Être rappelé</a></p>
         </div>
         <div class="faq revele">

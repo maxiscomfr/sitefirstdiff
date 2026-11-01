@@ -1,5 +1,5 @@
 // Comportements communs : en-tête, pied de page, apparitions, photos, visionneuse, formulaires.
-import { CONTACT, AVIS, REALISATIONS, CERTIFICATIONS, itineraire, photo, photoDistante, PHOTOS_LOCALES, VILLES } from './donnees.js?v=20261101b';
+import { CONTACT, AVIS, REALISATIONS, CERTIFICATIONS, itineraire, photo, photoDistante, PHOTOS_LOCALES, VILLES } from './donnees.js?v=20261101c';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -15,7 +15,7 @@ function entete() {
   const logo = clair ? 'sombre' : 'clair';
   const liens = univers === 'pro'
     ? [['professionnels.html#armony', 'Armony'], ['professionnels.html#catalogues', 'Catalogues'], ['professionnels.html#showroom', 'Showroom'], ['professionnels.html#rendez-vous', 'Rendez-vous']]
-    : [['particuliers.html#collections', 'Collections'], ['particuliers.html#portraits', 'Portraits'], ['configurateur.html', 'Configurateur'], ['particuliers.html#contact', 'Contact']];
+    : [['particuliers.html#collections', 'Collections'], ['particuliers.html#portraits', 'Portraits'], ['configurateur.html', 'Configurateur'], ['showroom.html', 'Showroom'], ['particuliers.html#contact', 'Contact']];
   const ici = location.pathname.split('/').pop() || 'index.html';
   el.innerHTML = `
     <a class="marques" href="index.html" aria-label="FirstDiff × Armony — accueil">
@@ -59,7 +59,7 @@ function pied() {
       </div>
       <nav aria-label="Particuliers">
         <h2 class="t">Particuliers</h2>
-        <ul><li><a href="particuliers.html">Cuisines Armony</a></li><li><a href="particuliers.html#collections">Collections</a></li><li><a href="particuliers.html#portraits">Portraits</a></li><li><a href="configurateur.html">Composer ma cuisine</a></li><li><a href="particuliers.html#contact">Être rappelé</a></li></ul>
+        <ul><li><a href="particuliers.html">Cuisines Armony</a></li><li><a href="particuliers.html#collections">Collections</a></li><li><a href="particuliers.html#portraits">Portraits</a></li><li><a href="configurateur.html">Composer ma cuisine</a></li><li><a href="showroom.html">Visiter le showroom</a></li><li><a href="particuliers.html#contact">Être rappelé</a></li></ul>
       </nav>
       <nav aria-label="Professionnels">
         <h2 class="t">Professionnels</h2>

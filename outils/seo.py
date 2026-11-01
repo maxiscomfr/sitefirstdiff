@@ -27,6 +27,8 @@ PAGES = [
          desc='Cuisinistes, architectes d’intérieur, agenceurs : catalogues Armony, accompagnement FirstDiff et rendez-vous avec votre agent, showroom de Tours Nord.', nom='Professionnels'),
     dict(f='configurateur.html', url='/configurateur.html', titre='Configurateur de cuisine 3D | FirstDiff',
          desc='Posez vos meubles Armony dans votre pièce en 3D, avec les finitions du catalogue 2026, et recevez le chiffrage de FirstDiff, showroom de Tours Nord.', nom='Configurateur 3D', parent='particuliers'),
+    dict(f='showroom.html', url='/showroom.html', titre='Showroom cuisines Armony à Tours : prendre rendez-vous | FirstDiff',
+         desc='Réservez votre visite au showroom FirstDiff de Tours Nord : façades, plans de travail et profilés Armony à voir et à toucher, tous les jours de 9 h à 19 h sur rendez-vous.', nom='Showroom', parent='particuliers'),
     dict(f='mentions-legales.html', url='/mentions-legales.html', titre='Mentions légales | FirstDiff', desc='Mentions légales du site FirstDiff, cuisines italiennes Armony à Tours : éditeur, hébergeur, propriété intellectuelle et données personnelles.', nom='Mentions légales'),
     dict(f='confidentialite.html', url='/confidentialite.html', titre='Politique de confidentialité | FirstDiff', desc='Données recueillies par les formulaires de FirstDiff, finalités, durée de conservation et droits d’accès, de rectification et de suppression.', nom='Confidentialité'),
     dict(f='merci.html', url='/merci.html', titre='Demande envoyée | FirstDiff', desc='Votre demande est bien arrivée chez FirstDiff.', nom='Merci', noindex=True),
@@ -103,6 +105,6 @@ for p in PAGES:
 
 urls = [p for p in PAGES if not p.get('noindex')]
 (RACINE / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    ''.join(f'  <url><loc>{SITE}{p["url"]}</loc><lastmod>{date.today().isoformat()}</lastmod><changefreq>monthly</changefreq><priority>{"1.0" if p["url"] == "/" else "0.8" if p["url"] in ("/particuliers.html", "/professionnels.html", "/configurateur.html") else "0.7" if p.get("ville") else "0.3"}</priority></url>\n' for p in urls) + '</urlset>\n')
+    ''.join(f'  <url><loc>{SITE}{p["url"]}</loc><lastmod>{date.today().isoformat()}</lastmod><changefreq>monthly</changefreq><priority>{"1.0" if p["url"] == "/" else "0.8" if p["url"] in ("/particuliers.html", "/professionnels.html", "/configurateur.html", "/showroom.html") else "0.7" if p.get("ville") else "0.3"}</priority></url>\n' for p in urls) + '</urlset>\n')
 (RACINE / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n')
 print('Adresse du site :', SITE)
