@@ -21,22 +21,22 @@ TEL, MAIL = '+33664357728', 'contact@firstdiff.com'
 DESC_ACCUEIL = 'FirstDiff présente les cuisines italiennes Armony Cucine à Tours : collections, configurateur 3D et showroom à Tours Nord, pour particuliers et professionnels.'
 PAGES = [
     dict(f='index.html', url='/', titre='Cuisines italiennes Armony à Tours | FirstDiff', desc=DESC_ACCUEIL, nom='Accueil'),
-    dict(f='particuliers.html', url='/particuliers.html', titre='Composer sa cuisine Armony | FirstDiff',
+    dict(f='particuliers.html', url='/particuliers', titre='Composer sa cuisine Armony | FirstDiff',
          desc='Collections et portraits Armony Cucine, conseils pour bien choisir, configurateur 3D et chiffrage par FirstDiff, showroom de Tours Nord. Cuisine italienne sur mesure.', nom='Particuliers'),
-    dict(f='professionnels.html', url='/professionnels.html', titre='Revendeurs : Armony dans votre magasin | FirstDiff',
+    dict(f='professionnels.html', url='/professionnels', titre='Revendeurs : Armony dans votre magasin | FirstDiff',
          desc='Cuisinistes, architectes d’intérieur, agenceurs : catalogues Armony, accompagnement FirstDiff et rendez-vous avec votre agent, showroom de Tours Nord.', nom='Professionnels'),
-    dict(f='configurateur.html', url='/configurateur.html', titre='Configurateur de cuisine 3D | FirstDiff',
+    dict(f='configurateur.html', url='/configurateur', titre='Configurateur de cuisine 3D | FirstDiff',
          desc='Posez vos meubles Armony dans votre pièce en 3D, avec les finitions du catalogue 2026, et recevez le chiffrage de FirstDiff, showroom de Tours Nord.', nom='Configurateur 3D', parent='particuliers'),
-    dict(f='showroom.html', url='/showroom.html', titre='Showroom cuisines Armony à Tours : prendre rendez-vous | FirstDiff',
+    dict(f='showroom.html', url='/showroom', titre='Showroom cuisines Armony à Tours : prendre rendez-vous | FirstDiff',
          desc='Réservez votre visite au showroom FirstDiff de Tours Nord : façades, plans de travail et profilés Armony à voir et à toucher, tous les jours de 9 h à 19 h sur rendez-vous.', nom='Showroom', parent='particuliers'),
-    dict(f='mentions-legales.html', url='/mentions-legales.html', titre='Mentions légales | FirstDiff', desc='Mentions légales du site FirstDiff, cuisines italiennes Armony à Tours : éditeur, hébergeur, propriété intellectuelle et données personnelles.', nom='Mentions légales'),
-    dict(f='confidentialite.html', url='/confidentialite.html', titre='Politique de confidentialité | FirstDiff', desc='Données recueillies par les formulaires de FirstDiff, finalités, durée de conservation et droits d’accès, de rectification et de suppression.', nom='Confidentialité'),
-    dict(f='merci.html', url='/merci.html', titre='Demande envoyée | FirstDiff', desc='Votre demande est bien arrivée chez FirstDiff.', nom='Merci', noindex=True),
-    dict(f='404.html', url='/404.html', titre='Page introuvable | FirstDiff', desc='Cette page n’existe pas.', nom='Page introuvable', noindex=True),
+    dict(f='mentions-legales.html', url='/mentions-legales', titre='Mentions légales | FirstDiff', desc='Mentions légales du site FirstDiff, cuisines italiennes Armony à Tours : éditeur, hébergeur, propriété intellectuelle et données personnelles.', nom='Mentions légales'),
+    dict(f='confidentialite.html', url='/confidentialite', titre='Politique de confidentialité | FirstDiff', desc='Données recueillies par les formulaires de FirstDiff, finalités, durée de conservation et droits d’accès, de rectification et de suppression.', nom='Confidentialité'),
+    dict(f='merci.html', url='/merci', titre='Demande envoyée | FirstDiff', desc='Votre demande est bien arrivée chez FirstDiff.', nom='Merci', noindex=True),
+    dict(f='404.html', url='/404', titre='Page introuvable | FirstDiff', desc='Cette page n’existe pas.', nom='Page introuvable', noindex=True),
 ]
 sys.path.insert(0, str(RACINE / 'outils'))
 from villes import VILLES, fichier as fichier_ville
-PAGES += [dict(f=fichier_ville(v), url='/' + fichier_ville(v), titre=v['titre'] + ' | FirstDiff', desc=v['desc'],
+PAGES += [dict(f=fichier_ville(v), url='/' + fichier_ville(v)[:-5], titre=v['titre'] + ' | FirstDiff', desc=v['desc'],
                nom=v['ville'], parent='particuliers', ville=True) for v in VILLES]
 secteur = re.findall(r"\['(\d\d)', '([^']+)'\]", (RACINE / 'assets/js/donnees.js').read_text())
 PAGE_PAR_URL = {p['url']: p for p in PAGES}
@@ -78,7 +78,7 @@ def bloc(p, html):
         if p['url'] != '/':
             trail = [('Accueil', '/')]
             if p.get('parent'):
-                trail.append((PAGE_PAR_URL['/' + p['parent'] + '.html']['nom'], '/' + p['parent'] + '.html'))
+                trail.append((PAGE_PAR_URL['/' + p['parent']]['nom'], '/' + p['parent']))
             trail.append((p['nom'], p['url']))
             graphe.append({'@type': 'BreadcrumbList', 'itemListElement': [
                 {'@type': 'ListItem', 'position': i + 1, 'name': n, 'item': SITE + u} for i, (n, u) in enumerate(trail)]})
@@ -105,6 +105,6 @@ for p in PAGES:
 
 urls = [p for p in PAGES if not p.get('noindex')]
 (RACINE / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    ''.join(f'  <url><loc>{SITE}{p["url"]}</loc><lastmod>{date.today().isoformat()}</lastmod><changefreq>monthly</changefreq><priority>{"1.0" if p["url"] == "/" else "0.8" if p["url"] in ("/particuliers.html", "/professionnels.html", "/configurateur.html", "/showroom.html") else "0.7" if p.get("ville") else "0.3"}</priority></url>\n' for p in urls) + '</urlset>\n')
+    ''.join(f'  <url><loc>{SITE}{p["url"]}</loc><lastmod>{date.today().isoformat()}</lastmod><changefreq>monthly</changefreq><priority>{"1.0" if p["url"] == "/" else "0.8" if p["url"] in ("/particuliers", "/professionnels", "/configurateur", "/showroom") else "0.7" if p.get("ville") else "0.3"}</priority></url>\n' for p in urls) + '</urlset>\n')
 (RACINE / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n')
 print('Adresse du site :', SITE)

@@ -127,9 +127,13 @@ def fichier(v):
     return f'cuisine-italienne-{v["slug"]}.html'
 
 
+def lien(v):
+    return fichier(v)[:-5]
+
+
 def page(v, version):
     e = escape
-    autres = ''.join(f'<li><a href="{fichier(o)}">{e(o["ville"])}</a></li>' for o in VILLES if o is not v)
+    autres = ''.join(f'<li><a href="{lien(o)}">{e(o["ville"])}</a></li>' for o in VILLES if o is not v)
     faq_html = ''.join(f'<details><summary>{e(q)}</summary><p>{e(r)}</p></details>' for q, r in v['faq'])
     intro = ''.join(f'<p>{e(p)}</p>' for p in v['intro'])
     return f'''<!doctype html>
@@ -152,13 +156,13 @@ def page(v, version):
     <section class="heros heros-ville">
       <div class="heros-fond"><img src="assets/img/armony/{v['photo']}" srcset="assets/img/armony/960/{v['photo']} 960w, assets/img/armony/{v['photo']} 1920w" sizes="100vw" alt="Cuisine Armony Cucine, collection italienne présentée par FirstDiff" width="1920" height="1440" fetchpriority="high"></div>
       <div class="conteneur">
-        <nav class="fil" aria-label="Fil d’Ariane"><a href="./">Accueil</a> / <a href="particuliers.html">Particuliers</a> / <span aria-current="page">{e(v['ville'])}</span></nav>
+        <nav class="fil" aria-label="Fil d’Ariane"><a href="./">Accueil</a> / <a href="particuliers">Particuliers</a> / <span aria-current="page">{e(v['ville'])}</span></nav>
         <span class="surtitre revele">{e(v['dep'])} ({v['cp']})</span>
         <h1 class="display">Cuisine italienne<br><span class="italique">à {e(v['ville'])}</span></h1>
         <p class="chapo revele revele-d2" style="margin-top:26px">{e(v['accroche'])}</p>
         <div class="actions revele revele-d3">
-          <a class="btn plein" href="configurateur.html">Composer ma cuisine <span class="fleche"></span></a>
-          <a class="btn" href="particuliers.html#contact">Être rappelé</a>
+          <a class="btn plein" href="configurateur">Composer ma cuisine <span class="fleche"></span></a>
+          <a class="btn" href="particuliers#contact">Être rappelé</a>
         </div>
       </div>
     </section>
@@ -180,7 +184,7 @@ def page(v, version):
           <h2 class="titre-m revele revele-d1">{e(v['conseil'][0])}</h2>
         </div>
         <div class="revele revele-d2"><p>{e(v['conseil'][1])}</p>
-          <p><a class="lien" href="particuliers.html#collections">Voir les douze collections Armony</a></p></div>
+          <p><a class="lien" href="particuliers#collections">Voir les douze collections Armony</a></p></div>
       </div>
     </section>
 
@@ -209,8 +213,8 @@ def page(v, version):
           <h2 class="titre revele revele-d1">Un projet<br><span class="italique">à {e(v['ville'])} ?</span></h2>
           <p class="chapo revele revele-d2" style="margin-top:22px">Appelez-nous de 9 h à 19 h, ou laissez vos coordonnées : nous vous rappelons.</p>
           <p class="revele revele-d3" style="margin-top:26px"><a class="lien" data-tel href="tel:+33664357728">+33 6 64 35 77 28</a></p>
-          <p class="revele revele-d3"><a class="lien" href="showroom.html">Réserver une visite au showroom</a></p>
-          <p class="revele revele-d3"><a class="lien" href="particuliers.html#contact">Être rappelé</a></p>
+          <p class="revele revele-d3"><a class="lien" href="showroom">Réserver une visite au showroom</a></p>
+          <p class="revele revele-d3"><a class="lien" href="particuliers#contact">Être rappelé</a></p>
         </div>
         <div class="faq revele">
           {faq_html}

@@ -1,6 +1,6 @@
 // Espace particuliers : grille des collections, carrousel des portraits, aperçu 3D.
-import { $, $$, chargerPhotos, ouvrirVisionneuse, brancherFormulaire, glisser, observer } from './site.js?v=20261101e';
-import { COLLECTIONS, PORTRAITS, ORDRE_PORTRAITS } from './donnees.js?v=20261101e';
+import { $, $$, chargerPhotos, ouvrirVisionneuse, brancherFormulaire, glisser, observer } from './site.js?v=20261101f';
+import { COLLECTIONS, PORTRAITS, ORDRE_PORTRAITS } from './donnees.js?v=20261101f';
 
 const fleche = '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1v14M1 8h14" stroke="currentColor"/></svg>';
 
@@ -24,7 +24,7 @@ grille.addEventListener('click', (e) => {
   ouvrirVisionneuse({
     surtitre: 'Collection Armony', titre: c.nom, sousTitre: c.style,
     lignes: [c.accroche, ...(c.portraits.length ? [`Portraits : ${c.portraits.map((p) => PORTRAITS[p].titre.replace('Portrait ', 'n° ')).join(', ')}`] : [])],
-    images, lien: `configurateur.html?modele=${c.id}`,
+    images, lien: `configurateur?modele=${c.id}`,
   });
 });
 

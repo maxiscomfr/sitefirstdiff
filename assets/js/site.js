@@ -1,5 +1,5 @@
 // Comportements communs : en-tête, pied de page, apparitions, photos, visionneuse, formulaires.
-import { CONTACT, AVIS, REALISATIONS, CERTIFICATIONS, itineraire, photo, photoDistante, PHOTOS_LOCALES, VILLES } from './donnees.js?v=20261101e';
+import { CONTACT, AVIS, REALISATIONS, CERTIFICATIONS, itineraire, photo, photoDistante, PHOTOS_LOCALES, VILLES } from './donnees.js?v=20261101f';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -14,11 +14,11 @@ function entete() {
   const clair = document.body.classList.contains('clair');
   const logo = clair ? 'sombre' : 'clair';
   const liens = univers === 'pro'
-    ? [['professionnels.html#armony', 'Armony'], ['professionnels.html#catalogues', 'Catalogues'], ['professionnels.html#showroom', 'Showroom'], ['professionnels.html#rendez-vous', 'Rendez-vous']]
-    : [['particuliers.html#collections', 'Collections'], ['particuliers.html#portraits', 'Portraits'], ['configurateur.html', 'Configurateur'], ['showroom.html', 'Showroom'], ['particuliers.html#contact', 'Contact']];
+    ? [['professionnels#armony', 'Armony'], ['professionnels#catalogues', 'Catalogues'], ['professionnels#showroom', 'Showroom'], ['professionnels#rendez-vous', 'Rendez-vous']]
+    : [['particuliers#collections', 'Collections'], ['particuliers#portraits', 'Portraits'], ['configurateur', 'Configurateur'], ['showroom', 'Showroom'], ['particuliers#contact', 'Contact']];
   const ici = location.pathname.split('/').pop() || 'index.html';
   el.innerHTML = `
-    <a class="marques" href="index.html" aria-label="FirstDiff × Armony — accueil">
+    <a class="marques" href="./" aria-label="FirstDiff × Armony — accueil">
       <img src="assets/img/logos/firstdiff-ligne-${logo}.webp" alt="FirstDiff" width="160" height="38">
       <span class="x" aria-hidden="true">×</span>
       <img class="armony" src="assets/img/logos/armony-${logo}.webp" alt="Armony Cucine" width="86" height="20">
@@ -27,8 +27,8 @@ function entete() {
       ${liens.map(([h, t]) => `<a href="${h}"${h === ici ? ' aria-current="page"' : ''}>${t}</a>`).join('')}
       <a class="appel" href="tel:${CONTACT.telephoneLien}" aria-label="Appeler le ${CONTACT.telephone}"><span class="appel-lib">Appeler</span> <span class="num">${CONTACT.telephone}</span></a>
       <span class="bascule" role="group" aria-label="Changer d'espace">
-        <a href="particuliers.html"${univers !== 'pro' ? ' aria-current="true"' : ''}>Particuliers</a>
-        <a href="professionnels.html"${univers === 'pro' ? ' aria-current="true"' : ''}>Pros</a>
+        <a href="particuliers"${univers !== 'pro' ? ' aria-current="true"' : ''}>Particuliers</a>
+        <a href="professionnels"${univers === 'pro' ? ' aria-current="true"' : ''}>Pros</a>
       </span>
     </nav>
     <button class="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav"><span></span><span></span></button>`;
@@ -59,11 +59,11 @@ function pied() {
       </div>
       <nav aria-label="Particuliers">
         <h2 class="t">Particuliers</h2>
-        <ul><li><a href="particuliers.html">Cuisines Armony</a></li><li><a href="particuliers.html#collections">Collections</a></li><li><a href="particuliers.html#portraits">Portraits</a></li><li><a href="configurateur.html">Composer ma cuisine</a></li><li><a href="showroom.html">Visiter le showroom</a></li><li><a href="particuliers.html#contact">Être rappelé</a></li></ul>
+        <ul><li><a href="particuliers">Cuisines Armony</a></li><li><a href="particuliers#collections">Collections</a></li><li><a href="particuliers#portraits">Portraits</a></li><li><a href="configurateur">Composer ma cuisine</a></li><li><a href="showroom">Visiter le showroom</a></li><li><a href="particuliers#contact">Être rappelé</a></li></ul>
       </nav>
       <nav aria-label="Professionnels">
         <h2 class="t">Professionnels</h2>
-        <ul><li><a href="professionnels.html">Armony dans votre magasin</a></li><li><a href="professionnels.html#catalogues">Catalogues</a></li><li><a href="professionnels.html#showroom">Showroom Tours Nord</a></li><li><a href="professionnels.html#rendez-vous">Prendre rendez-vous</a></li></ul>
+        <ul><li><a href="professionnels">Armony dans votre magasin</a></li><li><a href="professionnels#catalogues">Catalogues</a></li><li><a href="professionnels#showroom">Showroom Tours Nord</a></li><li><a href="professionnels#rendez-vous">Prendre rendez-vous</a></li></ul>
       </nav>
       <address class="contact-pied">
         <h2 class="t">Contact</h2>
@@ -80,7 +80,7 @@ function pied() {
     <nav class="pied-villes" aria-label="Cuisines Armony par ville"><span>Cuisine italienne à</span>${VILLES.map(([f, n]) => `<a href="${f}">${n}</a>`).join('')}</nav>
     <div class="pied-bas">
       <span>© ${new Date().getFullYear()} FirstDiff, un intérieur d’exception</span>
-      <span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a> · Armony Cucine est une marque d’Armony Cucine S.p.A., Italie</span>
+      <span><a href="mentions-legales">Mentions légales</a> · <a href="confidentialite">Confidentialité</a> · Armony Cucine est une marque d’Armony Cucine S.p.A., Italie</span>
     </div>
   </div>`;
 }
@@ -91,13 +91,13 @@ function piedPortail() {
   const adresse = CONTACT.adresse ? `${CONTACT.adresse}, ${CONTACT.ville}` : `${CONTACT.showroom}, ${CONTACT.ville}`;
   el.innerHTML = `<a href="tel:${CONTACT.telephoneLien}">${CONTACT.telephone}</a><a href="mailto:${CONTACT.email}">${CONTACT.email}</a>
     <address>${adresse} · ${CONTACT.horaires.toLowerCase()}</address><a href="${itineraire()}" target="_blank" rel="noopener">Itinéraire<span class="sr"> (nouvelle fenêtre)</span></a>
-    <a href="mentions-legales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a>`;
+    <a href="mentions-legales">Mentions légales</a><a href="confidentialite">Confidentialité</a>`;
 }
 
 // ---------- barre d'action sur téléphone : appeler / être rappelé ----------
 function barreAction() {
   if (document.body.classList.contains('page-config') || document.body.classList.contains('portail')) return;
-  const rappel = univers === 'pro' ? 'professionnels.html#rendez-vous' : 'particuliers.html#contact';
+  const rappel = univers === 'pro' ? 'professionnels#rendez-vous' : 'particuliers#contact';
   document.body.insertAdjacentHTML('beforeend', `
     <div class="barre-action" role="group" aria-label="Nous contacter">
       <a href="tel:${CONTACT.telephoneLien}">Appeler</a>
@@ -230,7 +230,7 @@ export function ouvrirVisionneuse({ surtitre, titre, sousTitre, lignes = [], ima
     ${sousTitre ? `<div class="italique" style="font-size:22px">${sousTitre}</div>` : ''}
     ${lignes.length ? `<ul>${lignes.map((l) => `<li>${l}</li>`).join('')}</ul>` : ''}
     <div class="vignettes">${images.map((src, k) => `<button aria-label="Photo ${k + 1}"><div class="photo" data-photo="${src}"></div></button>`).join('')}</div>
-    <p style="margin-top:28px"><a class="btn or" href="${lien || 'configurateur.html'}">Composer ma cuisine <span class="fleche"></span></a></p>`;
+    <p style="margin-top:28px"><a class="btn or" href="${lien || 'configurateur'}">Composer ma cuisine <span class="fleche"></span></a></p>`;
   $$('.vignettes button', vis).forEach((b, k) => b.onclick = () => { i = k; montrer(); });
   chargerPhotos($('aside', vis));
   montrer();
@@ -240,16 +240,11 @@ export function ouvrirVisionneuse({ surtitre, titre, sousTitre, lignes = [], ima
 }
 function fermer() { vis.classList.remove('ouverte'); document.documentElement.style.overflow = ''; }
 
-// ---------- formulaires Netlify ----------
+// ---------- formulaires : envoyés à la fonction /api/demande (Cloudflare Pages) ----------
 export async function envoyerFormulaire(form, extra = {}) {
   const donnees = new FormData(form);
   for (const [k, v] of Object.entries(extra)) v instanceof Blob ? donnees.set(k, v, 'composition.jpg') : donnees.set(k, v);
-  const avecFichier = [...donnees.values()].some((v) => v instanceof Blob && v.size);
-  const options = avecFichier
-    ? { method: 'POST', body: donnees }
-    : { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams([...donnees].filter(([, v]) => typeof v === 'string')).toString() };
-  const r = await fetch('/', options);
+  const r = await fetch('/api/demande', { method: 'POST', body: donnees, headers: { Accept: 'application/json' } });
   if (!r.ok) throw new Error('Envoi refusé (' + r.status + ')');
 }
 
@@ -273,7 +268,7 @@ export function brancherFormulaire(form, { avant, apres } = {}) {
     try {
       const extra = avant ? await avant() : {};
       await envoyerFormulaire(form, extra);
-      apres ? apres() : (location.href = form.getAttribute('action') || 'merci.html');
+      apres ? apres() : (location.href = form.getAttribute('action') || 'merci');
     } catch (err) {
       etat.classList.add('erreur');
       etat.innerHTML = `L’envoi n’a pas abouti. Appelez-nous au <a href="tel:${CONTACT.telephoneLien}">${CONTACT.telephone}</a> ou écrivez à <a href="mailto:${CONTACT.email}">${CONTACT.email}</a>.`;

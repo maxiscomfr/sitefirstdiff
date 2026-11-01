@@ -1,9 +1,0 @@
-{
-  "name": "firstdiff-site",
-  "private": true,
-  "type": "module",
-  "description": "Site FirstDiff : pages statiques, et une fonction Netlify qui met en page les e-mails de demande.",
-  "dependencies": {
-    "nodemailer": "6.9.16"
-  }
-}

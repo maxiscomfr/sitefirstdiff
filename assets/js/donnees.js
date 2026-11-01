@@ -153,4 +153,4 @@ export const CATALOGUES = [
 ];
 
 // Pages locales (générées par outils/villes.py) : liens du pied de page.
-export const VILLES = [['cuisine-italienne-tours.html', 'Tours'], ['cuisine-italienne-amboise.html', 'Amboise'], ['cuisine-italienne-blois.html', 'Blois'], ['cuisine-italienne-poitiers.html', 'Poitiers'], ['cuisine-italienne-niort.html', 'Niort'], ['cuisine-italienne-la-rochelle.html', 'La Rochelle'], ['cuisine-italienne-angouleme.html', 'Angoulême'], ['cuisine-italienne-limoges.html', 'Limoges'], ['cuisine-italienne-bordeaux.html', 'Bordeaux']];
+export const VILLES = [['cuisine-italienne-tours', 'Tours'], ['cuisine-italienne-amboise', 'Amboise'], ['cuisine-italienne-blois', 'Blois'], ['cuisine-italienne-poitiers', 'Poitiers'], ['cuisine-italienne-niort', 'Niort'], ['cuisine-italienne-la-rochelle', 'La Rochelle'], ['cuisine-italienne-angouleme', 'Angoulême'], ['cuisine-italienne-limoges', 'Limoges'], ['cuisine-italienne-bordeaux', 'Bordeaux']];
