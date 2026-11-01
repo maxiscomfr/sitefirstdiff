@@ -50,13 +50,15 @@ def bloc(p, html):
     url = SITE + p['url']
     img = SITE + '/assets/img/og.jpg'
     t, d = escape(p['titre']), escape(p['desc'], quote=True)
-    lignes = [f'<title>{t}</title>', f'<meta name="description" content="{d}">']
+    lignes = [f'<title>{t}</title>', f'<meta name="description" content="{d}">',
+              '<link rel="icon" href="/assets/img/favicon-192.png" type="image/png" sizes="192x192">',
+              '<link rel="manifest" href="/site.webmanifest">']
     if p.get('noindex'):
         lignes.append('<meta name="robots" content="noindex">')
     else:
         lignes += [f'<link rel="canonical" href="{url}">',
                    '<meta property="og:type" content="website">', '<meta property="og:locale" content="fr_FR">',
-                   '<meta property="og:site_name" content="FirstDiff">',
+                   '<meta property="og:site_name" content="FIRST DIFF">', '<meta name="application-name" content="FIRST DIFF">', '<meta name="apple-mobile-web-app-title" content="FIRST DIFF">',
                    f'<meta property="og:title" content="{t}">', f'<meta property="og:description" content="{d}">',
                    f'<meta property="og:url" content="{url}">', f'<meta property="og:image" content="{img}">',
                    '<meta property="og:image:width" content="1200">', '<meta property="og:image:height" content="630">',
@@ -80,6 +82,9 @@ def bloc(p, html):
                 {'@type': 'ListItem', 'position': i + 1, 'name': n, 'item': SITE + u} for i, (n, u) in enumerate(trail)]})
         else:
             graphe.append({'@type': 'BreadcrumbList', 'itemListElement': [{'@type': 'ListItem', 'position': 1, 'name': 'Accueil', 'item': SITE + '/'}]})
+            # nom du site affiché par Google au-dessus de l'adresse
+            graphe.insert(0, {'@type': 'WebSite', '@id': SITE + '/#site', 'name': 'FIRST DIFF', 'alternateName': ['FirstDiff', 'First Diff'], 'url': SITE + '/',
+                              'publisher': {'@id': SITE + '/#entreprise'}, 'inLanguage': 'fr-FR'})
         q = faq(html)
         if q:
             graphe.append({'@type': 'FAQPage', 'mainEntity': q})
