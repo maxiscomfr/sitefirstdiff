@@ -53,15 +53,24 @@ export async function onRequestPost({ request, env }) {
   let r;
   try {
     r = await fetch('https://api.resend.com/emails', {
-      method: 'POST', headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(corps),
+      method: 'POST', headers: { Authorization: `Bearer ${String(env.RESEND_API_KEY).trim()}`, 'Content-Type': 'application/json' }, body: JSON.stringify(corps),
     });
   } catch (e) { console.log('Resend injoignable', e.message); return reponse(request, false, nom, 'Service d’envoi injoignable'); }
   if (!r.ok) { const detail = await r.text(); console.log('Resend', r.status, detail); return reponse(request, false, nom, `Resend ${r.status} : ${detail.slice(0, 300)}`); }
   return reponse(request, true, nom);
 }
 
-// Diagnostic : /api/demande dans le navigateur indique si la fonction tourne et si la clé est réglée (sans la montrer).
+// Diagnostic : /api/demande dans le navigateur indique si la fonction tourne, si la clé est réglée (sans la montrer)
+// et ce que Resend répond à cette clé (liste des domaines : aucun e-mail n'est envoyé).
 export async function onRequestGet({ env }) {
-  return new Response(JSON.stringify({ fonction: 'ok', cle_resend: env.RESEND_API_KEY ? 'présente' : 'ABSENTE', destinataire: env.MAIL_TO || 'contact@firstdiff.com' }),
-    { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
+  const info = { fonction: 'ok', cle_resend: env.RESEND_API_KEY ? 'présente' : 'ABSENTE', destinataire: env.MAIL_TO || 'contact@firstdiff.com', expediteur: env.MAIL_FROM || 'Site FIRST DIFF <site@firstdiff.com>' };
+  if (env.RESEND_API_KEY) {
+    try {
+      const r = await fetch('https://api.resend.com/domains', { headers: { Authorization: `Bearer ${String(env.RESEND_API_KEY).trim()}` } });
+      const t = await r.text(); let j = null; try { j = JSON.parse(t); } catch {}
+      info.resend_statut = r.status;
+      info.resend_reponse = j && Array.isArray(j.data) ? j.data.map(x => `${x.name} : ${x.status}`) : t.slice(0, 300);
+    } catch (e) { info.resend_statut = 'injoignable'; info.resend_reponse = String(e.message || e); }
+  }
+  return new Response(JSON.stringify(info, null, 1), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
 }
